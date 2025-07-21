@@ -3,7 +3,7 @@
 import { useState, useContext, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Map, Pin, Sun, TestTube2, ImageUp, Loader2, AlertCircle, Sparkles, X, MapPin } from "lucide-react";
+import { Map, Pin, Sun, TestTube2, ImageUp, Loader2, AlertCircle, Sparkles, X, MapPin, ShoppingCart } from "lucide-react";
 import Image from 'next/image';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../ui/dialog';
 import { Input } from '../ui/input';
@@ -81,6 +81,13 @@ export default function MyFarmTab() {
       setIsLoadingAnalysis(false);
     }
   };
+  
+  const handleOrderSupplies = (supply: string) => {
+    toast({
+        title: "Searching for suppliers...",
+        description: `Looking for ${supply} on local e-commerce stores.`
+    });
+  }
 
   const resetDroneAnalysis = () => {
     setDroneImageFile(null);
@@ -175,7 +182,7 @@ export default function MyFarmTab() {
           <DialogHeader>
             <DialogTitle className="font-headline text-2xl flex items-center gap-2"><TestTube2 className="text-primary"/>Soil Health Card</DialogTitle>
             <DialogDescription>
-              A summary of your soil's health based on the latest test results.
+              A summary of your soil's health and recommendations.
             </DialogDescription>
           </DialogHeader>
           <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -205,12 +212,20 @@ export default function MyFarmTab() {
               </Card>
           </div>
            <Card className="mt-6">
-              <CardHeader>
+              <CardHeader className="pb-4">
                   <CardTitle className="text-lg">Recommendations</CardTitle>
+                  <CardDescription>Increase Potassium application. Consider using Muriate of Potash. Maintain current Nitrogen levels. No additional Phosphorus required this season.</CardDescription>
               </CardHeader>
-              <CardContent>
-                  <p>Increase Potassium application. Consider using Muriate of Potash. Maintain current Nitrogen levels. No additional Phosphorus required this season.</p>
-              </CardContent>
+            </Card>
+            <Card className="mt-6 bg-primary/5">
+                <CardHeader>
+                    <CardTitle className="text-lg flex items-center gap-2"><ShoppingCart className="text-primary" /> Order Supplies</CardTitle>
+                    <CardDescription>Take action on your soil health report by ordering the necessary inputs.</CardDescription>
+                </CardHeader>
+                <CardContent className="flex flex-col sm:flex-row gap-4">
+                    <Button className="flex-1" onClick={() => handleOrderSupplies("Muriate of Potash")}>Order Recommended Fertilizers</Button>
+                    <Button className="flex-1" variant="secondary" onClick={() => handleOrderSupplies("quality seeds")}>Order Seeds</Button>
+                </CardContent>
             </Card>
         </DialogContent>
       </Dialog>
