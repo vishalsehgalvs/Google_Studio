@@ -4,7 +4,6 @@
 import React, { createContext, useState, ReactNode, useEffect, useContext } from 'react';
 import en from '@/locales/en.json';
 import hi from '@/locales/hi.json';
-import es from '@/locales/es.json';
 
 interface Language {
     value: string;
@@ -23,20 +22,11 @@ export const languages: Language[] = [
     { value: "ta", label: "தமிழ் (Tamil)" },
     { value: "te", label: "తెలుగు (Telugu)" },
     { value: "ur", label: "اردو (Urdu)" },
-    { value: "es", label: "Español (Spanish)" },
-    { value: "fr", label: "Français (French)" },
-    { value: "de", label: "Deutsch (German)" },
-    { value: "pt", label: "Português (Portuguese)" },
-    { value: "ru", label: "Русский (Russian)" },
-    { value: "zh-CN", label: "中文 (Chinese)" },
-    { value: "ja", label: "日本語 (Japanese)" },
-    { value: "ar", label: "العربية (Arabic)" },
   ];
 
 const translations: Record<string, any> = {
   en,
   hi,
-  es,
 };
 
 type TranslateFunction = (key: string, options?: Record<string, string | number>) => string;
