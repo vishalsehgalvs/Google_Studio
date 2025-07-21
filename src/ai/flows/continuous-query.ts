@@ -32,6 +32,7 @@ const prompt = ai.definePrompt({
     name: 'answerFollowUpPrompt',
     input: { schema: AnswerFollowUpInputSchema },
     output: { schema: AnswerFollowUpOutputSchema },
+    model: 'googleai/gemini-2.0-flash',
     prompt: `You are a helpful agricultural assistant. A farmer has a follow-up question regarding a recent crop diagnosis.
 Provide a clear and concise answer to their question based on the provided context.
 Generate the response in the following language: {{language}}.

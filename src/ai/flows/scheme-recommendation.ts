@@ -44,6 +44,7 @@ const prompt = ai.definePrompt({
     }),
   },
   output: {schema: RecommendSchemesOutputSchema},
+  model: 'googleai/gemini-2.0-flash',
   prompt: `You are an expert on government agricultural schemes in India. Your task is to act as an intelligent scheme identifier.
 Generate the response in the following language: {{farmerProfile.language}}.
 

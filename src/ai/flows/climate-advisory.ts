@@ -43,6 +43,7 @@ const advisoryGenerationPrompt = ai.definePrompt({
     name: 'advisoryGenerationPrompt',
     input: { schema: z.object({ location: z.string(), weather: WeatherDataSchema, language: z.string() }) },
     output: { schema: z.object({ advisory: z.string() }) },
+    model: 'googleai/gemini-2.0-flash',
     prompt: `You are an agricultural expert providing climate advisories.
 Generate the response in the following language: {{language}}.
 

@@ -35,6 +35,7 @@ const prompt = ai.definePrompt({
   name: 'marketTrendAnalysisPrompt',
   input: {schema: MarketTrendAnalysisInputSchema},
   output: {schema: MarketTrendAnalysisOutputSchema},
+  model: 'googleai/gemini-2.0-flash',
   prompt: `You are an expert market analyst specializing in agricultural market trends.
 Generate the response in the following language: {{language}}.
 
