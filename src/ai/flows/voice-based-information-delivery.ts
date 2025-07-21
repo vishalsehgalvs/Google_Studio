@@ -33,7 +33,7 @@ const voiceBasedInformationDeliveryFlow = ai.defineFlow(
   },
   async (input) => {
     const { media } = await ai.generate({
-      model: ai.model('gemini-2.5-flash-preview-tts'),
+      model: 'googleai/gemini-2.5-flash-preview-tts',
       config: {
         responseModalities: ['AUDIO'],
         speechConfig: {
