@@ -4,6 +4,7 @@
 import React, { createContext, useState, ReactNode, useEffect, useContext } from 'react';
 import en from '@/locales/en.json';
 import hi from '@/locales/hi.json';
+import es from '@/locales/es.json';
 
 interface Language {
     value: string;
@@ -35,6 +36,7 @@ export const languages: Language[] = [
 const translations: Record<string, any> = {
   en,
   hi,
+  es,
 };
 
 type TranslateFunction = (key: string, options?: Record<string, string | number>) => string;
