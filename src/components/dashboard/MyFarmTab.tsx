@@ -1,10 +1,10 @@
 
 "use client";
 
-import { useState, useContext, useCallback } from 'react';
+import { useState, useContext } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Map, Pin, Sun, TestTube2, ImageUp, Loader2, AlertCircle, Sparkles, X, MapPin, ShoppingCart, Building, Globe, Database, KeyRound } from "lucide-react";
+import { Map, Pin, Sun, TestTube2, ImageUp, Loader2, AlertCircle, Sparkles, X, ShoppingCart, Building, Globe, Database, KeyRound } from "lucide-react";
 import Image from 'next/image';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '../ui/dialog';
 import { Input } from '../ui/input';
@@ -49,7 +49,6 @@ const mapContainerStyle = {
 };
 
 const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-// A valid key must exist and must not be the placeholder.
 const isApiKeyValid = apiKey && apiKey !== "YOUR_API_KEY_HERE";
 
 export default function MyFarmTab() {
@@ -76,7 +75,6 @@ export default function MyFarmTab() {
   const { isLoaded, loadError } = useJsApiLoader({
     id: 'google-map-script',
     googleMapsApiKey: apiKey || "",
-    // Crucially, disable loading if the key is not valid.
     disabled: !isApiKeyValid,
   });
 
@@ -161,7 +159,6 @@ export default function MyFarmTab() {
   };
 
   const renderMap = () => {
-    // If the API key is not valid, show the placeholder immediately.
     if (!isApiKeyValid) {
       return (
         <div className="flex flex-col items-center justify-center text-center p-4 bg-muted h-full rounded-md">
@@ -173,7 +170,6 @@ export default function MyFarmTab() {
       );
     }
     
-    // If the API key is valid, proceed with loading logic.
     if (loadError) {
       return (
         <div className="flex flex-col items-center justify-center text-center p-4 bg-muted h-full rounded-md">
@@ -460,3 +456,4 @@ export default function MyFarmTab() {
   );
 }
 
+    
