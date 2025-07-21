@@ -338,7 +338,7 @@ export default function MyFarmTab() {
               </div>
               <Button onClick={handleAnalyzeFootage} disabled={!droneImagePreview || isLoadingAnalysis} className="w-full mt-4 bg-accent hover:bg-accent/90">
                   {isLoadingAnalysis ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
-                  {isLoadingAnalysis ? t('myFarmTab.droneModal.analyzing') : t('myFarmTab.droneModal.analyze')}
+                  {isLoadingAnalysis ? t('myFarmTab.droneModal.analyzing') : t('myFarm-tab.droneModal.analyze')}
               </Button>
             </div>
             <div>
