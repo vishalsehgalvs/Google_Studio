@@ -6,8 +6,10 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Leaf, Loader2 } from 'lucide-react';
+import { Leaf, Loader2, Smartphone, AtSign, User } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Separator } from '../ui/separator';
 
 export default function Login() {
     const router = useRouter();
@@ -15,6 +17,7 @@ export default function Login() {
     const [isLoading, setIsLoading] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [mobile, setMobile] = useState('');
 
     const handleLogin = (e: React.FormEvent) => {
         e.preventDefault();
@@ -22,22 +25,51 @@ export default function Login() {
 
         // Simulate API call
         setTimeout(() => {
+            // A simple validation check
             if (email && password) {
-                toast({
-                    title: "Login Successful",
-                    description: "Welcome back!",
-                });
-                router.push('/dashboard');
+                loginSuccess();
             } else {
-                toast({
-                    variant: "destructive",
-                    title: "Login Failed",
-                    description: "Please enter your email and password.",
-                });
-                setIsLoading(false);
+                loginFailure("Please enter your email and password.");
             }
         }, 1000);
     };
+    
+    const handleMobileLogin = (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsLoading(true);
+
+        setTimeout(() => {
+            if (mobile && mobile.length >= 10) {
+                 loginSuccess();
+            } else {
+                loginFailure("Please enter a valid mobile number.");
+            }
+        }, 1000);
+    };
+
+    const handleGuestLogin = () => {
+        setIsLoading(true);
+        setTimeout(() => {
+            loginSuccess("Welcome, Guest!");
+        }, 500);
+    };
+
+    const loginSuccess = (title: string = "Login Successful") => {
+        toast({
+            title: title,
+            description: "Redirecting to your dashboard...",
+        });
+        router.push('/dashboard');
+    }
+
+    const loginFailure = (description: string) => {
+        toast({
+            variant: "destructive",
+            title: "Login Failed",
+            description: description,
+        });
+        setIsLoading(false);
+    }
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 px-4">
@@ -49,40 +81,80 @@ export default function Login() {
                             FarmAssist
                         </h1>
                     </div>
-                    <CardTitle className="text-2xl">Welcome Back!</CardTitle>
-                    <CardDescription>Enter your credentials to access your dashboard.</CardDescription>
+                    <CardTitle className="text-2xl">Welcome!</CardTitle>
+                    <CardDescription>Sign in to access your dashboard.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <form onSubmit={handleLogin} className="space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="email">Email</Label>
-                            <Input
-                                id="email"
-                                type="email"
-                                placeholder="farmer@example.com"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                required
-                                disabled={isLoading}
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="password">Password</Label>
-                            <Input
-                                id="password"
-                                type="password"
-                                placeholder="********"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                required
-                                disabled={isLoading}
-                            />
-                        </div>
-                         <Button type="submit" className="w-full bg-primary hover:bg-primary/90 mt-4" disabled={isLoading}>
-                            {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                            {isLoading ? 'Signing In...' : 'Sign In'}
-                        </Button>
-                    </form>
+                    <Tabs defaultValue="email" className="w-full">
+                        <TabsList className="grid w-full grid-cols-2">
+                            <TabsTrigger value="email"><AtSign className="mr-2 h-4 w-4"/>Email</TabsTrigger>
+                            <TabsTrigger value="mobile"><Smartphone className="mr-2 h-4 w-4"/>Mobile</TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="email" className="pt-4">
+                             <form onSubmit={handleLogin} className="space-y-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="email">Email</Label>
+                                    <Input
+                                        id="email"
+                                        type="email"
+                                        placeholder="farmer@example.com"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        required
+                                        disabled={isLoading}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="password">Password</Label>
+                                    <Input
+                                        id="password"
+                                        type="password"
+                                        placeholder="********"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        required
+                                        disabled={isLoading}
+                                    />
+                                </div>
+                                <Button type="submit" className="w-full bg-primary hover:bg-primary/90 mt-4" disabled={isLoading}>
+                                    {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                                    {isLoading ? 'Signing In...' : 'Sign In'}
+                                </Button>
+                            </form>
+                        </TabsContent>
+                        <TabsContent value="mobile" className="pt-4">
+                            <form onSubmit={handleMobileLogin} className="space-y-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="mobile">Mobile Number</Label>
+                                    <Input
+                                        id="mobile"
+                                        type="tel"
+                                        placeholder="e.g. 9876543210"
+                                        value={mobile}
+                                        onChange={(e) => setMobile(e.target.value)}
+                                        required
+                                        disabled={isLoading}
+                                    />
+                                </div>
+                                <Button type="submit" className="w-full bg-primary hover:bg-primary/90 mt-4" disabled={isLoading}>
+                                    {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                                    {isLoading ? 'Sending OTP...' : 'Send OTP'}
+                                </Button>
+                            </form>
+                        </TabsContent>
+                    </Tabs>
+                    
+                    <div className="my-6 flex items-center">
+                        <div className="flex-grow border-t border-muted-foreground/20"></div>
+                        <span className="mx-4 text-sm text-muted-foreground">OR</span>
+                        <div className="flex-grow border-t border-muted-foreground/20"></div>
+                    </div>
+
+                    <Button variant="outline" className="w-full" onClick={handleGuestLogin} disabled={isLoading}>
+                         {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <User className="mr-2 h-4 w-4" />}
+                         Continue as Guest
+                    </Button>
+
                 </CardContent>
                 <CardFooter className="flex flex-col items-center text-sm">
                     <p className="text-muted-foreground">Don't have an account?</p>
