@@ -16,17 +16,19 @@ const ClimateAdvisoryInputSchema = z.object({
 });
 export type ClimateAdvisoryInput = z.infer<typeof ClimateAdvisoryInputSchema>;
 
+const WeatherDataSchema = z.object({
+    temperature: z.number(),
+    humidity: z.number(),
+    windSpeed: z.number(),
+    precipitation: z.string(),
+    forecast: z.string(),
+});
+
 const ClimateAdvisoryOutputSchema = z.object({
   advisory: z
     .string()
     .describe('Actionable advice for farmers based on the weather forecast.'),
-  weather: z.object({
-        temperature: z.number(),
-        humidity: z.number(),
-        windSpeed: z.number(),
-        precipitation: z.string(),
-        forecast: z.string(),
-    })
+  weather: WeatherDataSchema,
 });
 export type ClimateAdvisoryOutput = z.infer<typeof ClimateAdvisoryOutputSchema>;
 
@@ -36,19 +38,24 @@ export async function getClimateAdvisory(
   return getClimateAdvisoryFlow(input);
 }
 
-const climateAdvisoryPrompt = ai.definePrompt({
-  name: 'climateAdvisoryPrompt',
-  input: { schema: z.object({ location: z.string() }) },
-  output: { schema: ClimateAdvisoryOutputSchema },
-  tools: [getWeatherTool],
-  prompt: `You are an agricultural expert providing climate advisories.
-Use the getWeather tool to get the weather for the user's location.
-Then, provide a concise, actionable advisory for a farmer based on that weather forecast.
+const advisoryGenerationPrompt = ai.definePrompt({
+    name: 'advisoryGenerationPrompt',
+    input: { schema: z.object({ location: z.string(), weather: WeatherDataSchema }) },
+    output: { schema: z.object({ advisory: z.string() }) },
+    prompt: `You are an agricultural expert providing climate advisories for the location "{{location}}".
+Based on the following weather data, provide a concise, actionable advisory for a farmer.
 Focus on protective measures or opportunities.
 For example, if there is heavy rain, advise on drainage. If it's very hot, advise on irrigation.
-Location: {{{location}}}
+
+Weather Data:
+- Temperature: {{{weather.temperature}}}°C
+- Humidity: {{{weather.humidity}}}%
+- Wind Speed: {{{weather.windSpeed}}} km/h
+- Precipitation: {{{weather.precipitation}}}
+- Forecast: {{{weather.forecast}}}
 `,
 });
+
 
 const getClimateAdvisoryFlow = ai.defineFlow(
   {
@@ -57,15 +64,21 @@ const getClimateAdvisoryFlow = ai.defineFlow(
     outputSchema: ClimateAdvisoryOutputSchema,
   },
   async (input) => {
-    const llmResponse = await climateAdvisoryPrompt(input);
-    const weatherInfo = llmResponse.toolRequest?.tool?.input;
-    const advisory = llmResponse.output?.advisory ?? "No advisory available.";
-    
-    // We need to call the tool again to get the data to return to the client
+    // Step 1: Explicitly call the tool to get weather data.
     const weather = await getWeatherTool(input);
 
+    // Step 2: Pass the weather data to a separate prompt to generate the advisory.
+    const { output } = await advisoryGenerationPrompt({
+        location: input.location,
+        weather: weather,
+    });
+    
+    if (!output) {
+      throw new Error("Could not generate climate advisory.");
+    }
+
     return {
-        advisory,
+        advisory: output.advisory,
         weather,
     };
   }
