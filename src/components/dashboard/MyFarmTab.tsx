@@ -4,7 +4,7 @@
 import { useState, useContext, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Map, Pin, Sun, TestTube2, ImageUp, Loader2, AlertCircle, Sparkles, X, MapPin, ShoppingCart, Building, Globe, Database } from "lucide-react";
+import { Map, Pin, Sun, TestTube2, ImageUp, Loader2, AlertCircle, Sparkles, X, MapPin, ShoppingCart, Building, Globe, Database, KeyRound } from "lucide-react";
 import Image from 'next/image';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '../ui/dialog';
 import { Input } from '../ui/input';
@@ -18,7 +18,7 @@ import { useUser } from '@/context/UserContext';
 import { saveSoilHealthCard } from '@/lib/db';
 import DataHistoryTab from './DataHistoryTab';
 import { useTranslation } from '@/context/LanguageContext';
-import MockMap from './MockMap';
+import { GoogleMap, useJsApiLoader } from '@react-google-maps/api';
 
 type AnalysisResult = {
   analysis: string;
@@ -42,6 +42,11 @@ const sampleSoilHealthCard = {
   recommendations: "Increase Potassium application. Consider using Muriate of Potash. Maintain current Nitrogen levels. No additional Phosphorus required this season."
 };
 
+const mapContainerStyle = {
+  width: '100%',
+  height: '100%',
+};
+
 export default function MyFarmTab() {
   const [isSoilCardOpen, setIsSoilCardOpen] = useState(false);
   const [isDroneModalOpen, setIsDroneModalOpen] = useState(false);
@@ -62,6 +67,10 @@ export default function MyFarmTab() {
   const { user } = useUser();
   const { languageCode, t } = useTranslation();
   const { toast } = useToast();
+
+  const { isLoaded, loadError } = useJsApiLoader({
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
+  });
 
   const handleOpenSoilCard = () => {
     if (user) {
@@ -158,7 +167,33 @@ export default function MyFarmTab() {
             </CardHeader>
             <CardContent className="h-[calc(100%-110px)]">
               <div className="w-full h-full bg-muted rounded-md flex items-center justify-center overflow-hidden relative">
-                  <MockMap />
+                {loadError || !process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ? (
+                    <div className="flex flex-col items-center justify-center text-center p-4">
+                      <KeyRound className="w-12 h-12 text-destructive mb-4" />
+                      <h3 className="font-bold text-lg text-destructive">Google Maps API Key is Missing</h3>
+                      <p className="text-muted-foreground text-sm mt-2">Please add your API key to the <code className="bg-destructive/10 text-destructive font-mono p-1 rounded-sm">.env</code> file to enable the map view.</p>
+                      <p className="text-muted-foreground text-xs mt-1">Example: <code className="bg-destructive/10 text-destructive font-mono p-1 rounded-sm">NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=YourApiKeyHere</code></p>
+                    </div>
+                ) : isLoaded && locationContext?.coordinates ? (
+                   <GoogleMap
+                        mapContainerStyle={mapContainerStyle}
+                        center={locationContext.coordinates}
+                        zoom={15}
+                        mapTypeId="satellite"
+                        options={{
+                            zoomControl: false,
+                            streetViewControl: false,
+                            mapTypeControl: false,
+                            fullscreenControl: false,
+                        }}
+                    >
+                    </GoogleMap>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="h-6 w-6 animate-spin text-primary"/>
+                    <p>Loading Map & Location...</p>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
