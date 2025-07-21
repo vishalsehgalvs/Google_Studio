@@ -3,9 +3,9 @@
 import { Leaf, LogOut, Volume2 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAudioPlayer } from '@/context/AudioPlayerContext';
-import { useRouter } from 'next/navigation';
 import { Button } from '../ui/button';
 import { ScrollArea } from '../ui/scroll-area';
+import { useUser } from '@/context/UserContext';
 
 type HeaderProps = {
   onReadAloud: () => void;
@@ -13,7 +13,7 @@ type HeaderProps = {
 
 export default function Header({ onReadAloud }: HeaderProps) {
   const { isPlaying, stopAudio } = useAudioPlayer();
-  const router = useRouter();
+  const { logout } = useUser();
 
   const handleReadAloudClick = () => {
     if (isPlaying) {
@@ -25,7 +25,7 @@ export default function Header({ onReadAloud }: HeaderProps) {
 
   const handleLogout = () => {
     stopAudio();
-    router.push('/');
+    logout();
   }
 
   const languages = [

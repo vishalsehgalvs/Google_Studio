@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useContext } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,6 +16,8 @@ import { answerFollowUp } from '@/ai/flows/continuous-query';
 import { Textarea } from '../ui/textarea';
 import { ScrollArea } from '../ui/scroll-area';
 import { useAudioPlayer } from '@/context/AudioPlayerContext';
+import { useUser } from '@/context/UserContext';
+import { saveDiagnosis } from '@/lib/db';
 
 type DiagnosisResult = {
   disease: string;
@@ -44,6 +46,7 @@ export default function DiagnosisTab() {
   const { toast } = useToast();
   
   const { playAudio, stopAudio, isPlaying, isLoading: isAudioLoading, audioSrc } = useAudioPlayer();
+  const { user } = useUser();
 
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
   const [followUpQuestion, setFollowUpQuestion] = useState("");
@@ -67,7 +70,7 @@ export default function DiagnosisTab() {
   };
 
   const handleDiagnose = async () => {
-    if (!imagePreview) return;
+    if (!imagePreview || !user) return;
     setIsLoading(true);
     setError(null);
     setDiagnosis(null);
@@ -75,6 +78,15 @@ export default function DiagnosisTab() {
     try {
       const result = await imageBasedDiagnosis({ photoDataUri: imagePreview });
       setDiagnosis(result.diagnosis);
+      // Save the diagnosis to our mock DB
+      saveDiagnosis(user.id, {
+        id: `diag_${Date.now()}`,
+        userId: user.id,
+        imageDataUri: imagePreview,
+        ...result.diagnosis,
+        timestamp: new Date().toISOString(),
+      });
+      toast({ title: "Diagnosis Saved", description: "The result has been saved to your farm history." });
     } catch (e) {
       console.error(e);
       setError("Failed to diagnose the image. Please try a different image or try again later.");
@@ -89,6 +101,7 @@ export default function DiagnosisTab() {
   };
 
   const handleSpeakDiagnosis = async () => {
+    if (!diagnosis) return;
     const textToSpeak = `Disease: ${diagnosis.disease}. Remedies: ${diagnosis.remedies}`;
     
     if (isPlaying && currentSpokenText === textToSpeak) {
@@ -97,7 +110,6 @@ export default function DiagnosisTab() {
       return;
     }
 
-    if (!diagnosis) return;
     setCurrentSpokenText(textToSpeak);
     try {
       const { audioDataUri } = await voiceBasedInformationDelivery({ text: textToSpeak });
@@ -224,7 +236,7 @@ export default function DiagnosisTab() {
           )}
         </CardContent>
         <CardFooter>
-            <Button onClick={handleDiagnose} disabled={!imagePreview || isLoading} className="w-full bg-accent hover:bg-accent/90">
+            <Button onClick={handleDiagnose} disabled={!imagePreview || isLoading || !user} className="w-full bg-accent hover:bg-accent/90">
                 {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
                 {isLoading ? 'Diagnosing...' : 'Diagnose Plant'}
             </Button>

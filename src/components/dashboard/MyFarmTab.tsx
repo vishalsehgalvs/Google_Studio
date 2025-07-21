@@ -3,7 +3,7 @@
 import { useState, useContext, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Map, Pin, Sun, TestTube2, ImageUp, Loader2, AlertCircle, Sparkles, X, MapPin, ShoppingCart, Building, Globe } from "lucide-react";
+import { Map, Pin, Sun, TestTube2, ImageUp, Loader2, AlertCircle, Sparkles, X, MapPin, ShoppingCart, Building, Globe, Database } from "lucide-react";
 import Image from 'next/image';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '../ui/dialog';
 import { Input } from '../ui/input';
@@ -14,6 +14,9 @@ import { Skeleton } from '../ui/skeleton';
 import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
 import { orderSupplies, OrderSuppliesOutput } from '@/ai/flows/order-supplies';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
+import { useUser } from '@/context/UserContext';
+import { saveSoilHealthCard } from '@/lib/db';
+import DataHistoryTab from './DataHistoryTab';
 
 type AnalysisResult = {
   analysis: string;
@@ -34,9 +37,25 @@ const mapOptions = {
   mapTypeId: 'satellite',
 };
 
+const sampleSoilHealthCard = {
+  id: `shc_${Date.now()}`,
+  metrics: {
+    ph: 6.8,
+    organicCarbon: 0.75,
+    conductivity: 0.2,
+  },
+  nutrients: {
+    nitrogen: { value: 150, unit: 'kg/ha', status: 'Medium' },
+    phosphorus: { value: 25, unit: 'kg/ha', status: 'High' },
+    potassium: { value: 120, unit: 'kg/ha', status: 'Low' },
+  },
+  recommendations: "Increase Potassium application. Consider using Muriate of Potash. Maintain current Nitrogen levels. No additional Phosphorus required this season."
+};
+
 export default function MyFarmTab() {
   const [isSoilCardOpen, setIsSoilCardOpen] = useState(false);
   const [isDroneModalOpen, setIsDroneModalOpen] = useState(false);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   
   const [droneImageFile, setDroneImageFile] = useState<File | null>(null);
   const [droneImagePreview, setDroneImagePreview] = useState<string | null>(null);
@@ -50,11 +69,25 @@ export default function MyFarmTab() {
   const [orderedProduct, setOrderedProduct] = useState("");
 
   const locationContext = useContext(LocationContext);
+  const { user } = useUser();
   const { toast } = useToast();
 
   const { isLoaded: isMapLoaded, loadError: mapLoadError } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
   });
+
+  const handleOpenSoilCard = () => {
+    if (user) {
+      saveSoilHealthCard(user.id, {
+        ...sampleSoilHealthCard,
+        userId: user.id,
+        location: locationContext?.locationName || 'Unknown',
+        timestamp: new Date().toISOString(),
+      });
+      toast({ title: "Soil Health Card Viewed", description: "A snapshot has been saved to your history." });
+    }
+    setIsSoilCardOpen(true);
+  };
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -71,13 +104,14 @@ export default function MyFarmTab() {
   };
 
   const handleAnalyzeFootage = async () => {
-    if (!droneImagePreview) return;
+    if (!droneImagePreview || !user) return;
     setIsLoadingAnalysis(true);
     setErrorAnalysis(null);
     setAnalysisResult(null);
     try {
       const result = await analyzeDroneFootage({ imageDataUri: droneImagePreview });
       setAnalysisResult(result);
+      // No specific data to save for drone analysis yet, but could be added here.
     } catch (e) {
       console.error(e);
       setErrorAnalysis("Failed to analyze the footage. Please try another image or try again later.");
@@ -193,7 +227,8 @@ export default function MyFarmTab() {
               </CardHeader>
               <CardContent className="flex flex-col gap-3">
                   <Button variant="outline" onClick={() => setIsDroneModalOpen(true)}>Request Drone Footage Analysis</Button>
-                  <Button variant="outline" onClick={() => setIsSoilCardOpen(true)}>View Soil Health Card</Button>
+                  <Button variant="outline" onClick={handleOpenSoilCard}>View Soil Health Card</Button>
+                  <Button variant="outline" onClick={() => setIsHistoryOpen(true)}><Database className="mr-2 h-4 w-4"/> View Data History</Button>
               </CardContent>
           </Card>
         </div>
@@ -215,9 +250,9 @@ export default function MyFarmTab() {
                 </CardHeader>
                 <CardContent>
                   <ul className="space-y-3">
-                    <li className="flex justify-between"><span>pH Level:</span><span className="font-bold">6.8</span></li>
-                    <li className="flex justify-between"><span>Organic Carbon:</span><span className="font-bold">0.75%</span></li>
-                    <li className="flex justify-between"><span>Electrical Conductivity:</span><span className="font-bold">0.2 dS/m</span></li>
+                    <li className="flex justify-between"><span>pH Level:</span><span className="font-bold">{sampleSoilHealthCard.metrics.ph}</span></li>
+                    <li className="flex justify-between"><span>Organic Carbon:</span><span className="font-bold">{sampleSoilHealthCard.metrics.organicCarbon}%</span></li>
+                    <li className="flex justify-between"><span>Electrical Conductivity:</span><span className="font-bold">{sampleSoilHealthCard.metrics.conductivity} dS/m</span></li>
                   </ul>
                 </CardContent>
               </Card>
@@ -227,9 +262,9 @@ export default function MyFarmTab() {
                 </CardHeader>
                 <CardContent>
                    <ul className="space-y-3">
-                    <li className="flex justify-between items-center"><span>Nitrogen (N):</span><span className="font-bold text-yellow-600">Medium (150 kg/ha)</span></li>
-                    <li className="flex justify-between items-center"><span>Phosphorus (P):</span><span className="font-bold text-green-600">High (25 kg/ha)</span></li>
-                    <li className="flex justify-between items-center"><span>Potassium (K):</span><span className="font-bold text-red-600">Low (120 kg/ha)</span></li>
+                    <li className="flex justify-between items-center"><span>Nitrogen (N):</span><span className="font-bold text-yellow-600">{sampleSoilHealthCard.nutrients.nitrogen.status} ({sampleSoilHealthCard.nutrients.nitrogen.value} kg/ha)</span></li>
+                    <li className="flex justify-between items-center"><span>Phosphorus (P):</span><span className="font-bold text-green-600">{sampleSoilHealthCard.nutrients.phosphorus.status} ({sampleSoilHealthCard.nutrients.phosphorus.value} kg/ha)</span></li>
+                    <li className="flex justify-between items-center"><span>Potassium (K):</span><span className="font-bold text-red-600">{sampleSoilHealthCard.nutrients.potassium.status} ({sampleSoilHealthCard.nutrients.potassium.value} kg/ha)</span></li>
                   </ul>
                 </CardContent>
               </Card>
@@ -237,7 +272,7 @@ export default function MyFarmTab() {
            <Card className="mt-6">
               <CardHeader className="pb-4">
                   <CardTitle className="text-lg">Recommendations</CardTitle>
-                  <CardDescription>Increase Potassium application. Consider using Muriate of Potash. Maintain current Nitrogen levels. No additional Phosphorus required this season.</CardDescription>
+                  <CardDescription>{sampleSoilHealthCard.recommendations}</CardDescription>
               </CardHeader>
             </Card>
             <Card className="mt-6 bg-primary/5">
@@ -368,6 +403,26 @@ export default function MyFarmTab() {
           </div>
            <DialogFooter>
                 <Button variant="secondary" onClick={() => setIsSupplierModalOpen(false)}>Close</Button>
+            </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Data History Dialog */}
+      <Dialog open={isHistoryOpen} onOpenChange={setIsHistoryOpen}>
+        <DialogContent className="sm:max-w-4xl">
+            <DialogHeader>
+                <DialogTitle className="font-headline text-2xl flex items-center gap-2">
+                    <Database className="text-primary"/> Data History
+                </DialogTitle>
+                <DialogDescription>
+                    {user?.id === 'admin@example.com' ? "Viewing all data as admin." : "A record of your past activities and reports."}
+                </DialogDescription>
+            </DialogHeader>
+            <div className="mt-4 max-h-[60vh] overflow-y-auto">
+                <DataHistoryTab />
+            </div>
+             <DialogFooter>
+                <Button variant="secondary" onClick={() => setIsHistoryOpen(false)}>Close</Button>
             </DialogFooter>
         </DialogContent>
       </Dialog>

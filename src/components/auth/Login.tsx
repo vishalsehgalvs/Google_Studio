@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,11 +9,13 @@ import { Label } from "@/components/ui/label";
 import { Leaf, Loader2, Smartphone, AtSign, User } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Separator } from '../ui/separator';
+import { useUser } from '@/context/UserContext';
+import { addUser, getUser } from '@/lib/db';
 
 export default function Login() {
     const router = useRouter();
     const { toast } = useToast();
+    const { login } = useUser();
     const [isLoading, setIsLoading] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -25,8 +27,12 @@ export default function Login() {
 
         // Simulate API call
         setTimeout(() => {
-            // A simple validation check
             if (email && password) {
+                let user = getUser(email);
+                if (!user) {
+                    user = addUser({ id: email, email, mobile: '', password });
+                }
+                login(user);
                 loginSuccess();
             } else {
                 loginFailure("Please enter your email and password.");
@@ -40,6 +46,11 @@ export default function Login() {
 
         setTimeout(() => {
             if (mobile && mobile.length >= 10) {
+                 let user = getUser(mobile);
+                 if (!user) {
+                    user = addUser({ id: mobile, email: '', mobile, password: '' });
+                 }
+                 login(user);
                  loginSuccess();
             } else {
                 loginFailure("Please enter a valid mobile number.");
@@ -50,6 +61,9 @@ export default function Login() {
     const handleGuestLogin = () => {
         setIsLoading(true);
         setTimeout(() => {
+            const guestId = `guest_${Date.now()}`;
+            const user = addUser({ id: guestId, email: 'Guest User', mobile: '', password: '' });
+            login(user);
             loginSuccess("Welcome, Guest!");
         }, 500);
     };
