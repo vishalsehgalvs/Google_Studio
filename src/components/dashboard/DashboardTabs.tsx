@@ -5,12 +5,13 @@ import DiagnosisTab from "./DiagnosisTab";
 import MarketTab from "./MarketTab";
 import SchemesTab from "./SchemesTab";
 import WeatherTab from "./WeatherTab";
-import { Leaf, LineChart, LandPlot, CloudSun } from 'lucide-react';
+import MyFarmTab from "./MyFarmTab";
+import { Leaf, LineChart, LandPlot, CloudSun, Tractor } from 'lucide-react';
 
 export default function DashboardTabs() {
   return (
     <Tabs defaultValue="diagnosis" className="w-full">
-      <TabsList className="grid w-full grid-cols-4 bg-primary/10 rounded-lg h-12">
+      <TabsList className="grid w-full grid-cols-5 bg-primary/10 rounded-lg h-12">
         <TabsTrigger value="diagnosis" className="text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg rounded-md text-sm sm:text-base">
           <Leaf className="w-4 h-4 mr-1 sm:mr-2" />
           Diagnosis
@@ -27,6 +28,10 @@ export default function DashboardTabs() {
           <CloudSun className="w-4 h-4 mr-1 sm:mr-2" />
           Weather
         </TabsTrigger>
+        <TabsTrigger value="myfarm" className="text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg rounded-md text-sm sm:text-base">
+          <Tractor className="w-4 h-4 mr-1 sm:mr-2" />
+          My Farm
+        </TabsTrigger>
       </TabsList>
       <TabsContent value="diagnosis" className="mt-6">
         <DiagnosisTab />
@@ -39,6 +44,9 @@ export default function DashboardTabs() {
       </TabsContent>
       <TabsContent value="weather" className="mt-6">
         <WeatherTab />
+      </TabsContent>
+      <TabsContent value="myfarm" className="mt-6">
+        <MyFarmTab />
       </TabsContent>
     </Tabs>
   );
