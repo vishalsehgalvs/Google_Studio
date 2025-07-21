@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useContext } from 'react';
+import { useState, useContext, memo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Map, Pin, Sun, TestTube2, ImageUp, Loader2, AlertCircle, Sparkles, X, ShoppingCart, Building, Globe, Database, KeyRound, Beaker } from "lucide-react";
@@ -54,8 +54,7 @@ const mapContainerStyle = {
 
 const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
-function MapComponent() {
-  const locationContext = useContext(LocationContext);
+const MapComponent = memo(function MapComponent({ coordinates }: { coordinates: { lat: number; lng: number; }}) {
   const { isLoaded, loadError } = useJsApiLoader({
     id: 'google-map-script',
     googleMapsApiKey: apiKey!,
@@ -71,11 +70,11 @@ function MapComponent() {
     );
   }
 
-  if (!isLoaded || !locationContext?.coordinates) {
+  if (!isLoaded) {
       return (
            <div className="flex items-center justify-center h-full">
               <Loader2 className="h-6 w-6 animate-spin text-primary"/>
-              <p className="ml-2">Loading Map & Location...</p>
+              <p className="ml-2">Loading Map...</p>
             </div>
       );
   }
@@ -83,7 +82,7 @@ function MapComponent() {
   return (
       <GoogleMap
           mapContainerStyle={mapContainerStyle}
-          center={locationContext.coordinates}
+          center={coordinates}
           zoom={15}
           mapTypeId="satellite"
           options={{
@@ -95,7 +94,7 @@ function MapComponent() {
       >
       </GoogleMap>
   );
-}
+});
 
 function MissingApiKeyPlaceholder() {
   return (
@@ -251,7 +250,20 @@ export default function MyFarmTab() {
             </CardHeader>
             <CardContent className="h-[calc(100%-110px)]">
               <div className="w-full h-full bg-muted rounded-md flex items-center justify-center overflow-hidden relative">
-                {isApiKeyValid ? <MapComponent /> : <MissingApiKeyPlaceholder />}
+                {
+                  isApiKeyValid ? (
+                    locationContext?.coordinates ? (
+                      <MapComponent coordinates={locationContext.coordinates} />
+                    ) : (
+                      <div className="flex items-center justify-center h-full">
+                         <Loader2 className="h-6 w-6 animate-spin text-primary"/>
+                         <p className="ml-2">Loading Location...</p>
+                      </div>
+                    )
+                  ) : (
+                    <MissingApiKeyPlaceholder />
+                  )
+                }
               </div>
             </CardContent>
           </Card>
@@ -545,5 +557,3 @@ export default function MyFarmTab() {
     </>
   );
 }
-
-    
