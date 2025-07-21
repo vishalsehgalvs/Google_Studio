@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useContext } from 'react';
@@ -11,15 +12,16 @@ import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useUser } from '@/context/UserContext';
 import { addUser, getUser } from '@/lib/db';
-import { LanguageContext, languages } from '@/context/LanguageContext';
+import { languages } from '@/context/LanguageContext';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { ScrollArea } from '../ui/scroll-area';
+import { useTranslation } from '@/context/LanguageContext';
 
 export default function Login() {
     const router = useRouter();
     const { toast } = useToast();
     const { login } = useUser();
-    const langContext = useContext(LanguageContext);
+    const { languageCode, setLanguageCode, t } = useTranslation();
     const [isLoading, setIsLoading] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -29,7 +31,6 @@ export default function Login() {
         e.preventDefault();
         setIsLoading(true);
 
-        // Simulate API call
         setTimeout(() => {
             if (email && password) {
                 let user = getUser(email);
@@ -99,13 +100,13 @@ export default function Login() {
                             FarmAssist
                         </h1>
                     </div>
-                    <CardTitle className="text-2xl">Welcome!</CardTitle>
-                    <CardDescription>Sign in to access your dashboard.</CardDescription>
+                    <CardTitle className="text-2xl">{t('login.welcome')}</CardTitle>
+                    <CardDescription>{t('login.signInPrompt')}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                     <div className="space-y-2">
-                        <Label htmlFor="language-select" className="flex items-center gap-2"><Languages /> Preferred Language</Label>
-                         <Select value={langContext?.languageCode} onValueChange={langContext?.setLanguageCode}>
+                        <Label htmlFor="language-select" className="flex items-center gap-2"><Languages /> {t('login.preferredLanguage')}</Label>
+                         <Select value={languageCode} onValueChange={setLanguageCode}>
                             <SelectTrigger id="language-select" className="w-full">
                                 <SelectValue placeholder="Language" />
                             </SelectTrigger>
@@ -124,17 +125,17 @@ export default function Login() {
 
                     <Tabs defaultValue="email" className="w-full">
                         <TabsList className="grid w-full grid-cols-2">
-                            <TabsTrigger value="email"><AtSign className="mr-2 h-4 w-4"/>Email</TabsTrigger>
-                            <TabsTrigger value="mobile"><Smartphone className="mr-2 h-4 w-4"/>Mobile</TabsTrigger>
+                            <TabsTrigger value="email"><AtSign className="mr-2 h-4 w-4"/>{t('login.email')}</TabsTrigger>
+                            <TabsTrigger value="mobile"><Smartphone className="mr-2 h-4 w-4"/>{t('login.mobile')}</TabsTrigger>
                         </TabsList>
                         <TabsContent value="email" className="pt-4">
                              <form onSubmit={handleLogin} className="space-y-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="email">Email</Label>
+                                    <Label htmlFor="email">{t('login.email')}</Label>
                                     <Input
                                         id="email"
                                         type="email"
-                                        placeholder="farmer@example.com"
+                                        placeholder={t('login.emailPlaceholder')}
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
                                         required
@@ -142,11 +143,11 @@ export default function Login() {
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="password">Password</Label>
+                                    <Label htmlFor="password">{t('login.password')}</Label>
                                     <Input
                                         id="password"
                                         type="password"
-                                        placeholder="********"
+                                        placeholder={t('login.passwordPlaceholder')}
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                         required
@@ -155,18 +156,18 @@ export default function Login() {
                                 </div>
                                 <Button type="submit" className="w-full bg-primary hover:bg-primary/90 mt-4" disabled={isLoading}>
                                     {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                                    {isLoading ? 'Signing In...' : 'Sign In'}
+                                    {isLoading ? t('login.signingIn') : t('login.signIn')}
                                 </Button>
                             </form>
                         </TabsContent>
                         <TabsContent value="mobile" className="pt-4">
                             <form onSubmit={handleMobileLogin} className="space-y-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="mobile">Mobile Number</Label>
+                                    <Label htmlFor="mobile">{t('login.mobile')}</Label>
                                     <Input
                                         id="mobile"
                                         type="tel"
-                                        placeholder="e.g. 9876543210"
+                                        placeholder={t('login.mobilePlaceholder')}
                                         value={mobile}
                                         onChange={(e) => setMobile(e.target.value)}
                                         required
@@ -175,7 +176,7 @@ export default function Login() {
                                 </div>
                                 <Button type="submit" className="w-full bg-primary hover:bg-primary/90 mt-4" disabled={isLoading}>
                                     {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                                    {isLoading ? 'Sending OTP...' : 'Send OTP'}
+                                    {isLoading ? t('login.sendingOtp') : t('login.sendOtp')}
                                 </Button>
                             </form>
                         </TabsContent>
@@ -183,20 +184,20 @@ export default function Login() {
                     
                     <div className="my-6 flex items-center">
                         <div className="flex-grow border-t border-muted-foreground/20"></div>
-                        <span className="mx-4 text-sm text-muted-foreground">OR</span>
+                        <span className="mx-4 text-sm text-muted-foreground">{t('login.or')}</span>
                         <div className="flex-grow border-t border-muted-foreground/20"></div>
                     </div>
 
                     <Button variant="outline" className="w-full" onClick={handleGuestLogin} disabled={isLoading}>
                          {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <User className="mr-2 h-4 w-4" />}
-                         Continue as Guest
+                         {t('login.continueAsGuest')}
                     </Button>
 
                 </CardContent>
                 <CardFooter className="flex flex-col items-center text-sm">
-                    <p className="text-muted-foreground">Don't have an account?</p>
+                    <p className="text-muted-foreground">{t('login.noAccount')}</p>
                     <Button variant="link" className="p-0 h-auto text-accent hover:text-accent/80">
-                        Sign up here
+                        {t('login.signUp')}
                     </Button>
                 </CardFooter>
             </Card>

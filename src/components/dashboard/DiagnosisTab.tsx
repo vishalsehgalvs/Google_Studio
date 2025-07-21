@@ -18,7 +18,7 @@ import { ScrollArea } from '../ui/scroll-area';
 import { useAudioPlayer } from '@/context/AudioPlayerContext';
 import { useUser } from '@/context/UserContext';
 import { saveDiagnosis } from '@/lib/db';
-import { LanguageContext } from '@/context/LanguageContext';
+import { useTranslation } from '@/context/LanguageContext';
 
 type DiagnosisResult = {
   disease: string;
@@ -48,7 +48,7 @@ export default function DiagnosisTab() {
   
   const { playAudio, stopAudio, isPlaying, isLoading: isAudioLoading, audioSrc } = useAudioPlayer();
   const { user } = useUser();
-  const langContext = useContext(LanguageContext);
+  const { languageCode, t } = useTranslation();
 
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
   const [followUpQuestion, setFollowUpQuestion] = useState("");
@@ -80,10 +80,9 @@ export default function DiagnosisTab() {
     try {
       const result = await imageBasedDiagnosis({ 
         photoDataUri: imagePreview,
-        language: langContext?.languageCode || 'en',
+        language: languageCode || 'en',
       });
       setDiagnosis(result.diagnosis);
-      // Save the diagnosis to our mock DB
       saveDiagnosis(user.id, {
         id: `diag_${Date.now()}`,
         userId: user.id,
@@ -94,7 +93,7 @@ export default function DiagnosisTab() {
       toast({ title: "Diagnosis Saved", description: "The result has been saved to your farm history." });
     } catch (e) {
       console.error(e);
-      setError("Failed to diagnose the image. Please try a different image or try again later.");
+      setError(t('diagnosisTab.error.failedDiagnosis'));
       toast({
         variant: "destructive",
         title: "Diagnosis Error",
@@ -107,7 +106,7 @@ export default function DiagnosisTab() {
 
   const handleSpeakDiagnosis = async () => {
     if (!diagnosis) return;
-    const textToSpeak = `Disease: ${diagnosis.disease}. Remedies: ${diagnosis.remedies}`;
+    const textToSpeak = `${t('diagnosisTab.diseaseIdentified')}: ${diagnosis.disease}. ${t('diagnosisTab.suggestedRemedies')}: ${diagnosis.remedies}`;
     
     if (isPlaying && currentSpokenText === textToSpeak) {
       stopAudio();
@@ -150,13 +149,12 @@ export default function DiagnosisTab() {
           try {
             const result = await voiceQueryToText({ audioDataUri: base64Audio });
             setTranscript(result.text);
-            // set the transcript as the follow-up question if a diagnosis is present
             if(diagnosis) {
               setFollowUpQuestion(result.text);
             }
           } catch (e) {
              console.error(e);
-             setError("Failed to transcribe audio. Please try again.");
+             setError(t('diagnosisTab.error.failedTranscription'));
              toast({ variant: "destructive", title: "Transcription Error", description: "Could not understand audio." });
           } finally {
              setIsTranscribing(false);
@@ -199,7 +197,7 @@ export default function DiagnosisTab() {
       const result = await answerFollowUp({ 
           question: followUpQuestion, 
           context,
-          language: langContext?.languageCode || 'en',
+          language: languageCode || 'en',
       });
       setChatHistory([...newHistory, { sender: 'ai', text: result.answer }]);
     } catch(e) {
@@ -216,8 +214,8 @@ export default function DiagnosisTab() {
     <div className="grid md:grid-cols-2 gap-8 items-start">
       <Card className="shadow-lg border-primary/20">
         <CardHeader>
-          <CardTitle className="font-headline text-2xl flex items-center gap-2"><ImageIcon className="text-primary"/>Image-Based Diagnosis</CardTitle>
-          <CardDescription>Upload an image of an affected crop to get a diagnosis and remedies.</CardDescription>
+          <CardTitle className="font-headline text-2xl flex items-center gap-2"><ImageIcon className="text-primary"/>{t('diagnosisTab.title')}</CardTitle>
+          <CardDescription>{t('diagnosisTab.description')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="relative border-2 border-dashed border-muted-foreground/50 rounded-lg p-6 text-center cursor-pointer hover:border-primary transition-colors">
@@ -233,21 +231,21 @@ export default function DiagnosisTab() {
                 ) : (
                     <div className="flex flex-col items-center gap-2 text-muted-foreground">
                         <Upload className="h-10 w-10"/>
-                        <p>Click or drag & drop to upload image</p>
+                        <p>{t('diagnosisTab.uploadPrompt')}</p>
                     </div>
                 )}
              </label>
           </div>
           {imageFile && (
             <div className="text-sm text-muted-foreground">
-              Selected file: {imageFile.name}
+              {t('diagnosisTab.selectedFile', { fileName: imageFile.name })}
             </div>
           )}
         </CardContent>
         <CardFooter>
             <Button onClick={handleDiagnose} disabled={!imagePreview || isLoading || !user} className="w-full bg-accent hover:bg-accent/90">
                 {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
-                {isLoading ? 'Diagnosing...' : 'Diagnose Plant'}
+                {isLoading ? t('diagnosisTab.diagnosing') : t('diagnosisTab.diagnosePlant')}
             </Button>
         </CardFooter>
       </Card>
@@ -255,20 +253,20 @@ export default function DiagnosisTab() {
       <div className="space-y-8">
         <Card className="shadow-lg border-primary/20">
             <CardHeader>
-                <CardTitle className="font-headline text-2xl flex items-center gap-2"><Mic className="text-primary"/>Voice Query</CardTitle>
-                <CardDescription>Ask a question with your voice. If a diagnosis is active, it will be treated as a follow-up question.</CardDescription>
+                <CardTitle className="font-headline text-2xl flex items-center gap-2"><Mic className="text-primary"/>{t('diagnosisTab.voiceQueryTitle')}</CardTitle>
+                <CardDescription>{t('diagnosisTab.voiceQueryDescription')}</CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col items-center gap-4">
                 <Button onClick={handleMicClick} size="lg" variant={isRecording ? 'destructive' : 'outline'} className="rounded-full w-20 h-20 border-accent text-accent hover:bg-accent/10 hover:text-accent">
                     <Mic className={`h-8 w-8 ${isRecording ? 'animate-pulse' : ''}`}/>
                 </Button>
-                <p className="text-sm text-muted-foreground">{isRecording ? 'Recording...' : 'Tap to speak'}</p>
+                <p className="text-sm text-muted-foreground">{isRecording ? t('diagnosisTab.recording') : t('diagnosisTab.tapToSpeak')}</p>
                 {isTranscribing && (
-                    <div className="flex items-center text-sm text-primary"><Loader2 className="mr-2 h-4 w-4 animate-spin"/> Transcribing...</div>
+                    <div className="flex items-center text-sm text-primary"><Loader2 className="mr-2 h-4 w-4 animate-spin"/> {t('diagnosisTab.transcribing')}</div>
                 )}
                 {transcript && !isTranscribing &&(
                     <div className="w-full p-3 bg-muted rounded-md text-center">
-                        <p className="font-semibold">You said:</p>
+                        <p className="font-semibold">{t('diagnosisTab.youSaid')}</p>
                         <p className="italic">"{transcript}"</p>
                     </div>
                 )}
@@ -278,35 +276,35 @@ export default function DiagnosisTab() {
         {(isLoading || diagnosis || error) && (
             <Card className="shadow-lg border-primary/20 animate-in fade-in-50">
               <CardHeader>
-                  <CardTitle className="font-headline text-xl">Diagnosis Result</CardTitle>
+                  <CardTitle className="font-headline text-xl">{t('diagnosisTab.resultTitle')}</CardTitle>
               </CardHeader>
               <CardContent>
-                  {isLoading && <div className="flex items-center gap-2"><Loader2 className="h-5 w-5 animate-spin text-primary"/> <p>Analyzing your crop...</p></div>}
+                  {isLoading && <div className="flex items-center gap-2"><Loader2 className="h-5 w-5 animate-spin text-primary"/> <p>{t('diagnosisTab.analyzing')}</p></div>}
                   {error && <div className="text-destructive flex items-center gap-2"><AlertCircle className="h-5 w-5"/> <p>{error}</p></div>}
                   {diagnosis && (
                       <div className="space-y-4">
                           <div>
-                              <h3 className="font-bold text-lg text-primary">Disease Identified</h3>
+                              <h3 className="font-bold text-lg text-primary">{t('diagnosisTab.diseaseIdentified')}</h3>
                               <p>{diagnosis.disease}</p>
                           </div>
                           <div>
-                              <h3 className="font-bold text-lg text-primary">Suggested Remedies</h3>
+                              <h3 className="font-bold text-lg text-primary">{t('diagnosisTab.suggestedRemedies')}</h3>
                               <p className="whitespace-pre-wrap">{diagnosis.remedies}</p>
                           </div>
                           <div>
-                            <h3 className="font-bold text-lg text-primary flex items-center gap-2"><ShieldCheck size={20}/>Confidence Score</h3>
+                            <h3 className="font-bold text-lg text-primary flex items-center gap-2"><ShieldCheck size={20}/>{t('diagnosisTab.confidenceScore')}</h3>
                             <div className="flex items-center gap-2 mt-2">
                                 <Progress value={diagnosis.confidenceScore * 100} className="w-full h-3" />
                                 <span className="font-mono text-sm">{(diagnosis.confidenceScore * 100).toFixed(0)}%</span>
                             </div>
                           </div>
                           <Button onClick={handleSpeakDiagnosis} variant="outline" size="sm" className="mt-4 border-accent text-accent hover:bg-accent/10 hover:text-accent">
-                            <Volume2 className={`mr-2 h-4 w-4 ${(isPlaying && currentSpokenText.startsWith('Disease:')) || isAudioLoading ? "animate-pulse" : ""}`} />
-                            {(isPlaying && currentSpokenText.startsWith('Disease:')) ? "Stop" : (isAudioLoading && currentSpokenText.startsWith('Disease:')) ? "Loading..." : "Read Aloud"}
+                            <Volume2 className={`mr-2 h-4 w-4 ${(isPlaying && currentSpokenText.startsWith(t('diagnosisTab.diseaseIdentified'))) || isAudioLoading ? "animate-pulse" : ""}`} />
+                            {(isPlaying && currentSpokenText.startsWith(t('diagnosisTab.diseaseIdentified'))) ? t('diagnosisTab.stop') : (isAudioLoading && currentSpokenText.startsWith(t('diagnosisTab.diseaseIdentified'))) ? t('diagnosisTab.loading') : t('diagnosisTab.readAloud')}
                           </Button>
 
                           <div className="pt-4 border-t border-border">
-                            <h3 className="font-bold text-lg text-primary flex items-center gap-2"><MessageCircle size={20} /> Ask a Follow-up Question</h3>
+                            <h3 className="font-bold text-lg text-primary flex items-center gap-2"><MessageCircle size={20} /> {t('diagnosisTab.followUpTitle')}</h3>
                             <ScrollArea className="h-48 w-full rounded-md border p-4 mt-2 bg-muted/50">
                                 <div className="space-y-4">
                                   {chatHistory.map((msg, index) => (
@@ -323,7 +321,7 @@ export default function DiagnosisTab() {
                                 <Textarea 
                                   value={followUpQuestion}
                                   onChange={(e) => setFollowUpQuestion(e.target.value)}
-                                  placeholder="Type your question here..."
+                                  placeholder={t('diagnosisTab.typeQuestion')}
                                   className="flex-1"
                                   rows={1}
                                   onKeyDown={(e) => {

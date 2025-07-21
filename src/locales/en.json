@@ -1,0 +1,181 @@
+{
+  "login": {
+    "welcome": "Welcome!",
+    "signInPrompt": "Sign in to access your dashboard.",
+    "preferredLanguage": "Preferred Language",
+    "email": "Email",
+    "mobile": "Mobile",
+    "password": "Password",
+    "signIn": "Sign In",
+    "signingIn": "Signing In...",
+    "sendOtp": "Send OTP",
+    "sendingOtp": "Sending OTP...",
+    "or": "OR",
+    "continueAsGuest": "Continue as Guest",
+    "noAccount": "Don't have an account?",
+    "signUp": "Sign up here",
+    "emailPlaceholder": "farmer@example.com",
+    "passwordPlaceholder": "********",
+    "mobilePlaceholder": "e.g. 9876543210"
+  },
+  "header": {
+    "appName": "FarmAssist",
+    "readPageAloud": "Read Page Aloud",
+    "stopReading": "Stop Reading",
+    "logout": "Logout"
+  },
+  "dashboard": {
+    "tabs": {
+      "diagnosis": "Diagnosis",
+      "market": "Market Info",
+      "schemes": "Govt. Schemes",
+      "weather": "Weather",
+      "myfarm": "My Farm"
+    }
+  },
+  "diagnosisTab": {
+    "title": "Image-Based Diagnosis",
+    "description": "Upload an image of an affected crop to get a diagnosis and remedies.",
+    "uploadPrompt": "Click or drag & drop to upload image",
+    "selectedFile": "Selected file: {{fileName}}",
+    "diagnosePlant": "Diagnose Plant",
+    "diagnosing": "Diagnosing...",
+    "voiceQueryTitle": "Voice Query",
+    "voiceQueryDescription": "Ask a question with your voice. If a diagnosis is active, it will be treated as a follow-up question.",
+    "tapToSpeak": "Tap to speak",
+    "recording": "Recording...",
+    "transcribing": "Transcribing...",
+    "youSaid": "You said:",
+    "resultTitle": "Diagnosis Result",
+    "analyzing": "Analyzing your crop...",
+    "diseaseIdentified": "Disease Identified",
+    "suggestedRemedies": "Suggested Remedies",
+    "confidenceScore": "Confidence Score",
+    "readAloud": "Read Aloud",
+    "stop": "Stop",
+    "loading": "Loading...",
+    "followUpTitle": "Ask a Follow-up Question",
+    "typeQuestion": "Type your question here...",
+    "error": {
+      "failedDiagnosis": "Failed to diagnose the image. Please try a different image or try again later.",
+      "failedTranscription": "Failed to transcribe audio. Please try again."
+    }
+  },
+  "marketTab": {
+    "pricesTitle": "Market Prices",
+    "pricesDescription": "Latest crop prices from the market.",
+    "crop": "Crop",
+    "pricePerUnit": "Price (per {{unit}})",
+    "analysisTitle": "Market Trend Analysis",
+    "analysisDescription": "AI-powered insights on price movements.",
+    "yourLocation": "Your Location",
+    "priceTrend": "Price Trend Analysis",
+    "demandForecast": "Demand Forecast",
+    "locationPricing": "Location-Based Pricing",
+    "error": "Failed to analyze market trends. Please try again later."
+  },
+  "schemesTab": {
+    "recsTitle": "Personalized Scheme Recommendations",
+    "recsDescription": "Fill in your details to find government schemes tailored for you.",
+    "state": "State",
+    "selectState": "Select your state",
+    "landSize": "Land Size (in acres)",
+    "cropsGrown": "Crops Grown (comma-separated)",
+    "getRecs": "Get Recommendations",
+    "findingSchemes": "Finding Schemes...",
+    "yourRecsTitle": "Your Recommended Schemes",
+    "noSchemesFound": "No specific schemes found",
+    "noSchemesDescription": "Based on your profile, we couldn't find any highly relevant schemes from our list. You can browse all available schemes below.",
+    "allSchemesTitle": "All Government Schemes",
+    "allSchemesDescription": "Latest updates on schemes and policies for farmers.",
+    "whyRecommended": "Why it's recommended for you:",
+    "howToApply": "How to apply:",
+    "learnMore": "Learn More",
+    "error": {
+        "missingInfo": "Please fill out all fields to get recommendations."
+    }
+  },
+  "weatherTab": {
+    "title": "Weather & Climate Advisory",
+    "description": "Get hyper-local weather forecasts and AI-powered farming advice.",
+    "yourLocation": "Your Location",
+    "aiAdvisory": "AI Climate Advisory for {{location}}",
+    "temperature": "Temperature",
+    "humidity": "Humidity",
+    "windSpeed": "Wind Speed",
+    "forecast": "Forecast",
+    "error": "Failed to fetch climate advisory. Please try again later."
+  },
+  "myFarmTab": {
+    "mapTitle": "My Field Map",
+    "mapDescription": "A satellite overview of your field, centered on your current location.",
+    "overviewTitle": "Farm Overview",
+    "location": "Location",
+    "soilType": "Soil Type",
+    "soilTypeExample": "Black Cotton Soil",
+    "notAvailable": "Not available",
+    "actionsTitle": "Quick Actions",
+    "droneAnalysisBtn": "Request Drone Footage Analysis",
+    "soilHealthCardBtn": "View Soil Health Card",
+    "historyBtn": "View Data History",
+    "soilCard": {
+      "title": "Soil Health Card",
+      "description": "A summary of your soil's health and recommendations.",
+      "keyMetrics": "Key Metrics",
+      "phLevel": "pH Level",
+      "organicCarbon": "Organic Carbon",
+      "conductivity": "Electrical Conductivity",
+      "nutrientStatus": "Nutrient Status",
+      "nitrogen": "Nitrogen (N)",
+      "phosphorus": "Phosphorus (P)",
+      "potassium": "Potassium (K)",
+      "recommendations": "Recommendations",
+      "orderSupplies": "Order Supplies",
+      "orderDescription": "Take action on your soil health report by ordering the necessary inputs.",
+      "orderFertilizers": "Order Recommended Fertilizers",
+      "orderSeeds": "Order Seeds"
+    },
+    "droneModal": {
+      "title": "Drone Footage Analysis",
+      "description": "Upload a drone image of your field to get an AI-powered health assessment.",
+      "uploadPrompt": "Click or drag & drop to upload",
+      "analyze": "Analyze Footage",
+      "analyzing": "Analyzing...",
+      "resultTitle": "Analysis Result",
+      "analyzingField": "Analyzing your field...",
+      "uploadToSee": "Upload an image to see the analysis.",
+      "overallAssessment": "Overall Assessment",
+      "hotspots": "Identified Hotspots"
+    },
+    "supplierModal": {
+        "title": "Supplier Results",
+        "description": "Showing potential suppliers for \"{{product}}\". This is a mock response.",
+        "searching": "Searching for suppliers...",
+        "supplier": "Supplier",
+        "type": "Type",
+        "contact": "Contact / Location",
+        "local": "Local",
+        "online": "Online"
+    },
+    "historyModal": {
+        "title": "Data History",
+        "adminDescription": "Viewing all data as admin.",
+        "userDescription": "A record of your past activities and reports."
+    },
+    "dataHistory": {
+        "title": "Diagnosis History",
+        "noDiagnoses": "No diagnoses found.",
+        "remedies": "Remedies:",
+        "confidence": "Confidence:",
+        "soilCardsTitle": "Soil Health Card History",
+        "noSoilCards": "No soil health cards found.",
+        "reportFor": "Report for {{location}}",
+        "recommendations": "Recommendations:",
+        "metrics": "Metrics:",
+        "ph": "pH:",
+        "organicCarbon": "Organic Carbon:",
+        "conductivity": "Conductivity:"
+    },
+    "close": "Close"
+  }
+}

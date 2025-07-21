@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useContext } from "react";
@@ -17,7 +18,7 @@ import { recommendSchemes, RecommendSchemesOutput } from "@/ai/flows/scheme-reco
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { LanguageContext } from "@/context/LanguageContext";
+import { useTranslation } from "@/context/LanguageContext";
 
 const indianStates = [
   "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", 
@@ -37,14 +38,14 @@ export default function SchemesTab() {
   const [recommendations, setRecommendations] = useState<RecommendSchemesOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const langContext = useContext(LanguageContext);
+  const { languageCode, t } = useTranslation();
 
   const handleGetRecommendations = async () => {
     if (!state || !landSize || !crops) {
       toast({
         variant: "destructive",
         title: "Missing Information",
-        description: "Please fill out all fields to get recommendations.",
+        description: t('schemesTab.error.missingInfo'),
       });
       return;
     }
@@ -55,7 +56,7 @@ export default function SchemesTab() {
         state,
         landSize: parseFloat(landSize),
         crops: crops.split(",").map(c => c.trim()),
-        language: langContext?.languageCode || 'en',
+        language: languageCode || 'en',
       });
       setRecommendations(result);
     } catch (e) {
@@ -75,15 +76,15 @@ export default function SchemesTab() {
     <div className="grid md:grid-cols-2 gap-8 items-start">
       <Card className="shadow-lg border-primary/20">
         <CardHeader>
-          <CardTitle className="font-headline text-2xl">Personalized Scheme Recommendations</CardTitle>
-          <CardDescription>Fill in your details to find government schemes tailored for you.</CardDescription>
+          <CardTitle className="font-headline text-2xl">{t('schemesTab.recsTitle')}</CardTitle>
+          <CardDescription>{t('schemesTab.recsDescription')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="state">State</Label>
+            <Label htmlFor="state">{t('schemesTab.state')}</Label>
             <Select value={state} onValueChange={setState}>
               <SelectTrigger id="state" className="w-full">
-                <SelectValue placeholder="Select your state" />
+                <SelectValue placeholder={t('schemesTab.selectState')} />
               </SelectTrigger>
               <SelectContent>
                 {indianStates.map((stateName) => (
@@ -95,18 +96,18 @@ export default function SchemesTab() {
             </Select>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="land-size">Land Size (in acres)</Label>
+            <Label htmlFor="land-size">{t('schemesTab.landSize')}</Label>
             <Input id="land-size" type="number" placeholder="e.g., 5" value={landSize} onChange={(e) => setLandSize(e.target.value)} />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="crops">Crops Grown (comma-separated)</Label>
+            <Label htmlFor="crops">{t('schemesTab.cropsGrown')}</Label>
             <Input id="crops" placeholder="e.g., Cotton, Soybean" value={crops} onChange={(e) => setCrops(e.target.value)} />
           </div>
         </CardContent>
         <CardFooter>
           <Button onClick={handleGetRecommendations} disabled={isLoading} className="w-full bg-accent hover:bg-accent/90">
             {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-            {isLoading ? "Finding Schemes..." : "Get Recommendations"}
+            {isLoading ? t('schemesTab.findingSchemes') : t('schemesTab.getRecs')}
           </Button>
         </CardFooter>
       </Card>
@@ -115,7 +116,7 @@ export default function SchemesTab() {
         {recommendations && (
           <Card className="shadow-lg border-primary/20">
             <CardHeader>
-              <CardTitle className="font-headline text-2xl">Your Recommended Schemes</CardTitle>
+              <CardTitle className="font-headline text-2xl">{t('schemesTab.yourRecsTitle')}</CardTitle>
             </CardHeader>
             <CardContent>
               {recommendations.recommendations.length > 0 ? (
@@ -125,11 +126,11 @@ export default function SchemesTab() {
                       <AccordionTrigger className="font-bold text-left hover:no-underline">{scheme.title}</AccordionTrigger>
                       <AccordionContent className="space-y-3">
                         <div>
-                          <p className="font-semibold text-primary">Why it's recommended for you:</p>
+                          <p className="font-semibold text-primary">{t('schemesTab.whyRecommended')}</p>
                           <p>{scheme.reason}</p>
                         </div>
                          <div>
-                          <p className="font-semibold text-primary">How to apply:</p>
+                          <p className="font-semibold text-primary">{t('schemesTab.howToApply')}</p>
                           <p>{scheme.applicationGuidance}</p>
                         </div>
                       </AccordionContent>
@@ -139,9 +140,9 @@ export default function SchemesTab() {
               ) : (
                 <Alert>
                   <AlertCircle className="h-4 w-4"/>
-                  <AlertTitle>No specific schemes found</AlertTitle>
+                  <AlertTitle>{t('schemesTab.noSchemesFound')}</AlertTitle>
                   <AlertDescription>
-                    Based on your profile, we couldn't find any highly relevant schemes from our list. You can browse all available schemes below.
+                    {t('schemesTab.noSchemesDescription')}
                   </AlertDescription>
                 </Alert>
               )}
@@ -151,8 +152,8 @@ export default function SchemesTab() {
 
         <Card className="shadow-lg border-primary/20">
           <CardHeader>
-            <CardTitle className="font-headline text-2xl">All Government Schemes</CardTitle>
-            <CardDescription>Latest updates on schemes and policies for farmers.</CardDescription>
+            <CardTitle className="font-headline text-2xl">{t('schemesTab.allSchemesTitle')}</CardTitle>
+            <CardDescription>{t('schemesTab.allSchemesDescription')}</CardDescription>
           </CardHeader>
           <Accordion type="single" collapsible className="w-full px-6 pb-6">
             {governmentSchemes.map((scheme, index) => (
@@ -162,7 +163,7 @@ export default function SchemesTab() {
                   <p className="mb-4">{scheme.description}</p>
                   <Button asChild variant="link" className="p-0 h-auto text-accent hover:text-accent/80">
                     <a href={scheme.link} target="_blank" rel="noopener noreferrer">
-                      Learn More <ExternalLink className="w-4 h-4 ml-2" />
+                      {t('schemesTab.learnMore')} <ExternalLink className="w-4 h-4 ml-2" />
                     </a>
                   </Button>
                 </AccordionContent>

@@ -1,6 +1,9 @@
+
 "use client";
 
-import React, { createContext, useState, ReactNode, useEffect } from 'react';
+import React, { createContext, useState, ReactNode, useEffect, useContext } from 'react';
+import en from '@/locales/en.json';
+import hi from '@/locales/hi.json';
 
 interface Language {
     value: string;
@@ -28,11 +31,18 @@ export const languages: Language[] = [
     { value: "ja", label: "日本語 (Japanese)" },
     { value: "ar", label: "العربية (Arabic)" },
   ];
-  
+
+const translations: Record<string, any> = {
+  en,
+  hi,
+};
+
+type TranslateFunction = (key: string, options?: Record<string, string | number>) => string;
 
 interface LanguageContextType {
   languageCode: string;
   setLanguageCode: (code: string) => void;
+  t: TranslateFunction;
 }
 
 export const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
@@ -51,10 +61,35 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
     setLanguageCode(code);
     sessionStorage.setItem('languageCode', code);
   };
+  
+  const t: TranslateFunction = (key, options) => {
+    const langTranslations = translations[languageCode] || translations.en;
+    let text = key.split('.').reduce((obj, i) => obj?.[i], langTranslations);
+    
+    if (typeof text !== 'string') {
+        // Fallback for languages without full translation files
+        const enTranslations = translations.en;
+        text = key.split('.').reduce((obj, i) => obj?.[i], enTranslations);
+    }
+
+    if (typeof text !== 'string') {
+      console.warn(`Translation not found for key: ${key}`);
+      return key;
+    }
+
+    if (options) {
+      Object.keys(options).forEach(k => {
+        text = text.replace(`{{${k}}}`, String(options[k]));
+      });
+    }
+
+    return text;
+  };
 
   const value = {
     languageCode,
     setLanguageCode: handleSetLanguage,
+    t,
   };
 
   return (
@@ -62,4 +97,12 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
       {children}
     </LanguageContext.Provider>
   );
+};
+
+export const useTranslation = () => {
+    const context = useContext(LanguageContext);
+    if (context === undefined) {
+      throw new Error('useTranslation must be used within a LanguageProvider');
+    }
+    return context;
 };

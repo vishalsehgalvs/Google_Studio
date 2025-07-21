@@ -13,11 +13,13 @@ import Header from "../layout/Header";
 import { useAudioPlayer } from "@/context/AudioPlayerContext";
 import { useToast } from "@/hooks/use-toast";
 import { voiceBasedInformationDelivery } from "@/ai/flows/voice-based-information-delivery";
+import { useTranslation } from "@/context/LanguageContext";
 
 export default function DashboardTabs() {
   const [activeTab, setActiveTab] = useState("diagnosis");
   const { playAudio, stopAudio, isLoading: isAudioLoading } = useAudioPlayer();
   const { toast } = useToast();
+  const { t } = useTranslation();
   
   const contentRefs = {
     diagnosis: useRef<HTMLDivElement>(null),
@@ -69,23 +71,23 @@ export default function DashboardTabs() {
           <TabsList className="grid w-full grid-cols-5 bg-primary/10 rounded-lg h-12">
             <TabsTrigger value="diagnosis" className="text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg rounded-md text-sm sm:text-base">
               <Leaf className="w-4 h-4 mr-1 sm:mr-2" />
-              Diagnosis
+              {t('dashboard.tabs.diagnosis')}
             </TabsTrigger>
             <TabsTrigger value="market" className="text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg rounded-md text-sm sm:text-base">
               <LineChart className="w-4 h-4 mr-1 sm:mr-2" />
-              Market Info
+              {t('dashboard.tabs.market')}
             </TabsTrigger>
             <TabsTrigger value="schemes" className="text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg rounded-md text-sm sm:text-base">
               <LandPlot className="w-4 h-4 mr-1 sm:mr-2" />
-              Govt. Schemes
+              {t('dashboard.tabs.schemes')}
             </TabsTrigger>
             <TabsTrigger value="weather" className="text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg rounded-md text-sm sm:text-base">
               <CloudSun className="w-4 h-4 mr-1 sm:mr-2" />
-              Weather
+              {t('dashboard.tabs.weather')}
             </TabsTrigger>
             <TabsTrigger value="myfarm" className="text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg rounded-md text-sm sm:text-base">
               <Tractor className="w-4 h-4 mr-1 sm:mr-2" />
-              My Farm
+              {t('dashboard.tabs.myfarm')}
             </TabsTrigger>
           </TabsList>
           <TabsContent value="diagnosis" className="mt-6" ref={contentRefs.diagnosis}>

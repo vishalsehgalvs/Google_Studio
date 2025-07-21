@@ -22,7 +22,7 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { LocationContext } from "@/context/LocationContext";
 import { useAudioPlayer } from "@/context/AudioPlayerContext";
-import { LanguageContext } from "@/context/LanguageContext";
+import { useTranslation } from "@/context/LanguageContext";
 
 type AnalysisResult = {
   trendAnalysis: string;
@@ -42,7 +42,7 @@ export default function MarketTab() {
 
   const { toast } = useToast();
   const { playAudio, stopAudio, isPlaying, isLoading: isAudioLoading } = useAudioPlayer();
-  const langContext = useContext(LanguageContext);
+  const { languageCode, t } = useTranslation();
 
 
   useEffect(() => {
@@ -54,12 +54,12 @@ export default function MarketTab() {
         const result = await analyzeMarketTrends({
           marketData: JSON.stringify(marketData),
           location: location,
-          language: langContext?.languageCode || 'en',
+          language: languageCode || 'en',
         });
         setAnalysis(result);
       } catch (e) {
         console.error(e);
-        setError("Failed to analyze market trends. Please try again later.");
+        setError(t('marketTab.error'));
         toast({
           variant: "destructive",
           title: "Error",
@@ -70,7 +70,7 @@ export default function MarketTab() {
       }
     }
     getAnalysis();
-  }, [toast, location, langContext?.languageCode]);
+  }, [toast, location, languageCode, t]);
 
 
   const handleSpeak = async (text: string) => {
@@ -99,15 +99,15 @@ export default function MarketTab() {
     <div className="grid md:grid-cols-2 gap-8 items-start">
       <Card className="shadow-lg border-primary/20">
         <CardHeader>
-          <CardTitle className="font-headline text-2xl">Market Prices</CardTitle>
-          <CardDescription>Latest crop prices from the market.</CardDescription>
+          <CardTitle className="font-headline text-2xl">{t('marketTab.pricesTitle')}</CardTitle>
+          <CardDescription>{t('marketTab.pricesDescription')}</CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="font-bold">Crop</TableHead>
-                <TableHead className="text-right font-bold">Price (per {marketData[0].unit})</TableHead>
+                <TableHead className="font-bold">{t('marketTab.crop')}</TableHead>
+                <TableHead className="text-right font-bold">{t('marketTab.pricePerUnit', { unit: marketData[0].unit })}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -125,12 +125,12 @@ export default function MarketTab() {
       <div className="space-y-8">
         <Card className="shadow-lg border-primary/20">
           <CardHeader>
-            <CardTitle className="font-headline text-2xl">Market Trend Analysis</CardTitle>
-            <CardDescription>AI-powered insights on price movements.</CardDescription>
+            <CardTitle className="font-headline text-2xl">{t('marketTab.analysisTitle')}</CardTitle>
+            <CardDescription>{t('marketTab.analysisDescription')}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Label htmlFor="location-input">Your Location</Label>
+              <Label htmlFor="location-input">{t('marketTab.yourLocation')}</Label>
               <Input 
                 id="location-input"
                 value={location}
@@ -162,20 +162,20 @@ export default function MarketTab() {
             {!isLoading && !error && analysis && (
               <div className="space-y-6 pt-4">
                 <div>
-                  <h3 className="font-bold text-lg text-primary flex items-center gap-2"><TrendingUp size={20} /> Price Trend Analysis</h3>
+                  <h3 className="font-bold text-lg text-primary flex items-center gap-2"><TrendingUp size={20} /> {t('marketTab.priceTrend')}</h3>
                   <p className="text-foreground/90 whitespace-pre-wrap mt-1">{analysis.trendAnalysis}</p>
                 </div>
                  <div>
-                  <h3 className="font-bold text-lg text-primary flex items-center gap-2"><LineChart size={20} /> Demand Forecast</h3>
+                  <h3 className="font-bold text-lg text-primary flex items-center gap-2"><LineChart size={20} /> {t('marketTab.demandForecast')}</h3>
                   <p className="text-foreground/90 whitespace-pre-wrap mt-1">{analysis.demandForecast}</p>
                 </div>
                  <div>
-                  <h3 className="font-bold text-lg text-primary flex items-center gap-2"><LocateFixed size={20} /> Location-Based Pricing</h3>
+                  <h3 className="font-bold text-lg text-primary flex items-center gap-2"><LocateFixed size={20} /> {t('marketTab.locationPricing')}</h3>
                   <p className="text-foreground/90 whitespace-pre-wrap mt-1">{analysis.locationBasedPricing}</p>
                 </div>
                 <Button onClick={() => handleSpeak(Object.values(analysis).join('. '))} variant="outline" size="sm" className="border-accent text-accent hover:bg-accent/10 hover:text-accent">
                   <Volume2 className={`mr-2 h-4 w-4 ${isAudioLoading || isPlaying ? "animate-pulse" : ""}`} />
-                  {isAudioLoading ? "Loading..." : isPlaying ? "Stop" : "Read Aloud"}
+                  {isAudioLoading ? t('diagnosisTab.loading') : isPlaying ? t('diagnosisTab.stop') : t('diagnosisTab.readAloud')}
                 </Button>
               </div>
             )}

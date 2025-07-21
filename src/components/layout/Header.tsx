@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Leaf, LogOut, Volume2, Languages } from 'lucide-react';
@@ -6,8 +7,7 @@ import { useAudioPlayer } from '@/context/AudioPlayerContext';
 import { Button } from '../ui/button';
 import { ScrollArea } from '../ui/scroll-area';
 import { useUser } from '@/context/UserContext';
-import { useContext } from 'react';
-import { LanguageContext, languages } from '@/context/LanguageContext';
+import { useTranslation, languages } from '@/context/LanguageContext';
 
 type HeaderProps = {
   onReadAloud: () => void;
@@ -16,7 +16,7 @@ type HeaderProps = {
 export default function Header({ onReadAloud }: HeaderProps) {
   const { isPlaying, stopAudio } = useAudioPlayer();
   const { logout } = useUser();
-  const langContext = useContext(LanguageContext);
+  const { languageCode, setLanguageCode, t } = useTranslation();
 
   const handleReadAloudClick = () => {
     if (isPlaying) {
@@ -37,11 +37,11 @@ export default function Header({ onReadAloud }: HeaderProps) {
         <div className="flex items-center gap-3">
           <Leaf className="text-primary h-8 w-8" />
           <h1 className="text-3xl font-headline font-bold text-foreground">
-            FarmAssist
+            {t('header.appName')}
           </h1>
         </div>
         <div className="flex items-center gap-4">
-          <Select value={langContext?.languageCode} onValueChange={langContext?.setLanguageCode}>
+          <Select value={languageCode} onValueChange={setLanguageCode}>
             <SelectTrigger className="w-[180px]">
               <div className="flex items-center gap-2">
                 <Languages className="w-4 h-4" />
@@ -58,13 +58,13 @@ export default function Header({ onReadAloud }: HeaderProps) {
               </ScrollArea>
             </SelectContent>
           </Select>
-          <button onClick={handleReadAloudClick} className="p-2 rounded-full hover:bg-muted" title={isPlaying ? "Stop Reading" : "Read Page Aloud"}>
+          <button onClick={handleReadAloudClick} className="p-2 rounded-full hover:bg-muted" title={isPlaying ? t('header.stopReading') : t('header.readPageAloud')}>
             <Volume2 className={`text-primary h-6 w-6 ${isPlaying ? 'animate-pulse' : ''}`} />
-            <span className="sr-only">{isPlaying ? "Stop Reading" : "Read Page Aloud"}</span>
+            <span className="sr-only">{isPlaying ? t('header.stopReading') : t('header.readPageAloud')}</span>
           </button>
-          <Button onClick={handleLogout} variant="ghost" size="icon" title="Logout">
+          <Button onClick={handleLogout} variant="ghost" size="icon" title={t('header.logout')}>
             <LogOut className="text-destructive h-6 w-6"/>
-            <span className="sr-only">Logout</span>
+            <span className="sr-only">{t('header.logout')}</span>
           </Button>
         </div>
       </div>

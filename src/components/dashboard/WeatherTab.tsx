@@ -13,7 +13,7 @@ import { Label } from "../ui/label";
 import { getClimateAdvisory } from "@/ai/flows/climate-advisory";
 import { LocationContext } from "@/context/LocationContext";
 import { useAudioPlayer } from "@/context/AudioPlayerContext";
-import { LanguageContext } from "@/context/LanguageContext";
+import { useTranslation } from "@/context/LanguageContext";
 
 
 type WeatherData = {
@@ -41,7 +41,7 @@ export default function WeatherTab() {
 
   const { toast } = useToast();
   const { playAudio, stopAudio, isPlaying, isLoading: isAudioLoading } = useAudioPlayer();
-  const langContext = useContext(LanguageContext);
+  const { languageCode, t } = useTranslation();
 
   useEffect(() => {
     async function getAdvisory() {
@@ -51,12 +51,12 @@ export default function WeatherTab() {
       try {
         const result = await getClimateAdvisory({ 
             location,
-            language: langContext?.languageCode || 'en',
+            language: languageCode || 'en',
         });
         setAdvisoryResult(result);
       } catch (e) {
         console.error(e);
-        setError("Failed to fetch climate advisory. Please try again later.");
+        setError(t('weatherTab.error'));
         toast({
           variant: "destructive",
           title: "Error",
@@ -67,7 +67,7 @@ export default function WeatherTab() {
       }
     }
     getAdvisory();
-  }, [toast, location, langContext?.languageCode]);
+  }, [toast, location, languageCode, t]);
   
 
   const handleSpeak = async (text: string) => {
@@ -111,13 +111,13 @@ export default function WeatherTab() {
   return (
     <Card className="shadow-lg border-primary/20 max-w-4xl mx-auto">
         <CardHeader>
-        <CardTitle className="font-headline text-2xl flex items-center gap-2"><CloudSun className="text-primary"/>Weather & Climate Advisory</CardTitle>
-        <CardDescription>Get hyper-local weather forecasts and AI-powered farming advice.</CardDescription>
+        <CardTitle className="font-headline text-2xl flex items-center gap-2"><CloudSun className="text-primary"/>{t('weatherTab.title')}</CardTitle>
+        <CardDescription>{t('weatherTab.description')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
         <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-grow space-y-2">
-                <Label htmlFor="location-input">Your Location</Label>
+                <Label htmlFor="location-input">{t('weatherTab.yourLocation')}</Label>
                 <Input 
                     id="location-input"
                     value={location}
@@ -142,13 +142,13 @@ export default function WeatherTab() {
             <div>
                 <Card className="bg-primary/10 border-primary/20">
                     <CardHeader className="pb-4">
-                        <CardTitle className="flex items-center gap-2 text-primary"><Bell size={20} /> AI Climate Advisory for {location}</CardTitle>
+                        <CardTitle className="flex items-center gap-2 text-primary"><Bell size={20} /> {t('weatherTab.aiAdvisory', { location: location })}</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <p className="text-foreground/90 text-base">{advisoryResult.advisory}</p>
                         <Button onClick={() => handleSpeak(advisoryResult.advisory)} variant="outline" size="sm" className="mt-4 border-accent text-accent hover:bg-accent/10 hover:text-accent">
                              <Volume2 className={`mr-2 h-4 w-4 ${isAudioLoading || (isPlaying && currentSpokenText === advisoryResult.advisory) ? "animate-pulse" : ""}`} />
-                            {isAudioLoading && currentSpokenText === advisoryResult.advisory ? "Loading..." : isPlaying && currentSpokenText === advisoryResult.advisory ? "Stop" : "Read Aloud"}
+                            {isAudioLoading && currentSpokenText === advisoryResult.advisory ? t('diagnosisTab.loading') : isPlaying && currentSpokenText === advisoryResult.advisory ? t('diagnosisTab.stop') : t('diagnosisTab.readAloud')}
                         </Button>
                     </CardContent>
                 </Card>
@@ -156,19 +156,19 @@ export default function WeatherTab() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-center">
                 <Card className="p-4">
-                    <CardTitle className="text-sm font-medium text-muted-foreground flex items-center justify-center gap-2"><Thermometer size={16}/> Temperature</CardTitle>
+                    <CardTitle className="text-sm font-medium text-muted-foreground flex items-center justify-center gap-2"><Thermometer size={16}/> {t('weatherTab.temperature')}</CardTitle>
                     <p className="text-2xl font-bold">{advisoryResult.weather.temperature}°C</p>
                 </Card>
                  <Card className="p-4">
-                    <CardTitle className="text-sm font-medium text-muted-foreground flex items-center justify-center gap-2"><Droplets size={16}/> Humidity</CardTitle>
+                    <CardTitle className="text-sm font-medium text-muted-foreground flex items-center justify-center gap-2"><Droplets size={16}/> {t('weatherTab.humidity')}</CardTitle>
                     <p className="text-2xl font-bold">{advisoryResult.weather.humidity}%</p>
                 </Card>
                  <Card className="p-4">
-                    <CardTitle className="text-sm font-medium text-muted-foreground flex items-center justify-center gap-2"><Wind size={16}/> Wind Speed</CardTitle>
+                    <CardTitle className="text-sm font-medium text-muted-foreground flex items-center justify-center gap-2"><Wind size={16}/> {t('weatherTab.windSpeed')}</CardTitle>
                     <p className="text-2xl font-bold">{advisoryResult.weather.windSpeed} km/h</p>
                 </Card>
                  <Card className="p-4">
-                    <CardTitle className="text-sm font-medium text-muted-foreground flex items-center justify-center gap-2"><Cloud size={16}/> Forecast</CardTitle>
+                    <CardTitle className="text-sm font-medium text-muted-foreground flex items-center justify-center gap-2"><Cloud size={16}/> {t('weatherTab.forecast')}</CardTitle>
                     <p className="text-lg font-bold">{advisoryResult.weather.forecast}</p>
                 </Card>
             </div>

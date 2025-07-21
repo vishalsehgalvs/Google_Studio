@@ -20,9 +20,11 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import Image from "next/image";
 import { format } from 'date-fns';
+import { useTranslation } from "@/context/LanguageContext";
 
 export default function DataHistoryTab() {
   const { user } = useUser();
+  const { t } = useTranslation();
   const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([]);
   const [soilHealthCards, setSoilHealthCards] = useState<SoilHealthCard[]>([]);
 
@@ -48,11 +50,11 @@ export default function DataHistoryTab() {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Diagnosis History</CardTitle>
+          <CardTitle>{t('myFarmTab.dataHistory.title')}</CardTitle>
         </CardHeader>
         <CardContent>
           {diagnoses.length === 0 ? (
-            <p className="text-muted-foreground">No diagnoses found.</p>
+            <p className="text-muted-foreground">{t('myFarmTab.dataHistory.noDiagnoses')}</p>
           ) : (
             <Accordion type="single" collapsible className="w-full">
               {diagnoses.map((d) => (
@@ -70,8 +72,8 @@ export default function DataHistoryTab() {
                            <Image src={d.imageDataUri} alt={`Diagnosis for ${d.disease}`} layout="fill" className="object-contain rounded-md" />
                         </div>
                         <div className="space-y-2">
-                            <p><span className="font-semibold">Remedies:</span> {d.remedies}</p>
-                            <p><span className="font-semibold">Confidence:</span> {(d.confidenceScore * 100).toFixed(0)}%</p>
+                            <p><span className="font-semibold">{t('myFarmTab.dataHistory.remedies')}</span> {d.remedies}</p>
+                            <p><span className="font-semibold">{t('myFarmTab.dataHistory.confidence')}</span> {(d.confidenceScore * 100).toFixed(0)}%</p>
                         </div>
                     </div>
                   </AccordionContent>
@@ -84,29 +86,29 @@ export default function DataHistoryTab() {
       
       <Card>
         <CardHeader>
-          <CardTitle>Soil Health Card History</CardTitle>
+          <CardTitle>{t('myFarmTab.dataHistory.soilCardsTitle')}</CardTitle>
         </CardHeader>
         <CardContent>
           {soilHealthCards.length === 0 ? (
-            <p className="text-muted-foreground">No soil health cards found.</p>
+            <p className="text-muted-foreground">{t('myFarmTab.dataHistory.noSoilCards')}</p>
           ) : (
              <Accordion type="single" collapsible className="w-full">
                 {soilHealthCards.map((c) => (
                     <AccordionItem value={c.id} key={c.id}>
                         <AccordionTrigger>
                            <div className="flex justify-between w-full pr-4">
-                             <span>Report for {c.location}</span>
+                             <span>{t('myFarmTab.dataHistory.reportFor', { location: c.location })}</span>
                              <span className="text-sm text-muted-foreground">{format(new Date(c.timestamp), 'PPpp')}</span>
                            </div>
                         </AccordionTrigger>
                         <AccordionContent className="space-y-2">
                              {isAdmin && <p className="text-xs text-muted-foreground">User ID: {c.userId}</p>}
-                            <p><span className="font-semibold">Recommendations:</span> {c.recommendations}</p>
-                            <p className="font-semibold">Metrics:</p>
+                            <p><span className="font-semibold">{t('myFarmTab.dataHistory.recommendations')}</span> {c.recommendations}</p>
+                            <p className="font-semibold">{t('myFarmTab.dataHistory.metrics')}</p>
                             <ul className="list-disc list-inside text-sm">
-                                <li>pH: {c.metrics.ph}</li>
-                                <li>Organic Carbon: {c.metrics.organicCarbon}%</li>
-                                <li>Conductivity: {c.metrics.conductivity} dS/m</li>
+                                <li>{t('myFarmTab.dataHistory.ph')} {c.metrics.ph}</li>
+                                <li>{t('myFarmTab.dataHistory.organicCarbon')} {c.metrics.organicCarbon}%</li>
+                                <li>{t('myFarmTab.dataHistory.conductivity')} {c.metrics.conductivity} dS/m</li>
                             </ul>
                         </AccordionContent>
                     </AccordionItem>

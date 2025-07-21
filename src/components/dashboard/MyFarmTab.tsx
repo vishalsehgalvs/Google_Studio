@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useContext, useCallback } from 'react';
@@ -17,7 +18,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 import { useUser } from '@/context/UserContext';
 import { saveSoilHealthCard } from '@/lib/db';
 import DataHistoryTab from './DataHistoryTab';
-import { LanguageContext } from '@/context/LanguageContext';
+import { useTranslation } from '@/context/LanguageContext';
 
 type AnalysisResult = {
   analysis: string;
@@ -71,7 +72,7 @@ export default function MyFarmTab() {
 
   const locationContext = useContext(LocationContext);
   const { user } = useUser();
-  const langContext = useContext(LanguageContext);
+  const { languageCode, t } = useTranslation();
   const { toast } = useToast();
 
   const { isLoaded: isMapLoaded, loadError: mapLoadError } = useJsApiLoader({
@@ -113,10 +114,9 @@ export default function MyFarmTab() {
     try {
       const result = await analyzeDroneFootage({ 
         imageDataUri: droneImagePreview,
-        language: langContext?.languageCode || 'en',
+        language: languageCode || 'en',
       });
       setAnalysisResult(result);
-      // No specific data to save for drone analysis yet, but could be added here.
     } catch (e) {
       console.error(e);
       setErrorAnalysis("Failed to analyze the footage. Please try another image or try again later.");
@@ -145,7 +145,7 @@ export default function MyFarmTab() {
             title: "Supplier Search Error",
             description: "Could not find suppliers at this time."
         });
-        setIsSupplierModalOpen(false); // Close modal on error
+        setIsSupplierModalOpen(false);
     } finally {
         setIsLoadingSuppliers(false);
     }
@@ -188,10 +188,10 @@ export default function MyFarmTab() {
           <Card className="shadow-lg border-primary/20 h-[500px]">
             <CardHeader>
               <CardTitle className="font-headline text-2xl flex items-center gap-2">
-                <Map className="text-primary"/> My Field Map
+                <Map className="text-primary"/> {t('myFarmTab.mapTitle')}
               </CardTitle>
               <CardDescription>
-                A satellite overview of your field, centered on your current location.
+                {t('myFarmTab.mapDescription')}
               </CardDescription>
             </CardHeader>
             <CardContent className="h-[calc(100%-110px)]">
@@ -205,22 +205,22 @@ export default function MyFarmTab() {
         <div className="space-y-8">
           <Card className="shadow-lg border-primary/20">
               <CardHeader>
-                  <CardTitle className="font-headline text-xl">Farm Overview</CardTitle>
+                  <CardTitle className="font-headline text-xl">{t('myFarmTab.overviewTitle')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                   <div className="flex items-center gap-4">
                       <Pin className="text-primary" size={24}/>
                       <div>
-                          <p className="font-semibold">Location</p>
-                          {locationContext?.loading ? <Skeleton className="h-4 w-32 mt-1" /> : <p className="text-muted-foreground">{locationContext?.locationName || 'Not available'}</p>}
+                          <p className="font-semibold">{t('myFarmTab.location')}</p>
+                          {locationContext?.loading ? <Skeleton className="h-4 w-32 mt-1" /> : <p className="text-muted-foreground">{locationContext?.locationName || t('myFarmTab.notAvailable')}</p>}
                           {locationContext?.error && <p className="text-xs text-destructive">{locationContext.error}</p>}
                       </div>
                   </div>
                   <div className="flex items-center gap-4">
                       <Sun className="text-primary" size={24}/>
                       <div>
-                          <p className="font-semibold">Soil Type</p>
-                          <p className="text-muted-foreground">Black Cotton Soil</p>
+                          <p className="font-semibold">{t('myFarmTab.soilType')}</p>
+                          <p className="text-muted-foreground">{t('myFarmTab.soilTypeExample')}</p>
                       </div>
                   </div>
               </CardContent>
@@ -228,81 +228,79 @@ export default function MyFarmTab() {
           
           <Card className="shadow-lg border-primary/20">
               <CardHeader>
-                  <CardTitle className="font-headline text-xl">Quick Actions</CardTitle>
+                  <CardTitle className="font-headline text-xl">{t('myFarmTab.actionsTitle')}</CardTitle>
               </CardHeader>
               <CardContent className="flex flex-col gap-3">
-                  <Button variant="outline" onClick={() => setIsDroneModalOpen(true)}>Request Drone Footage Analysis</Button>
-                  <Button variant="outline" onClick={handleOpenSoilCard}>View Soil Health Card</Button>
-                  <Button variant="outline" onClick={() => setIsHistoryOpen(true)}><Database className="mr-2 h-4 w-4"/> View Data History</Button>
+                  <Button variant="outline" onClick={() => setIsDroneModalOpen(true)}>{t('myFarmTab.droneAnalysisBtn')}</Button>
+                  <Button variant="outline" onClick={handleOpenSoilCard}>{t('myFarmTab.soilHealthCardBtn')}</Button>
+                  <Button variant="outline" onClick={() => setIsHistoryOpen(true)}><Database className="mr-2 h-4 w-4"/> {t('myFarmTab.historyBtn')}</Button>
               </CardContent>
           </Card>
         </div>
       </div>
 
-      {/* Soil Health Card Dialog */}
       <Dialog open={isSoilCardOpen} onOpenChange={setIsSoilCardOpen}>
         <DialogContent className="sm:max-w-2xl">
           <DialogHeader>
-            <DialogTitle className="font-headline text-2xl flex items-center gap-2"><TestTube2 className="text-primary"/>Soil Health Card</DialogTitle>
+            <DialogTitle className="font-headline text-2xl flex items-center gap-2"><TestTube2 className="text-primary"/>{t('myFarmTab.soilCard.title')}</DialogTitle>
             <DialogDescription>
-              A summary of your soil's health and recommendations.
+              {t('myFarmTab.soilCard.description')}
             </DialogDescription>
           </DialogHeader>
           <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
               <Card>
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-lg">Key Metrics</CardTitle>
+                  <CardTitle className="text-lg">{t('myFarmTab.soilCard.keyMetrics')}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <ul className="space-y-3">
-                    <li className="flex justify-between"><span>pH Level:</span><span className="font-bold">{sampleSoilHealthCard.metrics.ph}</span></li>
-                    <li className="flex justify-between"><span>Organic Carbon:</span><span className="font-bold">{sampleSoilHealthCard.metrics.organicCarbon}%</span></li>
-                    <li className="flex justify-between"><span>Electrical Conductivity:</span><span className="font-bold">{sampleSoilHealthCard.metrics.conductivity} dS/m</span></li>
+                    <li className="flex justify-between"><span>{t('myFarmTab.soilCard.phLevel')}:</span><span className="font-bold">{sampleSoilHealthCard.metrics.ph}</span></li>
+                    <li className="flex justify-between"><span>{t('myFarmTab.soilCard.organicCarbon')}:</span><span className="font-bold">{sampleSoilHealthCard.metrics.organicCarbon}%</span></li>
+                    <li className="flex justify-between"><span>{t('myFarmTab.soilCard.conductivity')}:</span><span className="font-bold">{sampleSoilHealthCard.metrics.conductivity} dS/m</span></li>
                   </ul>
                 </CardContent>
               </Card>
                <Card>
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-lg">Nutrient Status</CardTitle>
+                  <CardTitle className="text-lg">{t('myFarmTab.soilCard.nutrientStatus')}</CardTitle>
                 </CardHeader>
                 <CardContent>
                    <ul className="space-y-3">
-                    <li className="flex justify-between items-center"><span>Nitrogen (N):</span><span className="font-bold text-yellow-600">{sampleSoilHealthCard.nutrients.nitrogen.status} ({sampleSoilHealthCard.nutrients.nitrogen.value} kg/ha)</span></li>
-                    <li className="flex justify-between items-center"><span>Phosphorus (P):</span><span className="font-bold text-green-600">{sampleSoilHealthCard.nutrients.phosphorus.status} ({sampleSoilHealthCard.nutrients.phosphorus.value} kg/ha)</span></li>
-                    <li className="flex justify-between items-center"><span>Potassium (K):</span><span className="font-bold text-red-600">{sampleSoilHealthCard.nutrients.potassium.status} ({sampleSoilHealthCard.nutrients.potassium.value} kg/ha)</span></li>
+                    <li className="flex justify-between items-center"><span>{t('myFarmTab.soilCard.nitrogen')}:</span><span className="font-bold text-yellow-600">{sampleSoilHealthCard.nutrients.nitrogen.status} ({sampleSoilHealthCard.nutrients.nitrogen.value} kg/ha)</span></li>
+                    <li className="flex justify-between items-center"><span>{t('myFarmTab.soilCard.phosphorus')}:</span><span className="font-bold text-green-600">{sampleSoilHealthCard.nutrients.phosphorus.status} ({sampleSoilHealthCard.nutrients.phosphorus.value} kg/ha)</span></li>
+                    <li className="flex justify-between items-center"><span>{t('myFarmTab.soilCard.potassium')}:</span><span className="font-bold text-red-600">{sampleSoilHealthCard.nutrients.potassium.status} ({sampleSoilHealthCard.nutrients.potassium.value} kg/ha)</span></li>
                   </ul>
                 </CardContent>
               </Card>
           </div>
            <Card className="mt-6">
               <CardHeader className="pb-4">
-                  <CardTitle className="text-lg">Recommendations</CardTitle>
+                  <CardTitle className="text-lg">{t('myFarmTab.soilCard.recommendations')}</CardTitle>
                   <CardDescription>{sampleSoilHealthCard.recommendations}</CardDescription>
               </CardHeader>
             </Card>
             <Card className="mt-6 bg-primary/5">
                 <CardHeader>
-                    <CardTitle className="text-lg flex items-center gap-2"><ShoppingCart className="text-primary" /> Order Supplies</CardTitle>
-                    <CardDescription>Take action on your soil health report by ordering the necessary inputs.</CardDescription>
+                    <CardTitle className="text-lg flex items-center gap-2"><ShoppingCart className="text-primary" /> {t('myFarmTab.soilCard.orderSupplies')}</CardTitle>
+                    <CardDescription>{t('myFarmTab.soilCard.orderDescription')}</CardDescription>
                 </CardHeader>
                 <CardContent className="flex flex-col sm:flex-row gap-4">
-                    <Button className="flex-1" onClick={() => handleOrderSupplies("Muriate of Potash (fertilizer)")}>Order Recommended Fertilizers</Button>
-                    <Button className="flex-1" variant="secondary" onClick={() => handleOrderSupplies("quality seeds")}>Order Seeds</Button>
+                    <Button className="flex-1" onClick={() => handleOrderSupplies("Muriate of Potash (fertilizer)")}>{t('myFarmTab.soilCard.orderFertilizers')}</Button>
+                    <Button className="flex-1" variant="secondary" onClick={() => handleOrderSupplies("quality seeds")}>{t('myFarmTab.soilCard.orderSeeds')}</Button>
                 </CardContent>
             </Card>
         </DialogContent>
       </Dialog>
       
-      {/* Drone Footage Analysis Dialog */}
       <Dialog open={isDroneModalOpen} onOpenChange={(isOpen) => {
         if(!isOpen) resetDroneAnalysis();
         setIsDroneModalOpen(isOpen);
       }}>
         <DialogContent className="sm:max-w-4xl">
           <DialogHeader>
-            <DialogTitle className="font-headline text-2xl flex items-center gap-2"><Sparkles className="text-primary"/>Drone Footage Analysis</DialogTitle>
+            <DialogTitle className="font-headline text-2xl flex items-center gap-2"><Sparkles className="text-primary"/>{t('myFarmTab.droneModal.title')}</DialogTitle>
             <DialogDescription>
-              Upload a drone image of your field to get an AI-powered health assessment.
+              {t('myFarmTab.droneModal.description')}
             </DialogDescription>
           </DialogHeader>
           <div className="grid md:grid-cols-2 gap-6 mt-4 items-start">
@@ -320,31 +318,31 @@ export default function MyFarmTab() {
                     ) : (
                         <div className="flex flex-col items-center justify-center h-64 gap-2 text-muted-foreground">
                             <ImageUp className="h-12 w-12"/>
-                            <p>Click or drag & drop to upload</p>
+                            <p>{t('myFarmTab.droneModal.uploadPrompt')}</p>
                         </div>
                     )}
                 </label>
               </div>
               <Button onClick={handleAnalyzeFootage} disabled={!droneImagePreview || isLoadingAnalysis} className="w-full mt-4 bg-accent hover:bg-accent/90">
                   {isLoadingAnalysis ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
-                  {isLoadingAnalysis ? 'Analyzing...' : 'Analyze Footage'}
+                  {isLoadingAnalysis ? t('myFarmTab.droneModal.analyzing') : t('myFarmTab.droneModal.analyze')}
               </Button>
             </div>
             <div>
-              <h3 className="font-bold text-lg mb-2">Analysis Result</h3>
+              <h3 className="font-bold text-lg mb-2">{t('myFarmTab.droneModal.resultTitle')}</h3>
               <Card className="h-[340px] overflow-y-auto">
                 <CardContent className="p-4">
-                  {isLoadingAnalysis && <div className="flex items-center justify-center h-full gap-2"><Loader2 className="h-6 w-6 animate-spin text-primary"/> <p>Analyzing your field...</p></div>}
+                  {isLoadingAnalysis && <div className="flex items-center justify-center h-full gap-2"><Loader2 className="h-6 w-6 animate-spin text-primary"/> <p>{t('myFarmTab.droneModal.analyzingField')}</p></div>}
                   {errorAnalysis && <div className="text-destructive flex items-center justify-center h-full gap-2"><AlertCircle className="h-6 w-6"/> <p>{errorAnalysis}</p></div>}
-                  {!isLoadingAnalysis && !errorAnalysis && !analysisResult && <div className="text-muted-foreground flex items-center justify-center h-full">Upload an image to see the analysis.</div>}
+                  {!isLoadingAnalysis && !errorAnalysis && !analysisResult && <div className="text-muted-foreground flex items-center justify-center h-full">{t('myFarmTab.droneModal.uploadToSee')}</div>}
                   {analysisResult && (
                     <div className="space-y-4 animate-in fade-in-50">
                       <div>
-                        <h4 className="font-semibold text-primary">Overall Assessment</h4>
+                        <h4 className="font-semibold text-primary">{t('myFarmTab.droneModal.overallAssessment')}</h4>
                         <p className="text-sm">{analysisResult.analysis}</p>
                       </div>
                       <div>
-                        <h4 className="font-semibold text-primary">Identified Hotspots</h4>
+                        <h4 className="font-semibold text-primary">{t('myFarmTab.droneModal.hotspots')}</h4>
                         <div className="space-y-3 mt-2">
                           {analysisResult.hotspots.map((spot, index) => (
                             <div key={index} className="p-3 bg-muted/50 rounded-md border">
@@ -363,30 +361,29 @@ export default function MyFarmTab() {
         </DialogContent>
       </Dialog>
 
-      {/* Supplier Search Results Dialog */}
       <Dialog open={isSupplierModalOpen} onOpenChange={setIsSupplierModalOpen}>
         <DialogContent className="sm:max-w-2xl">
           <DialogHeader>
             <DialogTitle className="font-headline text-2xl flex items-center gap-2">
-                <ShoppingCart className="text-primary"/> Supplier Results
+                <ShoppingCart className="text-primary"/> {t('myFarmTab.supplierModal.title')}
             </DialogTitle>
             <DialogDescription>
-                Showing potential suppliers for "{orderedProduct}". This is a mock response.
+                {t('myFarmTab.supplierModal.description', { product: orderedProduct })}
             </DialogDescription>
           </DialogHeader>
           <div className="mt-4">
             {isLoadingSuppliers ? (
                  <div className="flex items-center justify-center h-40 gap-2">
                     <Loader2 className="h-6 w-6 animate-spin text-primary"/>
-                    <p>Searching for suppliers...</p>
+                    <p>{t('myFarmTab.supplierModal.searching')}</p>
                  </div>
             ) : (
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead>Supplier</TableHead>
-                            <TableHead>Type</TableHead>
-                            <TableHead>Contact / Location</TableHead>
+                            <TableHead>{t('myFarmTab.supplierModal.supplier')}</TableHead>
+                            <TableHead>{t('myFarmTab.supplierModal.type')}</TableHead>
+                            <TableHead>{t('myFarmTab.supplierModal.contact')}</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -396,7 +393,7 @@ export default function MyFarmTab() {
                                 <TableCell>
                                     <span className="flex items-center gap-2">
                                         {supplier.type === 'local' ? <Building size={16}/> : <Globe size={16}/>}
-                                        {supplier.type.charAt(0).toUpperCase() + supplier.type.slice(1)}
+                                        {t(`myFarmTab.supplierModal.${supplier.type}`)}
                                     </span>
                                 </TableCell>
                                 <TableCell>{supplier.contact}</TableCell>
@@ -407,27 +404,26 @@ export default function MyFarmTab() {
             )}
           </div>
            <DialogFooter>
-                <Button variant="secondary" onClick={() => setIsSupplierModalOpen(false)}>Close</Button>
+                <Button variant="secondary" onClick={() => setIsSupplierModalOpen(false)}>{t('myFarmTab.close')}</Button>
             </DialogFooter>
         </DialogContent>
       </Dialog>
       
-      {/* Data History Dialog */}
       <Dialog open={isHistoryOpen} onOpenChange={setIsHistoryOpen}>
         <DialogContent className="sm:max-w-4xl">
             <DialogHeader>
                 <DialogTitle className="font-headline text-2xl flex items-center gap-2">
-                    <Database className="text-primary"/> Data History
+                    <Database className="text-primary"/> {t('myFarmTab.historyModal.title')}
                 </DialogTitle>
                 <DialogDescription>
-                    {user?.id === 'admin@example.com' ? "Viewing all data as admin." : "A record of your past activities and reports."}
+                    {user?.id === 'admin@example.com' ? t('myFarmTab.historyModal.adminDescription') : t('myFarmTab.historyModal.userDescription')}
                 </DialogDescription>
             </DialogHeader>
             <div className="mt-4 max-h-[60vh] overflow-y-auto">
                 <DataHistoryTab />
             </div>
              <DialogFooter>
-                <Button variant="secondary" onClick={() => setIsHistoryOpen(false)}>Close</Button>
+                <Button variant="secondary" onClick={() => setIsHistoryOpen(false)}>{t('myFarmTab.close')}</Button>
             </DialogFooter>
         </DialogContent>
       </Dialog>
