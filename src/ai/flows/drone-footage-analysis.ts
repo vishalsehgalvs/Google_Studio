@@ -38,6 +38,7 @@ const prompt = ai.definePrompt({
   name: 'analyzeDroneFootagePrompt',
   input: {schema: AnalyzeDroneFootageInputSchema},
   output: {schema: AnalyzeDroneFootageOutputSchema},
+  model: 'googleai/gemini-2.0-flash',
   prompt: `You are an expert agronomist specializing in precision agriculture and remote sensing.
 You have been provided with a drone image of a farmer's field. Your task is to analyze this image to assess crop health.
 Generate the response in the following language: {{language}}.

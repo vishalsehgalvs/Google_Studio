@@ -32,6 +32,7 @@ const prompt = ai.definePrompt({
   name: 'voiceQueryToTextPrompt',
   input: {schema: VoiceQueryToTextInputSchema},
   output: {schema: VoiceQueryToTextOutputSchema},
+  model: 'googleai/gemini-2.0-flash',
   prompt: `Transcribe the following audio into text:
 
 Audio: {{media url=audioDataUri}}`,

@@ -38,6 +38,7 @@ const prompt = ai.definePrompt({
   name: 'imageBasedDiagnosisPrompt',
   input: {schema: ImageBasedDiagnosisInputSchema},
   output: {schema: ImageBasedDiagnosisOutputSchema},
+  model: 'googleai/gemini-2.0-flash',
   prompt: `You are an expert in plant pathology. A farmer has provided an image of a diseased plant.
   Your task is to analyze the image and provide a diagnosis of the disease and suggest remedies.
   You must also provide a confidence score for your diagnosis.
