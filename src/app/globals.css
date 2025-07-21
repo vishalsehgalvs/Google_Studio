@@ -24,10 +24,6 @@
     --input: 220 10% 90%;
     --ring: 220 90% 55%;
     --radius: 0.8rem;
-
-    --color-red-flame: 350 90% 60%;
-    --color-royal-blue: 220 85% 60%;
-    --color-emerald-green: 150 70% 50%;
   }
 
   .dark {
@@ -50,10 +46,6 @@
     --border: 220 10% 25%;
     --input: 220 10% 20%;
     --ring: 220 90% 65%;
-
-    --color-red-flame: 350 90% 60%;
-    --color-royal-blue: 220 85% 60%;
-    --color-emerald-green: 150 70% 50%;
   }
 }
 

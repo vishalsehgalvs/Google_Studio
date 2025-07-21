@@ -39,7 +39,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const logout = () => {
     setUser(null);
     sessionStorage.removeItem('userId');
-    router.push('/login');
+    router.push('/');
   };
 
   const value = {
