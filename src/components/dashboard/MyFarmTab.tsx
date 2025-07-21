@@ -54,58 +54,56 @@ const mapContainerStyle = {
 
 const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
-const MapComponent = memo(function MapComponent({ coordinates }: { coordinates: { lat: number; lng: number; }}) {
-  const { isLoaded, loadError } = useJsApiLoader({
-    id: 'google-map-script',
-    googleMapsApiKey: apiKey!,
-  });
+const MissingApiKeyPlaceholder = () => (
+  <div className="flex flex-col items-center justify-center text-center p-4 bg-muted h-full rounded-md">
+    <KeyRound className="w-12 h-12 text-destructive mb-4" />
+    <h3 className="font-bold text-lg text-destructive">Google Maps API Key is Missing</h3>
+    <p className="text-muted-foreground text-sm mt-2">Please add your API key to the <code className="bg-destructive/10 text-destructive font-mono p-1 rounded-sm">.env</code> file to enable the map view.</p>
+    <p className="text-muted-foreground text-xs mt-1">Example: <code className="bg-destructive/10 text-destructive font-mono p-1 rounded-sm">NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=YourApiKeyHere</code></p>
+  </div>
+);
 
-  if (loadError) {
-    return (
-      <div className="flex flex-col items-center justify-center text-center p-4 bg-muted h-full rounded-md">
-          <AlertCircle className="w-12 h-12 text-destructive mb-4" />
-          <h3 className="font-bold text-lg text-destructive">Map Loading Error</h3>
-          <p className="text-muted-foreground text-sm mt-2">Could not load the map. This might be due to an incorrect API key or a problem with your Google Cloud project setup.</p>
-      </div>
-    );
-  }
+const MapContainer = memo(function MapContainer({ coordinates }: { coordinates: { lat: number; lng: number; }}) {
+    const { isLoaded, loadError } = useJsApiLoader({
+        id: 'google-map-script',
+        googleMapsApiKey: apiKey!,
+    });
 
-  if (!isLoaded) {
-      return (
-           <div className="flex items-center justify-center h-full">
-              <Loader2 className="h-6 w-6 animate-spin text-primary"/>
-              <p className="ml-2">Loading Map...</p>
+    if (loadError) {
+        return (
+            <div className="flex flex-col items-center justify-center text-center p-4 bg-muted h-full rounded-md">
+                <AlertCircle className="w-12 h-12 text-destructive mb-4" />
+                <h3 className="font-bold text-lg text-destructive">Map Loading Error</h3>
+                <p className="text-muted-foreground text-sm mt-2">Could not load the map. This might be due to a network issue or an invalid API key configuration.</p>
             </div>
+        );
+    }
+    
+    if (!isLoaded) {
+      return (
+        <div className="flex items-center justify-center h-full">
+            <Loader2 className="h-6 w-6 animate-spin text-primary"/>
+            <p className="ml-2">Loading Map...</p>
+        </div>
       );
-  }
-  
-  return (
-      <GoogleMap
-          mapContainerStyle={mapContainerStyle}
-          center={coordinates}
-          zoom={15}
-          mapTypeId="satellite"
-          options={{
-              zoomControl: false,
-              streetViewControl: false,
-              mapTypeControl: false,
-              fullscreenControl: false,
-          }}
-      >
-      </GoogleMap>
-  );
+    }
+    
+    return (
+        <GoogleMap
+            mapContainerStyle={mapContainerStyle}
+            center={coordinates}
+            zoom={15}
+            mapTypeId="satellite"
+            options={{
+                zoomControl: false,
+                streetViewControl: false,
+                mapTypeControl: false,
+                fullscreenControl: false,
+            }}
+        />
+    );
 });
 
-function MissingApiKeyPlaceholder() {
-  return (
-    <div className="flex flex-col items-center justify-center text-center p-4 bg-muted h-full rounded-md">
-      <KeyRound className="w-12 h-12 text-destructive mb-4" />
-      <h3 className="font-bold text-lg text-destructive">Google Maps API Key is Missing</h3>
-      <p className="text-muted-foreground text-sm mt-2">Please add your API key to the <code className="bg-destructive/10 text-destructive font-mono p-1 rounded-sm">.env</code> file to enable the map view.</p>
-      <p className="text-muted-foreground text-xs mt-1">Example: <code className="bg-destructive/10 text-destructive font-mono p-1 rounded-sm">NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=YourApiKeyHere</code></p>
-    </div>
-  );
-}
 
 export default function MyFarmTab() {
   const [isSoilCardOpen, setIsSoilCardOpen] = useState(false);
@@ -132,7 +130,7 @@ export default function MyFarmTab() {
   const { languageCode, t } = useTranslation();
   const { toast } = useToast();
   
-  const isApiKeyValid = apiKey && apiKey !== "YOUR_API_KEY_HERE";
+  const isApiKeyValid = apiKey && apiKey !== 'YOUR_API_KEY_HERE';
 
   const handleOpenSoilCard = () => {
     if (user) {
@@ -234,6 +232,30 @@ export default function MyFarmTab() {
     setErrorDroneAnalysis(null);
     setIsLoadingDroneAnalysis(false);
   };
+  
+  const renderMapContent = () => {
+    if (!isApiKeyValid) {
+        return <MissingApiKeyPlaceholder />;
+    }
+    if (locationContext?.loading) {
+        return (
+            <div className="flex items-center justify-center h-full">
+                <Loader2 className="h-6 w-6 animate-spin text-primary"/>
+                <p className="ml-2">Loading Location...</p>
+            </div>
+        );
+    }
+    if (locationContext?.coordinates) {
+        return <MapContainer coordinates={locationContext.coordinates} />;
+    }
+    return (
+        <div className="flex flex-col items-center justify-center text-center p-4 bg-muted h-full rounded-md">
+            <AlertCircle className="w-12 h-12 text-destructive mb-4" />
+            <h3 className="font-bold text-lg text-destructive">Could Not Get Location</h3>
+            <p className="text-muted-foreground text-sm mt-2">{locationContext?.error || "An unknown error occurred."}</p>
+        </div>
+    );
+  }
 
   return (
     <>
@@ -250,20 +272,7 @@ export default function MyFarmTab() {
             </CardHeader>
             <CardContent className="h-[calc(100%-110px)]">
               <div className="w-full h-full bg-muted rounded-md flex items-center justify-center overflow-hidden relative">
-                {
-                  isApiKeyValid ? (
-                    locationContext?.coordinates ? (
-                      <MapComponent coordinates={locationContext.coordinates} />
-                    ) : (
-                      <div className="flex items-center justify-center h-full">
-                         <Loader2 className="h-6 w-6 animate-spin text-primary"/>
-                         <p className="ml-2">Loading Location...</p>
-                      </div>
-                    )
-                  ) : (
-                    <MissingApiKeyPlaceholder />
-                  )
-                }
+                {renderMapContent()}
               </div>
             </CardContent>
           </Card>
@@ -557,3 +566,5 @@ export default function MyFarmTab() {
     </>
   );
 }
+
+    
