@@ -18,18 +18,21 @@ interface LocationContextType {
 
 export const LocationContext = createContext<LocationContextType | undefined>(undefined);
 
-// This is a simplified mock reverse geocoding function.
+// This is an improved mock reverse geocoding function.
 // In a real-world app, you would use an API like Google Maps Geocoding.
 const mockReverseGeocode = (coords: Coordinates): string => {
     const locations = [
-        { name: 'Nagpur', lat: 21.1458, lng: 79.0882 },
-        { name: 'Mumbai', lat: 19.0760, lng: 72.8777 },
-        { name: 'Pune', lat: 18.5204, lng: 73.8567 },
-        { name: 'Delhi', lat: 28.7041, lng: 77.1025 },
-        // Add more locations as needed for better mock coverage
+        { name: 'Nagpur', address: 'Kisan Mandi, Nagpur, Maharashtra', lat: 21.1458, lng: 79.0882 },
+        { name: 'Mumbai', address: 'APMC Market, Vashi, Mumbai, Maharashtra', lat: 19.0760, lng: 72.8777 },
+        { name: 'Pune', address: 'Market Yard, Pune, Maharashtra', lat: 18.5204, lng: 73.8567 },
+        { name: 'Delhi', address: 'Azadpur Mandi, Delhi, NCR', lat: 28.7041, lng: 77.1025 },
+        { name: 'Bengaluru', address: 'KR Market, Bengaluru, Karnataka', lat: 12.9716, lng: 77.5946 },
+        { name: 'Chennai', address: 'Koyambedu Market, Chennai, Tamil Nadu', lat: 13.0827, lng: 80.2707 },
+        { name: 'Kolkata', address: 'Burrabazar, Kolkata, West Bengal', lat: 22.5726, lng: 88.3639 },
+        { name: 'Hyderabad', address: 'Gudimalkapur Market, Hyderabad, Telangana', lat: 17.3850, lng: 78.4867 },
     ];
 
-    let closestLocation: string | null = null;
+    let closestLocation: { name: string; address: string } | null = null;
     let minDistance = Infinity;
 
     for (const loc of locations) {
@@ -38,18 +41,19 @@ const mockReverseGeocode = (coords: Coordinates): string => {
         );
         if (distance < minDistance) {
             minDistance = distance;
-            closestLocation = loc.name;
+            closestLocation = { name: loc.name, address: loc.address };
         }
     }
     
-    // A threshold of ~1 degree is roughly 111km. If a known city is within this range, use it.
-    if (closestLocation && minDistance < 1) {
-        return closestLocation;
+    // A threshold of ~2 degrees is roughly 222km. If a known city is within this range, use it.
+    if (closestLocation && minDistance < 2) {
+        return closestLocation.address;
     }
 
     // If no known city is nearby, return the coordinates as a string.
     return `Lat: ${coords.lat.toFixed(4)}, Lng: ${coords.lng.toFixed(4)}`;
 }
+
 
 export const LocationProvider = ({ children }: { children: ReactNode }) => {
   const [coordinates, setCoordinates] = useState<Coordinates | null>(null);
@@ -63,7 +67,7 @@ export const LocationProvider = ({ children }: { children: ReactNode }) => {
 
     if (!navigator.geolocation) {
       setError("Geolocation is not supported by your browser. Defaulting to Nagpur.");
-      setLocationName("Nagpur");
+      setLocationName("Kisan Mandi, Nagpur, Maharashtra");
       setCoordinates({ lat: 21.1458, lng: 79.0882 });
       setLoading(false);
       return;
@@ -83,7 +87,7 @@ export const LocationProvider = ({ children }: { children: ReactNode }) => {
       },
       (err) => {
         setError(`Location access denied. Defaulting to Nagpur. Error: ${err.message}`);
-        setLocationName("Nagpur");
+        setLocationName("Kisan Mandi, Nagpur, Maharashtra");
         setCoordinates({ lat: 21.1458, lng: 79.0882 });
         setLoading(false);
       }

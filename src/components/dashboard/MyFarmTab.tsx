@@ -55,7 +55,7 @@ const sampleSoilHealthCard = {
 };
 
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "";
-const isMapsKeyMissing = GOOGLE_MAPS_API_KEY === "" || GOOGLE_MAPS_API_KEY === "YOUR_GOOGLE_MAPS_API_KEY_HERE";
+const isMapsKeyMissing = !GOOGLE_MAPS_API_KEY || GOOGLE_MAPS_API_KEY === "YOUR_GOOGLE_MAPS_API_KEY_HERE";
 
 export default function MyFarmTab() {
   const [isSoilCardOpen, setIsSoilCardOpen] = useState(false);
@@ -79,7 +79,7 @@ export default function MyFarmTab() {
   const { toast } = useToast();
 
   const { isLoaded: isMapLoaded, loadError: mapLoadError } = useJsApiLoader({
-    googleMapsApiKey: GOOGLE_MAPS_API_KEY,
+    googleMapsApiKey: isMapsKeyMissing ? "" : GOOGLE_MAPS_API_KEY,
     preventGoogleFontsLoading: true,
   });
 
@@ -166,10 +166,10 @@ export default function MyFarmTab() {
   const renderMap = useCallback(() => {
     if (isMapsKeyMissing) {
       return (
-        <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground p-4">
+        <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground p-4 bg-muted/50 rounded-lg">
           <Key className="h-10 w-10 mb-4 text-destructive"/>
-          <p className="font-bold">Google Maps API Key is Missing</p>
-          <p className="text-sm">Please add your API key to the <code className="bg-muted px-1 py-0.5 rounded-sm">.env</code> file to enable the map view.</p>
+          <p className="font-bold text-lg">Google Maps API Key is Missing</p>
+          <p className="text-sm mt-1">Please add your API key to the <code className="bg-muted px-1 py-0.5 rounded-sm">.env</code> file to enable the map view.</p>
         </div>
       );
     }
@@ -338,7 +338,7 @@ export default function MyFarmTab() {
               </div>
               <Button onClick={handleAnalyzeFootage} disabled={!droneImagePreview || isLoadingAnalysis} className="w-full mt-4 bg-accent hover:bg-accent/90">
                   {isLoadingAnalysis ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
-                  {isLoadingAnalysis ? t('myFarmTab.droneModal.analyzing') : t('myFarm-tab.droneModal.analyze')}
+                  {isLoadingAnalysis ? t('myFarmTab.droneModal.analyzing') : t('myFarmTab.droneModal.analyze')}
               </Button>
             </div>
             <div>
