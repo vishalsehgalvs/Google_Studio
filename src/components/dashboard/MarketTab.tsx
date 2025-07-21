@@ -22,6 +22,7 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { LocationContext } from "@/context/LocationContext";
 import { useAudioPlayer } from "@/context/AudioPlayerContext";
+import { LanguageContext } from "@/context/LanguageContext";
 
 type AnalysisResult = {
   trendAnalysis: string;
@@ -41,6 +42,7 @@ export default function MarketTab() {
 
   const { toast } = useToast();
   const { playAudio, stopAudio, isPlaying, isLoading: isAudioLoading } = useAudioPlayer();
+  const langContext = useContext(LanguageContext);
 
 
   useEffect(() => {
@@ -52,6 +54,7 @@ export default function MarketTab() {
         const result = await analyzeMarketTrends({
           marketData: JSON.stringify(marketData),
           location: location,
+          language: langContext?.languageCode || 'en',
         });
         setAnalysis(result);
       } catch (e) {
@@ -67,7 +70,7 @@ export default function MarketTab() {
       }
     }
     getAnalysis();
-  }, [toast, location]);
+  }, [toast, location, langContext?.languageCode]);
 
 
   const handleSpeak = async (text: string) => {

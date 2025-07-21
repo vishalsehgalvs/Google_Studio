@@ -17,6 +17,7 @@ const AnalyzeDroneFootageInputSchema = z.object({
     .describe(
       "An image from drone footage, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
     ),
+  language: z.string().describe('The language for the response (e.g., "en", "hi", "es").'),
 });
 export type AnalyzeDroneFootageInput = z.infer<typeof AnalyzeDroneFootageInputSchema>;
 
@@ -39,6 +40,7 @@ const prompt = ai.definePrompt({
   output: {schema: AnalyzeDroneFootageOutputSchema},
   prompt: `You are an expert agronomist specializing in precision agriculture and remote sensing.
 You have been provided with a drone image of a farmer's field. Your task is to analyze this image to assess crop health.
+Generate the response in the following language: {{language}}.
 
 Based on the image, provide a general analysis and identify specific "hotspots" that require attention.
 Look for visual cues suggesting:

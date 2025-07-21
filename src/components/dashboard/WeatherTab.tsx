@@ -13,6 +13,7 @@ import { Label } from "../ui/label";
 import { getClimateAdvisory } from "@/ai/flows/climate-advisory";
 import { LocationContext } from "@/context/LocationContext";
 import { useAudioPlayer } from "@/context/AudioPlayerContext";
+import { LanguageContext } from "@/context/LanguageContext";
 
 
 type WeatherData = {
@@ -40,6 +41,7 @@ export default function WeatherTab() {
 
   const { toast } = useToast();
   const { playAudio, stopAudio, isPlaying, isLoading: isAudioLoading } = useAudioPlayer();
+  const langContext = useContext(LanguageContext);
 
   useEffect(() => {
     async function getAdvisory() {
@@ -47,7 +49,10 @@ export default function WeatherTab() {
       setIsLoading(true);
       setError(null);
       try {
-        const result = await getClimateAdvisory({ location });
+        const result = await getClimateAdvisory({ 
+            location,
+            language: langContext?.languageCode || 'en',
+        });
         setAdvisoryResult(result);
       } catch (e) {
         console.error(e);
@@ -62,7 +67,7 @@ export default function WeatherTab() {
       }
     }
     getAdvisory();
-  }, [toast, location]);
+  }, [toast, location, langContext?.languageCode]);
   
 
   const handleSpeak = async (text: string) => {

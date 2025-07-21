@@ -1,11 +1,13 @@
 "use client";
 
-import { Leaf, LogOut, Volume2 } from 'lucide-react';
+import { Leaf, LogOut, Volume2, Languages } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAudioPlayer } from '@/context/AudioPlayerContext';
 import { Button } from '../ui/button';
 import { ScrollArea } from '../ui/scroll-area';
 import { useUser } from '@/context/UserContext';
+import { useContext } from 'react';
+import { LanguageContext, languages } from '@/context/LanguageContext';
 
 type HeaderProps = {
   onReadAloud: () => void;
@@ -14,6 +16,7 @@ type HeaderProps = {
 export default function Header({ onReadAloud }: HeaderProps) {
   const { isPlaying, stopAudio } = useAudioPlayer();
   const { logout } = useUser();
+  const langContext = useContext(LanguageContext);
 
   const handleReadAloudClick = () => {
     if (isPlaying) {
@@ -28,28 +31,6 @@ export default function Header({ onReadAloud }: HeaderProps) {
     logout();
   }
 
-  const languages = [
-    { value: "en", label: "English" },
-    { value: "hi", label: "हिन्दी (Hindi)" },
-    { value: "mr", label: "मराठी (Marathi)" },
-    { value: "bn", label: "বাংলা (Bengali)" },
-    { value: "gu", label: "ગુજરાતી (Gujarati)" },
-    { value: "kn", label: "ಕನ್ನಡ (Kannada)" },
-    { value: "ml", label: "മലയാളം (Malayalam)" },
-    { value: "pa", label: "ਪੰਜਾਬੀ (Punjabi)" },
-    { value: "ta", label: "தமிழ் (Tamil)" },
-    { value: "te", label: "తెలుగు (Telugu)" },
-    { value: "ur", label: "اردو (Urdu)" },
-    { value: "es", label: "Español (Spanish)" },
-    { value: "fr", label: "Français (French)" },
-    { value: "de", label: "Deutsch (German)" },
-    { value: "pt", label: "Português (Portuguese)" },
-    { value: "ru", label: "Русский (Russian)" },
-    { value: "zh-CN", label: "中文 (Chinese)" },
-    { value: "ja", label: "日本語 (Japanese)" },
-    { value: "ar", label: "العربية (Arabic)" },
-  ];
-
   return (
     <header className="bg-card shadow-md">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
@@ -60,9 +41,12 @@ export default function Header({ onReadAloud }: HeaderProps) {
           </h1>
         </div>
         <div className="flex items-center gap-4">
-          <Select defaultValue="en">
+          <Select value={langContext?.languageCode} onValueChange={langContext?.setLanguageCode}>
             <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Language" />
+              <div className="flex items-center gap-2">
+                <Languages className="w-4 h-4" />
+                <SelectValue placeholder="Language" />
+              </div>
             </SelectTrigger>
             <SelectContent>
               <ScrollArea className="h-72">

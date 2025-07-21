@@ -2,6 +2,7 @@ import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { UserProvider } from '@/context/UserContext';
+import { LanguageProvider } from '@/context/LanguageContext';
 
 export const metadata: Metadata = {
   title: 'FarmAssist',
@@ -22,9 +23,11 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased" suppressHydrationWarning>
-        <UserProvider>
-          {children}
-        </UserProvider>
+        <LanguageProvider>
+          <UserProvider>
+            {children}
+          </UserProvider>
+        </LanguageProvider>
         <Toaster />
       </body>
     </html>

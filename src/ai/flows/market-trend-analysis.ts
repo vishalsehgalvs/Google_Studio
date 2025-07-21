@@ -14,6 +14,7 @@ import {z} from 'genkit';
 const MarketTrendAnalysisInputSchema = z.object({
   marketData: z.string().describe('Market data in JSON format.'),
   location: z.string().describe('The location for which to provide pricing analysis.'),
+  language: z.string().describe('The language for the response (e.g., "en", "hi", "es").'),
 });
 
 export type MarketTrendAnalysisInput = z.infer<typeof MarketTrendAnalysisInputSchema>;
@@ -35,6 +36,7 @@ const prompt = ai.definePrompt({
   input: {schema: MarketTrendAnalysisInputSchema},
   output: {schema: MarketTrendAnalysisOutputSchema},
   prompt: `You are an expert market analyst specializing in agricultural market trends.
+Generate the response in the following language: {{language}}.
 
 Analyze the following market data for the location "{{location}}" and provide:
 1.  A general price trend analysis.

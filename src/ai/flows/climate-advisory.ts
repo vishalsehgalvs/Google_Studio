@@ -13,6 +13,7 @@ import { getWeatherTool } from '../tools/weather';
 
 const ClimateAdvisoryInputSchema = z.object({
   location: z.string().describe('The location for the climate advisory.'),
+  language: z.string().describe('The language for the response (e.g., "en", "hi", "es").'),
 });
 export type ClimateAdvisoryInput = z.infer<typeof ClimateAdvisoryInputSchema>;
 
@@ -40,9 +41,12 @@ export async function getClimateAdvisory(
 
 const advisoryGenerationPrompt = ai.definePrompt({
     name: 'advisoryGenerationPrompt',
-    input: { schema: z.object({ location: z.string(), weather: WeatherDataSchema }) },
+    input: { schema: z.object({ location: z.string(), weather: WeatherDataSchema, language: z.string() }) },
     output: { schema: z.object({ advisory: z.string() }) },
-    prompt: `You are an agricultural expert providing climate advisories for the location "{{location}}".
+    prompt: `You are an agricultural expert providing climate advisories.
+Generate the response in the following language: {{language}}.
+
+Location: "{{location}}".
 Based on the following weather data, provide a concise, actionable advisory for a farmer.
 Focus on protective measures or opportunities.
 For example, if there is heavy rain, advise on drainage. If it's very hot, advise on irrigation.
@@ -65,12 +69,13 @@ const getClimateAdvisoryFlow = ai.defineFlow(
   },
   async (input) => {
     // Step 1: Explicitly call the tool to get weather data.
-    const weather = await getWeatherTool(input);
+    const weather = await getWeatherTool({ location: input.location });
 
     // Step 2: Pass the weather data to a separate prompt to generate the advisory.
     const { output } = await advisoryGenerationPrompt({
         location: input.location,
         weather: weather,
+        language: input.language,
     });
     
     if (!output) {

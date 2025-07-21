@@ -17,6 +17,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 import { useUser } from '@/context/UserContext';
 import { saveSoilHealthCard } from '@/lib/db';
 import DataHistoryTab from './DataHistoryTab';
+import { LanguageContext } from '@/context/LanguageContext';
 
 type AnalysisResult = {
   analysis: string;
@@ -70,6 +71,7 @@ export default function MyFarmTab() {
 
   const locationContext = useContext(LocationContext);
   const { user } = useUser();
+  const langContext = useContext(LanguageContext);
   const { toast } = useToast();
 
   const { isLoaded: isMapLoaded, loadError: mapLoadError } = useJsApiLoader({
@@ -109,7 +111,10 @@ export default function MyFarmTab() {
     setErrorAnalysis(null);
     setAnalysisResult(null);
     try {
-      const result = await analyzeDroneFootage({ imageDataUri: droneImagePreview });
+      const result = await analyzeDroneFootage({ 
+        imageDataUri: droneImagePreview,
+        language: langContext?.languageCode || 'en',
+      });
       setAnalysisResult(result);
       // No specific data to save for drone analysis yet, but could be added here.
     } catch (e) {

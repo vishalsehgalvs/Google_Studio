@@ -16,6 +16,7 @@ const RecommendSchemesInputSchema = z.object({
   state: z.string().describe('The state the farmer resides in.'),
   landSize: z.number().describe('The size of the land in acres.'),
   crops: z.array(z.string()).describe('A list of crops the farmer grows.'),
+  language: z.string().describe('The language for the response (e.g., "en", "hi", "es").'),
 });
 export type RecommendSchemesInput = z.infer<typeof RecommendSchemesInputSchema>;
 
@@ -44,6 +45,7 @@ const prompt = ai.definePrompt({
   },
   output: {schema: RecommendSchemesOutputSchema},
   prompt: `You are an expert on government agricultural schemes in India. Your task is to act as an intelligent scheme identifier.
+Generate the response in the following language: {{farmerProfile.language}}.
 
 Based on the farmer's profile below, please recommend the most relevant government schemes from the provided list.
 

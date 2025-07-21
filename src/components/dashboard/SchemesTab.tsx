@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useContext } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -17,6 +17,7 @@ import { recommendSchemes, RecommendSchemesOutput } from "@/ai/flows/scheme-reco
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { LanguageContext } from "@/context/LanguageContext";
 
 const indianStates = [
   "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", 
@@ -36,6 +37,7 @@ export default function SchemesTab() {
   const [recommendations, setRecommendations] = useState<RecommendSchemesOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const langContext = useContext(LanguageContext);
 
   const handleGetRecommendations = async () => {
     if (!state || !landSize || !crops) {
@@ -53,6 +55,7 @@ export default function SchemesTab() {
         state,
         landSize: parseFloat(landSize),
         crops: crops.split(",").map(c => c.trim()),
+        language: langContext?.languageCode || 'en',
       });
       setRecommendations(result);
     } catch (e) {

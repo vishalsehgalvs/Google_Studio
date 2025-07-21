@@ -6,16 +6,20 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Leaf, Loader2, Smartphone, AtSign, User } from 'lucide-react';
+import { Leaf, Loader2, Smartphone, AtSign, User, Languages } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useUser } from '@/context/UserContext';
 import { addUser, getUser } from '@/lib/db';
+import { LanguageContext, languages } from '@/context/LanguageContext';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { ScrollArea } from '../ui/scroll-area';
 
 export default function Login() {
     const router = useRouter();
     const { toast } = useToast();
     const { login } = useUser();
+    const langContext = useContext(LanguageContext);
     const [isLoading, setIsLoading] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -98,7 +102,26 @@ export default function Login() {
                     <CardTitle className="text-2xl">Welcome!</CardTitle>
                     <CardDescription>Sign in to access your dashboard.</CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="space-y-6">
+                    <div className="space-y-2">
+                        <Label htmlFor="language-select" className="flex items-center gap-2"><Languages /> Preferred Language</Label>
+                         <Select value={langContext?.languageCode} onValueChange={langContext?.setLanguageCode}>
+                            <SelectTrigger id="language-select" className="w-full">
+                                <SelectValue placeholder="Language" />
+                            </SelectTrigger>
+                            <SelectContent>
+                            <ScrollArea className="h-72">
+                                {languages.map((lang) => (
+                                <SelectItem key={lang.value} value={lang.value}>
+                                    {lang.label}
+                                </SelectItem>
+                                ))}
+                            </ScrollArea>
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+
                     <Tabs defaultValue="email" className="w-full">
                         <TabsList className="grid w-full grid-cols-2">
                             <TabsTrigger value="email"><AtSign className="mr-2 h-4 w-4"/>Email</TabsTrigger>

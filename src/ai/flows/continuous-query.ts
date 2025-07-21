@@ -13,6 +13,7 @@ import { z } from 'genkit';
 const AnswerFollowUpInputSchema = z.object({
   question: z.string().describe('The follow-up question from the user.'),
   context: z.string().describe('The context of the previous diagnosis (disease, remedies).'),
+  language: z.string().describe('The language for the response (e.g., "en", "hi", "es").'),
 });
 export type AnswerFollowUpInput = z.infer<typeof AnswerFollowUpInputSchema>;
 
@@ -32,8 +33,8 @@ const prompt = ai.definePrompt({
     input: { schema: AnswerFollowUpInputSchema },
     output: { schema: AnswerFollowUpOutputSchema },
     prompt: `You are a helpful agricultural assistant. A farmer has a follow-up question regarding a recent crop diagnosis.
-
 Provide a clear and concise answer to their question based on the provided context.
+Generate the response in the following language: {{language}}.
 
 **Context of Diagnosis:**
 {{{context}}}

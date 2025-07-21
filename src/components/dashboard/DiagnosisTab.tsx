@@ -18,6 +18,7 @@ import { ScrollArea } from '../ui/scroll-area';
 import { useAudioPlayer } from '@/context/AudioPlayerContext';
 import { useUser } from '@/context/UserContext';
 import { saveDiagnosis } from '@/lib/db';
+import { LanguageContext } from '@/context/LanguageContext';
 
 type DiagnosisResult = {
   disease: string;
@@ -47,6 +48,7 @@ export default function DiagnosisTab() {
   
   const { playAudio, stopAudio, isPlaying, isLoading: isAudioLoading, audioSrc } = useAudioPlayer();
   const { user } = useUser();
+  const langContext = useContext(LanguageContext);
 
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
   const [followUpQuestion, setFollowUpQuestion] = useState("");
@@ -76,7 +78,10 @@ export default function DiagnosisTab() {
     setDiagnosis(null);
     setChatHistory([]);
     try {
-      const result = await imageBasedDiagnosis({ photoDataUri: imagePreview });
+      const result = await imageBasedDiagnosis({ 
+        photoDataUri: imagePreview,
+        language: langContext?.languageCode || 'en',
+      });
       setDiagnosis(result.diagnosis);
       // Save the diagnosis to our mock DB
       saveDiagnosis(user.id, {
@@ -191,7 +196,11 @@ export default function DiagnosisTab() {
     
     try {
       const context = `The diagnosed disease is ${diagnosis.disease}. The suggested remedies are: ${diagnosis.remedies}.`;
-      const result = await answerFollowUp({ question: followUpQuestion, context });
+      const result = await answerFollowUp({ 
+          question: followUpQuestion, 
+          context,
+          language: langContext?.languageCode || 'en',
+      });
       setChatHistory([...newHistory, { sender: 'ai', text: result.answer }]);
     } catch(e) {
       console.error(e);

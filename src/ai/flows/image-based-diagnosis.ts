@@ -17,6 +17,7 @@ const ImageBasedDiagnosisInputSchema = z.object({
     .describe(
       "A photo of a plant, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
     ),
+  language: z.string().describe('The language for the response (e.g., "en", "hi", "es").'),
 });
 export type ImageBasedDiagnosisInput = z.infer<typeof ImageBasedDiagnosisInputSchema>;
 
@@ -40,6 +41,7 @@ const prompt = ai.definePrompt({
   prompt: `You are an expert in plant pathology. A farmer has provided an image of a diseased plant.
   Your task is to analyze the image and provide a diagnosis of the disease and suggest remedies.
   You must also provide a confidence score for your diagnosis.
+  Generate the response in the following language: {{language}}.
 
   Image: {{media url=photoDataUri}}
   `,
