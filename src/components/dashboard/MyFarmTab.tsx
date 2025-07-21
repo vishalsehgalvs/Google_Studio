@@ -4,7 +4,7 @@
 import { useState, useContext, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Map, Pin, Sun, TestTube2, ImageUp, Loader2, AlertCircle, Sparkles, X, MapPin, ShoppingCart, Building, Globe, Database } from "lucide-react";
+import { Map, Pin, Sun, TestTube2, ImageUp, Loader2, AlertCircle, Sparkles, X, MapPin, ShoppingCart, Building, Globe, Database, Key } from "lucide-react";
 import Image from 'next/image';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '../ui/dialog';
 import { Input } from '../ui/input';
@@ -54,6 +54,9 @@ const sampleSoilHealthCard = {
   recommendations: "Increase Potassium application. Consider using Muriate of Potash. Maintain current Nitrogen levels. No additional Phosphorus required this season."
 };
 
+const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "";
+const isMapsKeyMissing = GOOGLE_MAPS_API_KEY === "" || GOOGLE_MAPS_API_KEY === "YOUR_GOOGLE_MAPS_API_KEY_HERE";
+
 export default function MyFarmTab() {
   const [isSoilCardOpen, setIsSoilCardOpen] = useState(false);
   const [isDroneModalOpen, setIsDroneModalOpen] = useState(false);
@@ -76,7 +79,8 @@ export default function MyFarmTab() {
   const { toast } = useToast();
 
   const { isLoaded: isMapLoaded, loadError: mapLoadError } = useJsApiLoader({
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
+    googleMapsApiKey: GOOGLE_MAPS_API_KEY,
+    preventGoogleFontsLoading: true,
   });
 
   const handleOpenSoilCard = () => {
@@ -160,8 +164,17 @@ export default function MyFarmTab() {
   };
   
   const renderMap = useCallback(() => {
+    if (isMapsKeyMissing) {
+      return (
+        <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground p-4">
+          <Key className="h-10 w-10 mb-4 text-destructive"/>
+          <p className="font-bold">Google Maps API Key is Missing</p>
+          <p className="text-sm">Please add your API key to the <code className="bg-muted px-1 py-0.5 rounded-sm">.env</code> file to enable the map view.</p>
+        </div>
+      );
+    }
     if (mapLoadError) {
-      return <div className="flex items-center justify-center h-full text-destructive"><AlertCircle className="mr-2"/>Error loading map. Please check the API key.</div>;
+      return <div className="flex items-center justify-center h-full text-destructive"><AlertCircle className="mr-2"/>Error loading map. Please check your API key and project settings.</div>;
     }
     if (!isMapLoaded || locationContext?.loading) {
         return <Skeleton className="w-full h-full" />;
