@@ -4,7 +4,7 @@
 import { useState, useContext } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Map, Pin, Sun, TestTube2, ImageUp, Loader2, AlertCircle, Sparkles, X, ShoppingCart, Building, Globe, Database, KeyRound } from "lucide-react";
+import { Map, Pin, Sun, TestTube2, ImageUp, Loader2, AlertCircle, Sparkles, X, ShoppingCart, Building, Globe, Database, KeyRound, Beaker } from "lucide-react";
 import Image from 'next/image';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '../ui/dialog';
 import { Input } from '../ui/input';
@@ -19,8 +19,9 @@ import { saveSoilHealthCard } from '@/lib/db';
 import DataHistoryTab from './DataHistoryTab';
 import { useTranslation } from '@/context/LanguageContext';
 import { GoogleMap, useJsApiLoader } from '@react-google-maps/api';
+import { analyzeSoilHealth, SoilHealthAnalysisOutput } from '@/ai/flows/soil-health-analysis';
 
-type AnalysisResult = {
+type DroneAnalysisResult = {
   analysis: string;
   hotspots: { issue: string; recommendation: string }[];
 };
@@ -33,6 +34,9 @@ const sampleSoilHealthCard = {
     ph: 6.8,
     organicCarbon: 0.75,
     conductivity: 0.2,
+    nitrogen: 150,
+    phosphorus: 25,
+    potassium: 120,
   },
   nutrients: {
     nitrogen: { value: 150, unit: 'kg/ha', status: 'Medium' },
@@ -109,12 +113,16 @@ export default function MyFarmTab() {
   const [isSoilCardOpen, setIsSoilCardOpen] = useState(false);
   const [isDroneModalOpen, setIsDroneModalOpen] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const [isSoilAnalysisModalOpen, setIsSoilAnalysisModalOpen] = useState(false);
   
   const [droneImageFile, setDroneImageFile] = useState<File | null>(null);
   const [droneImagePreview, setDroneImagePreview] = useState<string | null>(null);
-  const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
-  const [isLoadingAnalysis, setIsLoadingAnalysis] = useState(false);
-  const [errorAnalysis, setErrorAnalysis] = useState<string | null>(null);
+  const [droneAnalysisResult, setDroneAnalysisResult] = useState<DroneAnalysisResult | null>(null);
+  const [isLoadingDroneAnalysis, setIsLoadingDroneAnalysis] = useState(false);
+  const [errorDroneAnalysis, setErrorDroneAnalysis] = useState<string | null>(null);
+
+  const [isLoadingSoilAnalysis, setIsLoadingSoilAnalysis] = useState(false);
+  const [soilAnalysisResult, setSoilAnalysisResult] = useState<SoilHealthAnalysisOutput | null>(null);
 
   const [isSupplierModalOpen, setIsSupplierModalOpen] = useState(false);
   const [supplierResults, setSupplierResults] = useState<SupplierResults>([]);
@@ -148,35 +156,56 @@ export default function MyFarmTab() {
         setDroneImagePreview(reader.result as string);
       };
       reader.readAsDataURL(file);
-      setAnalysisResult(null);
-      setErrorAnalysis(null);
+      setDroneAnalysisResult(null);
+      setErrorDroneAnalysis(null);
     }
   };
 
-  const handleAnalyzeFootage = async () => {
+  const handleAnalyzeDroneFootage = async () => {
     if (!droneImagePreview || !user) return;
-    setIsLoadingAnalysis(true);
-    setErrorAnalysis(null);
-    setAnalysisResult(null);
+    setIsLoadingDroneAnalysis(true);
+    setErrorDroneAnalysis(null);
+    setDroneAnalysisResult(null);
     try {
       const result = await analyzeDroneFootage({ 
         imageDataUri: droneImagePreview,
         language: languageCode || 'en',
       });
-      setAnalysisResult(result);
+      setDroneAnalysisResult(result);
     } catch (e) {
       console.error(e);
-      setErrorAnalysis("Failed to analyze the footage. Please try another image or try again later.");
+      setErrorDroneAnalysis("Failed to analyze the footage. Please try another image or try again later.");
       toast({
         variant: "destructive",
         title: "Analysis Error",
         description: "Could not get analysis from the provided image."
       });
     } finally {
-      setIsLoadingAnalysis(false);
+      setIsLoadingDroneAnalysis(false);
     }
   };
   
+  const handleAnalyzeSoil = async () => {
+    setIsLoadingSoilAnalysis(true);
+    setSoilAnalysisResult(null);
+    try {
+        const result = await analyzeSoilHealth({
+            metrics: sampleSoilHealthCard.metrics,
+            language: languageCode || 'en',
+        });
+        setSoilAnalysisResult(result);
+    } catch(e) {
+        console.error(e);
+        toast({
+            variant: "destructive",
+            title: "Soil Analysis Error",
+            description: "Could not get soil health analysis."
+        });
+    } finally {
+        setIsLoadingSoilAnalysis(false);
+    }
+  };
+
   const handleOrderSupplies = async (product: string) => {
     setIsLoadingSuppliers(true);
     setOrderedProduct(product);
@@ -201,9 +230,9 @@ export default function MyFarmTab() {
   const resetDroneAnalysis = () => {
     setDroneImageFile(null);
     setDroneImagePreview(null);
-    setAnalysisResult(null);
-    setErrorAnalysis(null);
-    setIsLoadingAnalysis(false);
+    setDroneAnalysisResult(null);
+    setErrorDroneAnalysis(null);
+    setIsLoadingDroneAnalysis(false);
   };
 
   return (
@@ -258,6 +287,7 @@ export default function MyFarmTab() {
               <CardContent className="flex flex-col gap-3">
                   <Button variant="outline" onClick={() => setIsDroneModalOpen(true)}>{t('myFarmTab.droneAnalysisBtn')}</Button>
                   <Button variant="outline" onClick={handleOpenSoilCard}>{t('myFarmTab.soilHealthCardBtn')}</Button>
+                  <Button variant="outline" onClick={() => setIsSoilAnalysisModalOpen(true)}><Beaker className="mr-2 h-4 w-4"/>Get AI Soil Analysis</Button>
                   <Button variant="outline" onClick={() => setIsHistoryOpen(true)}><Database className="mr-2 h-4 w-4"/> {t('myFarmTab.historyBtn')}</Button>
               </CardContent>
           </Card>
@@ -336,7 +366,7 @@ export default function MyFarmTab() {
                     {droneImagePreview ? (
                         <div className="relative w-full h-64">
                             <Image src={droneImagePreview} alt="Drone footage preview" fill className="object-contain rounded-md" data-ai-hint="drone farm footage"/>
-                            <Button variant="destructive" size="icon" className="absolute top-2 right-2 z-10 h-8 w-8" onClick={(e) => { e.preventDefault(); setDroneImagePreview(null); setDroneImageFile(null); setAnalysisResult(null); }}>
+                            <Button variant="destructive" size="icon" className="absolute top-2 right-2 z-10 h-8 w-8" onClick={(e) => { e.preventDefault(); setDroneImagePreview(null); setDroneImageFile(null); setDroneAnalysisResult(null); }}>
                                 <X className="h-4 w-4"/>
                             </Button>
                         </div>
@@ -348,28 +378,28 @@ export default function MyFarmTab() {
                     )}
                 </label>
               </div>
-              <Button onClick={handleAnalyzeFootage} disabled={!droneImagePreview || isLoadingAnalysis} className="w-full mt-4 bg-accent hover:bg-accent/90">
-                  {isLoadingAnalysis ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
-                  {isLoadingAnalysis ? t('myFarmTab.droneModal.analyzing') : t('myFarmTab.droneModal.analyze')}
+              <Button onClick={handleAnalyzeDroneFootage} disabled={!droneImagePreview || isLoadingDroneAnalysis} className="w-full mt-4 bg-accent hover:bg-accent/90">
+                  {isLoadingDroneAnalysis ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
+                  {isLoadingDroneAnalysis ? t('myFarmTab.droneModal.analyzing') : t('myFarmTab.droneModal.analyze')}
               </Button>
             </div>
             <div>
               <h3 className="font-bold text-lg mb-2">{t('myFarmTab.droneModal.resultTitle')}</h3>
               <Card className="h-[340px] overflow-y-auto">
                 <CardContent className="p-4">
-                  {isLoadingAnalysis && <div className="flex items-center justify-center h-full gap-2"><Loader2 className="h-6 w-6 animate-spin text-primary"/> <p>{t('myFarmTab.droneModal.analyzingField')}</p></div>}
-                  {errorAnalysis && <div className="text-destructive flex items-center justify-center h-full gap-2"><AlertCircle className="h-6 w-6"/> <p>{errorAnalysis}</p></div>}
-                  {!isLoadingAnalysis && !errorAnalysis && !analysisResult && <div className="text-muted-foreground flex items-center justify-center h-full">{t('myFarmTab.droneModal.uploadToSee')}</div>}
-                  {analysisResult && (
+                  {isLoadingDroneAnalysis && <div className="flex items-center justify-center h-full gap-2"><Loader2 className="h-6 w-6 animate-spin text-primary"/> <p>{t('myFarmTab.droneModal.analyzingField')}</p></div>}
+                  {errorDroneAnalysis && <div className="text-destructive flex items-center justify-center h-full gap-2"><AlertCircle className="h-6 w-6"/> <p>{errorDroneAnalysis}</p></div>}
+                  {!isLoadingDroneAnalysis && !errorDroneAnalysis && !droneAnalysisResult && <div className="text-muted-foreground flex items-center justify-center h-full">{t('myFarmTab.droneModal.uploadToSee')}</div>}
+                  {droneAnalysisResult && (
                     <div className="space-y-4 animate-in fade-in-50">
                       <div>
                         <h4 className="font-semibold text-primary">{t('myFarmTab.droneModal.overallAssessment')}</h4>
-                        <p className="text-sm">{analysisResult.analysis}</p>
+                        <p className="text-sm">{droneAnalysisResult.analysis}</p>
                       </div>
                       <div>
                         <h4 className="font-semibold text-primary">{t('myFarmTab.droneModal.hotspots')}</h4>
                         <div className="space-y-3 mt-2">
-                          {analysisResult.hotspots.map((spot, index) => (
+                          {droneAnalysisResult.hotspots.map((spot, index) => (
                             <div key={index} className="p-3 bg-muted/50 rounded-md border">
                               <p className="font-bold text-sm">{spot.issue}</p>
                               <p className="text-xs text-muted-foreground mt-1">{spot.recommendation}</p>
@@ -383,6 +413,65 @@ export default function MyFarmTab() {
               </Card>
             </div>
           </div>
+        </DialogContent>
+      </Dialog>
+      
+      <Dialog open={isSoilAnalysisModalOpen} onOpenChange={setIsSoilAnalysisModalOpen}>
+        <DialogContent className="sm:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="font-headline text-2xl flex items-center gap-2"><Beaker className="text-primary"/>AI Soil Health Analysis</DialogTitle>
+            <DialogDescription>
+              View your soil metrics and get an AI-powered analysis and recommendations.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="mt-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Your Soil Metrics (Sample Data)</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+                        <p><strong>pH:</strong> {sampleSoilHealthCard.metrics.ph}</p>
+                        <p><strong>Organic Carbon:</strong> {sampleSoilHealthCard.metrics.organicCarbon}%</p>
+                        <p><strong>Nitrogen:</strong> {sampleSoilHealthCard.metrics.nitrogen} kg/ha</p>
+                        <p><strong>Phosphorus:</strong> {sampleSoilHealthCard.metrics.phosphorus} kg/ha</p>
+                        <p><strong>Potassium:</strong> {sampleSoilHealthCard.metrics.potassium} kg/ha</p>
+                    </div>
+                </CardContent>
+              </Card>
+
+              <div className="mt-4 text-center">
+                <Button onClick={handleAnalyzeSoil} disabled={isLoadingSoilAnalysis}>
+                    {isLoadingSoilAnalysis ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Sparkles className="mr-2 h-4 w-4"/>}
+                    {isLoadingSoilAnalysis ? 'Analyzing...' : 'Run AI Analysis'}
+                </Button>
+              </div>
+
+              {soilAnalysisResult && (
+                <Card className="mt-6 animate-in fade-in-50">
+                  <CardHeader>
+                    <CardTitle className="text-lg">AI Analysis & Recommendations</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div>
+                      <h4 className="font-semibold text-primary">Detailed Analysis</h4>
+                      <p className="text-sm whitespace-pre-wrap">{soilAnalysisResult.analysis}</p>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-primary">Recommendations</h4>
+                      <ul className="list-disc list-inside space-y-1 text-sm mt-2">
+                        {soilAnalysisResult.recommendations.map((rec, index) => (
+                          <li key={index}>{rec}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+          </div>
+          <DialogFooter>
+            <Button variant="secondary" onClick={() => setIsSoilAnalysisModalOpen(false)}>{t('myFarmTab.close')}</Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 

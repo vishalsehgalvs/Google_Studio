@@ -10,3 +10,4 @@ import '@/ai/flows/climate-advisory.ts';
 import '@/ai/flows/continuous-query.ts';
 import '@/ai/flows/drone-footage-analysis.ts';
 import '@/ai/flows/order-supplies.ts';
+import '@/ai/flows/soil-health-analysis.ts';

@@ -27,6 +27,9 @@ export interface SoilHealthCard {
     ph: number;
     organicCarbon: number;
     conductivity: number;
+    nitrogen: number;
+    phosphorus: number;
+    potassium: number;
   };
   nutrients: {
     nitrogen: { value: number, unit: string, status: string };
