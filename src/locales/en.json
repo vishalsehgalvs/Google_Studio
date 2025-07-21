@@ -1,3 +1,4 @@
+
 {
   "login": {
     "welcome": "Welcome!",
@@ -86,8 +87,42 @@
     "yourRecsTitle": "Your Recommended Schemes",
     "noSchemesFound": "No specific schemes found",
     "noSchemesDescription": "Based on your profile, we couldn't find any highly relevant schemes from our list. You can browse all available schemes below.",
-    "allSchemesTitle": "All Government Schemes",
-    "allSchemesDescription": "Latest updates on schemes and policies for farmers.",
+    "allSchemes": {
+      "title": "All Government Schemes",
+      "description": "Latest updates on schemes and policies for farmers.",
+      "schemesList": [
+        {
+          "title": "Pradhan Mantri Fasal Bima Yojana (PMFBY)",
+          "description": "An insurance service for farmers for their yields. It covers losses due to natural calamities, pests, and diseases.",
+          "link": "#"
+        },
+        {
+          "title": "Pradhan Mantri Kisan Samman Nidhi (PM-KISAN)",
+          "description": "A scheme providing income support of ₹6,000 per year to all landholding farmer families.",
+          "link": "#"
+        },
+        {
+          "title": "Kisan Credit Card (KCC) Scheme",
+          "description": "Provides farmers with timely access to credit for their cultivation needs.",
+          "link": "#"
+        },
+        {
+          "title": "National Mission for Sustainable Agriculture (NMSA)",
+          "description": "Aims to make agriculture more productive, sustainable, remunerative, and climate-resilient.",
+          "link": "#"
+        }
+      ]
+    },
+    "indianStates": [
+      "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", 
+      "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", 
+      "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", 
+      "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", 
+      "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", 
+      "West Bengal", "Andaman and Nicobar Islands", "Chandigarh", 
+      "Dadra and Nagar Haveli and Daman and Diu", "Delhi", "Jammu and Kashmir", 
+      "Ladakh", "Lakshadweep", "Puducherry"
+    ],
     "whyRecommended": "Why it's recommended for you:",
     "howToApply": "How to apply:",
     "learnMore": "Learn More",

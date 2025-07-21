@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useContext } from "react";
+import { useState } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -9,7 +9,6 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { governmentSchemes } from "@/lib/data";
 import { ExternalLink, Loader2, Sparkles, AlertCircle } from "lucide-react";
 import { Button } from "../ui/button";
 import { Label } from "../ui/label";
@@ -19,17 +18,13 @@ import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useTranslation } from "@/context/LanguageContext";
+import { ScrollArea } from "../ui/scroll-area";
 
-const indianStates = [
-  "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", 
-  "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", 
-  "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", 
-  "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", 
-  "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", 
-  "West Bengal", "Andaman and Nicobar Islands", "Chandigarh", 
-  "Dadra and Nagar Haveli and Daman and Diu", "Delhi", "Jammu and Kashmir", 
-  "Ladakh", "Lakshadweep", "Puducherry"
-];
+type Scheme = {
+  title: string;
+  description: string;
+  link: string;
+};
 
 export default function SchemesTab() {
   const [state, setState] = useState("");
@@ -39,6 +34,9 @@ export default function SchemesTab() {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const { languageCode, t } = useTranslation();
+
+  const indianStates: string[] = t('schemesTab.indianStates') as any;
+  const governmentSchemes: Scheme[] = t('schemesTab.allSchemes.schemesList') as any;
 
   const handleGetRecommendations = async () => {
     if (!state || !landSize || !crops) {
@@ -87,11 +85,13 @@ export default function SchemesTab() {
                 <SelectValue placeholder={t('schemesTab.selectState')} />
               </SelectTrigger>
               <SelectContent>
-                {indianStates.map((stateName) => (
-                  <SelectItem key={stateName} value={stateName}>
-                    {stateName}
-                  </SelectItem>
-                ))}
+                <ScrollArea className="h-72">
+                  {indianStates.map((stateName) => (
+                    <SelectItem key={stateName} value={stateName}>
+                      {stateName}
+                    </SelectItem>
+                  ))}
+                </ScrollArea>
               </SelectContent>
             </Select>
           </div>
@@ -152,8 +152,8 @@ export default function SchemesTab() {
 
         <Card className="shadow-lg border-primary/20">
           <CardHeader>
-            <CardTitle className="font-headline text-2xl">{t('schemesTab.allSchemesTitle')}</CardTitle>
-            <CardDescription>{t('schemesTab.allSchemesDescription')}</CardDescription>
+            <CardTitle className="font-headline text-2xl">{t('schemesTab.allSchemes.title')}</CardTitle>
+            <CardDescription>{t('schemesTab.allSchemes.description')}</CardDescription>
           </CardHeader>
           <Accordion type="single" collapsible className="w-full px-6 pb-6">
             {governmentSchemes.map((scheme, index) => (

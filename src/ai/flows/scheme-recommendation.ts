@@ -10,13 +10,13 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
-import { governmentSchemes } from '@/lib/data';
 
 const RecommendSchemesInputSchema = z.object({
   state: z.string().describe('The state the farmer resides in.'),
   landSize: z.number().describe('The size of the land in acres.'),
   crops: z.array(z.string()).describe('A list of crops the farmer grows.'),
   language: z.string().describe('The language for the response (e.g., "en", "hi", "es").'),
+  schemes: z.any().describe('The translated list of available government schemes.'),
 });
 export type RecommendSchemesInput = z.infer<typeof RecommendSchemesInputSchema>;
 
@@ -31,7 +31,7 @@ const RecommendSchemesOutputSchema = z.object({
 });
 export type RecommendSchemesOutput = z.infer<typeof RecommendSchemesOutputSchema>;
 
-export async function recommendSchemes(input: RecommendSchemesInput): Promise<RecommendSchemesOutput> {
+export async function recommendSchemes(input: Omit<RecommendSchemesInput, 'schemes'> & { schemes: any }): Promise<RecommendSchemesOutput> {
   return recommendSchemesFlow(input);
 }
 
@@ -77,7 +77,7 @@ const recommendSchemesFlow = ai.defineFlow(
   async (input) => {
     const {output} = await prompt({
         farmerProfile: input,
-        schemes: JSON.stringify(governmentSchemes),
+        schemes: JSON.stringify(input.schemes),
     });
     return output!;
   }
