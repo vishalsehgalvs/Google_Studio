@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useRef, useEffect } from 'react';
@@ -14,6 +15,7 @@ import { Progress } from '../ui/progress';
 import { answerFollowUp } from '@/ai/flows/continuous-query';
 import { Textarea } from '../ui/textarea';
 import { ScrollArea } from '../ui/scroll-area';
+import { useAudioPlayer } from '@/context/AudioPlayerContext';
 
 type DiagnosisResult = {
   disease: string;
@@ -41,22 +43,12 @@ export default function DiagnosisTab() {
 
   const { toast } = useToast();
   
-  const [isSpeaking, setIsSpeaking] = useState(false);
-  const audioRef = useState(typeof Audio !== 'undefined' ? new Audio() : undefined)[0];
+  const { playAudio, stopAudio, isPlaying, isLoading: isAudioLoading, audioSrc } = useAudioPlayer();
 
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
   const [followUpQuestion, setFollowUpQuestion] = useState("");
   const [isAnswering, setIsAnswering] = useState(false);
-
-  useEffect(() => {
-    const currentAudio = audioRef;
-    const onEnded = () => setIsSpeaking(false);
-    currentAudio?.addEventListener('ended', onEnded);
-    return () => {
-        currentAudio?.removeEventListener('ended', onEnded);
-        currentAudio?.pause();
-    };
-  }, [audioRef]);
+  const [currentSpokenText, setCurrentSpokenText] = useState("");
 
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -97,20 +89,19 @@ export default function DiagnosisTab() {
   };
 
   const handleSpeakDiagnosis = async () => {
-    if (isSpeaking) {
-      audioRef?.pause();
-      setIsSpeaking(false);
+    const textToSpeak = `Disease: ${diagnosis.disease}. Remedies: ${diagnosis.remedies}`;
+    
+    if (isPlaying && currentSpokenText === textToSpeak) {
+      stopAudio();
+      setCurrentSpokenText("");
       return;
     }
+
     if (!diagnosis) return;
-    setIsSpeaking(true);
-    const textToSpeak = `Disease: ${diagnosis.disease}. Remedies: ${diagnosis.remedies}`;
+    setCurrentSpokenText(textToSpeak);
     try {
       const { audioDataUri } = await voiceBasedInformationDelivery({ text: textToSpeak });
-      if (audioRef) {
-        audioRef.src = audioDataUri;
-        audioRef.play();
-      }
+      playAudio(audioDataUri);
     } catch (e) {
       console.error(e);
       toast({
@@ -118,7 +109,7 @@ export default function DiagnosisTab() {
         title: "Error",
         description: "Could not generate audio.",
       });
-      setIsSpeaking(false);
+      setCurrentSpokenText("");
     }
   };
   
@@ -289,8 +280,8 @@ export default function DiagnosisTab() {
                             </div>
                           </div>
                           <Button onClick={handleSpeakDiagnosis} variant="outline" size="sm" className="mt-4 border-accent text-accent hover:bg-accent/10 hover:text-accent">
-                            <Volume2 className={`mr-2 h-4 w-4 ${isSpeaking ? "animate-pulse" : ""}`} />
-                            {isSpeaking ? "Stop" : "Read Aloud"}
+                            <Volume2 className={`mr-2 h-4 w-4 ${(isPlaying && currentSpokenText.startsWith('Disease:')) || isAudioLoading ? "animate-pulse" : ""}`} />
+                            {(isPlaying && currentSpokenText.startsWith('Disease:')) ? "Stop" : (isAudioLoading && currentSpokenText.startsWith('Disease:')) ? "Loading..." : "Read Aloud"}
                           </Button>
 
                           <div className="pt-4 border-t border-border">

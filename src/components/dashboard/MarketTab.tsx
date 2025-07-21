@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useContext } from "react";
@@ -20,6 +21,7 @@ import { voiceBasedInformationDelivery } from "@/ai/flows/voice-based-informatio
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { LocationContext } from "@/context/LocationContext";
+import { useAudioPlayer } from "@/context/AudioPlayerContext";
 
 type AnalysisResult = {
   trendAnalysis: string;
@@ -31,14 +33,15 @@ export default function MarketTab() {
   const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [currentSpokenText, setCurrentSpokenText] = useState("");
   
   const locationContext = useContext(LocationContext);
   const location = locationContext?.locationName || "Nagpur";
   const setLocation = locationContext?.setLocationName || (() => {});
 
   const { toast } = useToast();
-  const audioRef = useState(typeof Audio !== 'undefined' ? new Audio() : undefined)[0];
+  const { playAudio, stopAudio, isPlaying, isLoading: isAudioLoading } = useAudioPlayer();
+
 
   useEffect(() => {
     async function getAnalysis() {
@@ -65,32 +68,19 @@ export default function MarketTab() {
     }
     getAnalysis();
   }, [toast, location]);
-  
-  useEffect(() => {
-    const currentAudio = audioRef;
-    const onEnded = () => setIsSpeaking(false);
-    currentAudio?.addEventListener('ended', onEnded);
-    return () => {
-        currentAudio?.removeEventListener('ended', onEnded);
-        currentAudio?.pause();
-    };
-  }, [audioRef]);
 
 
   const handleSpeak = async (text: string) => {
-    if (isSpeaking) {
-      audioRef?.pause();
-      setIsSpeaking(false);
+    if (isPlaying && currentSpokenText === text) {
+      stopAudio();
+      setCurrentSpokenText("");
       return;
     }
     if (!text) return;
-    setIsSpeaking(true);
+    setCurrentSpokenText(text);
     try {
       const { audioDataUri } = await voiceBasedInformationDelivery({ text });
-      if (audioRef) {
-          audioRef.src = audioDataUri;
-          audioRef.play();
-      }
+      playAudio(audioDataUri);
     } catch (e) {
       console.error(e);
       toast({
@@ -98,7 +88,7 @@ export default function MarketTab() {
         title: "Error",
         description: "Could not generate audio.",
       });
-      setIsSpeaking(false);
+      setCurrentSpokenText("");
     }
   };
 
@@ -181,8 +171,8 @@ export default function MarketTab() {
                   <p className="text-foreground/90 whitespace-pre-wrap mt-1">{analysis.locationBasedPricing}</p>
                 </div>
                 <Button onClick={() => handleSpeak(Object.values(analysis).join('. '))} variant="outline" size="sm" className="border-accent text-accent hover:bg-accent/10 hover:text-accent">
-                  <Volume2 className={`mr-2 h-4 w-4 ${isSpeaking ? "animate-pulse" : ""}`} />
-                  {isSpeaking ? "Stop" : "Read Aloud"}
+                  <Volume2 className={`mr-2 h-4 w-4 ${isAudioLoading || isPlaying ? "animate-pulse" : ""}`} />
+                  {isAudioLoading ? "Loading..." : isPlaying ? "Stop" : "Read Aloud"}
                 </Button>
               </div>
             )}

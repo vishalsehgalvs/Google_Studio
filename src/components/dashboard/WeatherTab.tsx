@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useContext } from "react";
@@ -11,6 +12,8 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { getClimateAdvisory } from "@/ai/flows/climate-advisory";
 import { LocationContext } from "@/context/LocationContext";
+import { useAudioPlayer } from "@/context/AudioPlayerContext";
+
 
 type WeatherData = {
     temperature: number;
@@ -29,14 +32,14 @@ export default function WeatherTab() {
   const [advisoryResult, setAdvisoryResult] = useState<AdvisoryResult | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isSpeaking, setIsSpeaking] = useState(false);
-  
+  const [currentSpokenText, setCurrentSpokenText] = useState("");
+
   const locationContext = useContext(LocationContext);
   const location = locationContext?.locationName || "Nagpur";
   const setLocation = locationContext?.setLocationName || (() => {});
 
   const { toast } = useToast();
-  const audioRef = useState(typeof Audio !== 'undefined' ? new Audio() : undefined)[0];
+  const { playAudio, stopAudio, isPlaying, isLoading: isAudioLoading } = useAudioPlayer();
 
   useEffect(() => {
     async function getAdvisory() {
@@ -61,31 +64,18 @@ export default function WeatherTab() {
     getAdvisory();
   }, [toast, location]);
   
-  useEffect(() => {
-    const currentAudio = audioRef;
-    const onEnded = () => setIsSpeaking(false);
-    currentAudio?.addEventListener('ended', onEnded);
-    return () => {
-        currentAudio?.removeEventListener('ended', onEnded);
-        currentAudio?.pause();
-    };
-  }, [audioRef]);
-
 
   const handleSpeak = async (text: string) => {
-    if (isSpeaking) {
-      audioRef?.pause();
-      setIsSpeaking(false);
+    if (isPlaying && currentSpokenText === text) {
+      stopAudio();
+      setCurrentSpokenText("");
       return;
     }
     if (!text) return;
-    setIsSpeaking(true);
+    setCurrentSpokenText(text);
     try {
       const { audioDataUri } = await voiceBasedInformationDelivery({ text });
-      if (audioRef) {
-          audioRef.src = audioDataUri;
-          audioRef.play();
-      }
+      playAudio(audioDataUri);
     } catch (e) {
       console.error(e);
       toast({
@@ -93,7 +83,7 @@ export default function WeatherTab() {
         title: "Error",
         description: "Could not generate audio.",
       });
-      setIsSpeaking(false);
+      setCurrentSpokenText("");
     }
   };
 
@@ -152,8 +142,8 @@ export default function WeatherTab() {
                     <CardContent>
                         <p className="text-foreground/90 text-base">{advisoryResult.advisory}</p>
                         <Button onClick={() => handleSpeak(advisoryResult.advisory)} variant="outline" size="sm" className="mt-4 border-accent text-accent hover:bg-accent/10 hover:text-accent">
-                            <Volume2 className={`mr-2 h-4 w-4 ${isSpeaking ? "animate-pulse" : ""}`} />
-                            {isSpeaking ? "Stop" : "Read Aloud"}
+                             <Volume2 className={`mr-2 h-4 w-4 ${isAudioLoading || (isPlaying && currentSpokenText === advisoryResult.advisory) ? "animate-pulse" : ""}`} />
+                            {isAudioLoading && currentSpokenText === advisoryResult.advisory ? "Loading..." : isPlaying && currentSpokenText === advisoryResult.advisory ? "Stop" : "Read Aloud"}
                         </Button>
                     </CardContent>
                 </Card>
