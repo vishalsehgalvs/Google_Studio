@@ -1,4 +1,3 @@
-
 "use client";
 
 import { Leaf, LogOut, Volume2 } from 'lucide-react';
@@ -6,6 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useAudioPlayer } from '@/context/AudioPlayerContext';
 import { useRouter } from 'next/navigation';
 import { Button } from '../ui/button';
+import { ScrollArea } from '../ui/scroll-area';
 
 type HeaderProps = {
   onReadAloud: () => void;
@@ -28,6 +28,28 @@ export default function Header({ onReadAloud }: HeaderProps) {
     router.push('/');
   }
 
+  const languages = [
+    { value: "en", label: "English" },
+    { value: "hi", label: "हिन्दी (Hindi)" },
+    { value: "mr", label: "मराठी (Marathi)" },
+    { value: "bn", label: "বাংলা (Bengali)" },
+    { value: "gu", label: "ગુજરાતી (Gujarati)" },
+    { value: "kn", label: "ಕನ್ನಡ (Kannada)" },
+    { value: "ml", label: "മലയാളം (Malayalam)" },
+    { value: "pa", label: "ਪੰਜਾਬੀ (Punjabi)" },
+    { value: "ta", label: "தமிழ் (Tamil)" },
+    { value: "te", label: "తెలుగు (Telugu)" },
+    { value: "ur", label: "اردو (Urdu)" },
+    { value: "es", label: "Español (Spanish)" },
+    { value: "fr", label: "Français (French)" },
+    { value: "de", label: "Deutsch (German)" },
+    { value: "pt", label: "Português (Portuguese)" },
+    { value: "ru", label: "Русский (Russian)" },
+    { value: "zh-CN", label: "中文 (Chinese)" },
+    { value: "ja", label: "日本語 (Japanese)" },
+    { value: "ar", label: "العربية (Arabic)" },
+  ];
+
   return (
     <header className="bg-card shadow-md">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
@@ -39,17 +61,17 @@ export default function Header({ onReadAloud }: HeaderProps) {
         </div>
         <div className="flex items-center gap-4">
           <Select defaultValue="en">
-            <SelectTrigger className="w-[140px]">
+            <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Language" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="en">English</SelectItem>
-              <SelectItem value="hi">हिन्दी (Hindi)</SelectItem>
-              <SelectItem value="mr">मराठी (Marathi)</SelectItem>
-              <SelectItem value="bn">বাংলা (Bengali)</SelectItem>
-              <SelectItem value="te">తెలుగు (Telugu)</SelectItem>
-              <SelectItem value="ta">தமிழ் (Tamil)</SelectItem>
-              <SelectItem value="kn">ಕನ್ನಡ (Kannada)</SelectItem>
+              <ScrollArea className="h-72">
+                {languages.map((lang) => (
+                  <SelectItem key={lang.value} value={lang.value}>
+                    {lang.label}
+                  </SelectItem>
+                ))}
+              </ScrollArea>
             </SelectContent>
           </Select>
           <button onClick={handleReadAloudClick} className="p-2 rounded-full hover:bg-muted" title={isPlaying ? "Stop Reading" : "Read Page Aloud"}>
