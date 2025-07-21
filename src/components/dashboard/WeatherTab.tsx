@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "../ui/button";
@@ -10,6 +10,7 @@ import { voiceBasedInformationDelivery } from "@/ai/flows/voice-based-informatio
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { getClimateAdvisory } from "@/ai/flows/climate-advisory";
+import { LocationContext } from "@/context/LocationContext";
 
 type WeatherData = {
     temperature: number;
@@ -29,7 +30,11 @@ export default function WeatherTab() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [location, setLocation] = useState("Nagpur");
+  
+  const locationContext = useContext(LocationContext);
+  const location = locationContext?.locationName || "Nagpur";
+  const setLocation = locationContext?.setLocationName || (() => {});
+
   const { toast } = useToast();
   const audioRef = useState(typeof Audio !== 'undefined' ? new Audio() : undefined)[0];
 
@@ -123,25 +128,26 @@ export default function WeatherTab() {
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
                     placeholder="e.g., Nagpur"
+                    disabled={locationContext?.loading}
                 />
             </div>
         </div>
 
-        {isLoading && renderSkeleton()}
+        {(isLoading || locationContext?.loading) && renderSkeleton()}
 
-        {error && (
+        {error && !isLoading && (
             <div className="text-destructive flex items-center gap-2 pt-4">
                 <AlertCircle className="h-5 w-5" />
                 <p>{error}</p>
             </div>
         )}
 
-        {!isLoading && !error && advisoryResult && (
+        {!isLoading && !locationContext?.loading && !error && advisoryResult && (
             <div className="space-y-6 pt-4 animate-in fade-in-50">
             <div>
                 <Card className="bg-primary/10 border-primary/20">
                     <CardHeader className="pb-4">
-                        <CardTitle className="flex items-center gap-2 text-primary"><Bell size={20} /> AI Climate Advisory</CardTitle>
+                        <CardTitle className="flex items-center gap-2 text-primary"><Bell size={20} /> AI Climate Advisory for {location}</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <p className="text-foreground/90 text-base">{advisoryResult.advisory}</p>

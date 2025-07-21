@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Map, Pin, Droplet, Sun, Wind, TestTube2, ImageUp, Loader2, AlertCircle, Sparkles, CheckCircle, X, MapPin } from "lucide-react";
@@ -9,6 +9,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Input } from '../ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { analyzeDroneFootage } from '@/ai/flows/drone-footage-analysis';
+import { LocationContext } from '@/context/LocationContext';
+import { Skeleton } from '../ui/skeleton';
 
 type AnalysisResult = {
   analysis: string;
@@ -24,6 +26,8 @@ export default function MyFarmTab() {
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const locationContext = useContext(LocationContext);
 
   const { toast } = useToast();
 
@@ -70,6 +74,40 @@ export default function MyFarmTab() {
     setIsLoading(false);
   };
 
+  const renderLocationInfo = () => {
+    if (locationContext?.loading) {
+      return (
+        <div className="absolute bottom-4 left-4 bg-background/80 backdrop-blur-sm p-3 rounded-lg shadow-lg flex items-center gap-2">
+            <Skeleton className="h-6 w-6 rounded-full" />
+            <div className="space-y-2">
+                <Skeleton className="h-4 w-32" />
+                <Skeleton className="h-3 w-24" />
+            </div>
+        </div>
+      );
+    }
+    if (locationContext?.error) {
+       return (
+         <div className="absolute bottom-4 left-4 bg-destructive/80 text-destructive-foreground backdrop-blur-sm p-3 rounded-lg shadow-lg flex items-center gap-2">
+            <AlertCircle />
+            <p className="text-xs">{locationContext.error}</p>
+         </div>
+       )
+    }
+    if (locationContext?.coordinates) {
+        return (
+            <div className="absolute bottom-4 left-4 bg-background/80 backdrop-blur-sm p-3 rounded-lg shadow-lg flex items-center gap-2">
+              <MapPin className="text-primary"/>
+              <div>
+                <p className="font-bold text-sm">{locationContext.locationName}</p>
+                <p className="text-xs text-muted-foreground">{locationContext.coordinates.lat.toFixed(4)}° N, {locationContext.coordinates.lng.toFixed(4)}° E</p>
+              </div>
+            </div>
+        )
+    }
+    return null;
+  }
+
   return (
     <>
       <div className="grid md:grid-cols-3 gap-8 items-start">
@@ -93,13 +131,7 @@ export default function MyFarmTab() {
                     className="object-cover w-full h-full"
                     data-ai-hint="satellite map farm"
                   />
-                  <div className="absolute bottom-4 left-4 bg-background/80 backdrop-blur-sm p-3 rounded-lg shadow-lg flex items-center gap-2">
-                    <MapPin className="text-primary"/>
-                    <div>
-                      <p className="font-bold text-sm">Your Location</p>
-                      <p className="text-xs text-muted-foreground">21.1458° N, 79.0882° E</p>
-                    </div>
-                  </div>
+                  {renderLocationInfo()}
               </div>
             </CardContent>
           </Card>
@@ -115,7 +147,7 @@ export default function MyFarmTab() {
                       <Pin className="text-primary" size={24}/>
                       <div>
                           <p className="font-semibold">Location</p>
-                          <p className="text-muted-foreground">Nagpur, Maharashtra</p>
+                          {locationContext?.loading ? <Skeleton className="h-4 w-32 mt-1" /> : <p className="text-muted-foreground">{locationContext?.locationName || 'Not available'}</p>}
                       </div>
                   </div>
                   <div className="flex items-center gap-4">

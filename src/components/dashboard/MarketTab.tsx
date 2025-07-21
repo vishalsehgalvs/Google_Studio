@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import {
   Table,
   TableBody,
@@ -19,6 +19,7 @@ import { useToast } from "@/hooks/use-toast";
 import { voiceBasedInformationDelivery } from "@/ai/flows/voice-based-information-delivery";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
+import { LocationContext } from "@/context/LocationContext";
 
 type AnalysisResult = {
   trendAnalysis: string;
@@ -31,12 +32,17 @@ export default function MarketTab() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [location, setLocation] = useState("Nagpur");
+  
+  const locationContext = useContext(LocationContext);
+  const location = locationContext?.locationName || "Nagpur";
+  const setLocation = locationContext?.setLocationName || (() => {});
+
   const { toast } = useToast();
   const audioRef = useState(typeof Audio !== 'undefined' ? new Audio() : undefined)[0];
 
   useEffect(() => {
     async function getAnalysis() {
+      if (!location) return;
       setIsLoading(true);
       setError(null);
       try {
@@ -137,6 +143,7 @@ export default function MarketTab() {
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
                 placeholder="e.g., Nagpur"
+                disabled={locationContext?.loading}
               />
             </div>
             {isLoading && (
