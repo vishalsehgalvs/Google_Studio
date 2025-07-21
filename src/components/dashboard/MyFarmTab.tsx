@@ -19,6 +19,7 @@ import { useUser } from '@/context/UserContext';
 import { saveSoilHealthCard } from '@/lib/db';
 import DataHistoryTab from './DataHistoryTab';
 import { useTranslation } from '@/context/LanguageContext';
+import MockMap from './MockMap';
 
 type AnalysisResult = {
   analysis: string;
@@ -165,13 +166,7 @@ export default function MyFarmTab() {
   
   const renderMap = useCallback(() => {
     if (isMapsKeyMissing) {
-      return (
-        <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground p-4 bg-muted/50 rounded-lg">
-          <Key className="h-10 w-10 mb-4 text-destructive"/>
-          <p className="font-bold text-lg">Google Maps API Key is Missing</p>
-          <p className="text-sm mt-1">Please add your API key to the <code className="bg-muted px-1 py-0.5 rounded-sm">.env</code> file to enable the map view.</p>
-        </div>
-      );
+      return <MockMap />;
     }
     if (mapLoadError) {
       return <div className="flex items-center justify-center h-full text-destructive"><AlertCircle className="mr-2"/>Error loading map. Please check your API key and project settings.</div>;
