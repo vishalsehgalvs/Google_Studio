@@ -23,12 +23,12 @@ export const languages: Language[] = [
     { value: "en", label: "English" },
     { value: "hi", label: "हिन्दी (Hindi)" },
     { value: "mr", label: "मराठी (Marathi)" },
+    { value: "ta", label: "தமிழ் (Tamil)" },
     { value: "bn", label: "বাংলা (Bengali)" },
     { value: "gu", label: "ગુજરાતી (Gujarati)" },
     { value: "kn", label: "ಕನ್ನಡ (Kannada)" },
     { value: "ml", label: "മലയാളം (Malayalam)" },
     { value: "pa", label: "ਪੰਜਾਬੀ (Punjabi)" },
-    { value: "ta", label: "தமிழ் (Tamil)" },
     { value: "te", label: "తెలుగు (Telugu)" },
     { value: "ur", label: "اردو (Urdu)" },
   ];
@@ -47,7 +47,7 @@ const translations: Record<string, any> = {
   ur,
 };
 
-type TranslateFunction = (key: string, options?: Record<string, string | number>) => string;
+type TranslateFunction = (key: string, options?: Record<string, string | number>) => any;
 
 interface LanguageContextType {
   languageCode: string;
@@ -73,27 +73,28 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   };
   
   const t: TranslateFunction = (key, options) => {
-    const langTranslations = translations[languageCode] || translations.en;
-    let text = key.split('.').reduce((obj, i) => obj?.[i], langTranslations);
+    const getTranslation = (lang: string, k: string): any => {
+        return k.split('.').reduce((obj, i) => obj?.[i], translations[lang]);
+    };
+
+    let translation = getTranslation(languageCode, key);
     
-    if (typeof text !== 'string') {
-        // Fallback to English if translation for the key is not found in the selected language
-        const enTranslations = translations.en;
-        text = key.split('.').reduce((obj, i) => obj?.[i], enTranslations);
+    if (translation === undefined) {
+        translation = getTranslation('en', key);
     }
 
-    if (typeof text !== 'string') {
-      console.warn(`Translation not found for key: ${key}`);
-      return key;
+    if (translation === undefined) {
+        console.warn(`Translation not found for key: ${key}`);
+        return key;
     }
 
-    if (options) {
+    if (typeof translation === 'string' && options) {
       Object.keys(options).forEach(k => {
-        text = text.replace(new RegExp(`{{${k}}}`, 'g'), String(options[k]));
+        translation = translation.replace(new RegExp(`{{${k}}}`, 'g'), String(options[k]));
       });
     }
 
-    return text;
+    return translation;
   };
 
   const value = {
