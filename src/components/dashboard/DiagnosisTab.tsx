@@ -4,16 +4,18 @@ import { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Image as ImageIcon, Mic, Upload, X, Loader2, AlertCircle, Volume2 } from "lucide-react";
+import { Image as ImageIcon, Mic, Upload, X, Loader2, AlertCircle, Volume2, ShieldCheck } from "lucide-react";
 import Image from "next/image";
 import { imageBasedDiagnosis } from '@/ai/flows/image-based-diagnosis';
 import { voiceQueryToText } from '@/ai/flows/voice-query-to-text';
 import { useToast } from "@/hooks/use-toast";
 import { voiceBasedInformationDelivery } from '@/ai/flows/voice-based-information-delivery';
+import { Progress } from '../ui/progress';
 
 type DiagnosisResult = {
   disease: string;
   remedies: string;
+  confidenceScore: number;
 };
 
 export default function DiagnosisTab() {
@@ -239,6 +241,13 @@ export default function DiagnosisTab() {
                           <div>
                               <h3 className="font-bold text-lg text-primary">Suggested Remedies</h3>
                               <p className="whitespace-pre-wrap">{diagnosis.remedies}</p>
+                          </div>
+                          <div>
+                            <h3 className="font-bold text-lg text-primary flex items-center gap-2"><ShieldCheck size={20}/>Confidence Score</h3>
+                            <div className="flex items-center gap-2 mt-2">
+                                <Progress value={diagnosis.confidenceScore * 100} className="w-full h-3" />
+                                <span className="font-mono text-sm">{(diagnosis.confidenceScore * 100).toFixed(0)}%</span>
+                            </div>
                           </div>
                           <Button onClick={handleSpeakDiagnosis} variant="outline" size="sm" className="mt-4 border-accent text-accent hover:bg-accent/10 hover:text-accent">
                             <Volume2 className={`mr-2 h-4 w-4 ${isSpeaking ? "animate-pulse" : ""}`} />

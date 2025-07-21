@@ -14,25 +14,37 @@ import { marketData } from "@/lib/data";
 import { analyzeMarketTrends } from "@/ai/flows/market-trend-analysis";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "../ui/button";
-import { Volume2, AlertCircle } from "lucide-react";
+import { Volume2, AlertCircle, LineChart, LocateFixed, TrendingUp } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { voiceBasedInformationDelivery } from "@/ai/flows/voice-based-information-delivery";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+
+type AnalysisResult = {
+  trendAnalysis: string;
+  demandForecast: string;
+  locationBasedPricing: string;
+};
 
 export default function MarketTab() {
-  const [analysis, setAnalysis] = useState("");
+  const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [location, setLocation] = useState("Nagpur");
   const { toast } = useToast();
   const audioRef = useState(typeof Audio !== 'undefined' ? new Audio() : undefined)[0];
 
   useEffect(() => {
     async function getAnalysis() {
+      setIsLoading(true);
+      setError(null);
       try {
         const result = await analyzeMarketTrends({
           marketData: JSON.stringify(marketData),
+          location: location,
         });
-        setAnalysis(result.trendAnalysis);
+        setAnalysis(result);
       } catch (e) {
         console.error(e);
         setError("Failed to analyze market trends. Please try again later.");
@@ -46,7 +58,7 @@ export default function MarketTab() {
       }
     }
     getAnalysis();
-  }, [toast]);
+  }, [toast, location]);
   
   useEffect(() => {
     const currentAudio = audioRef;
@@ -59,16 +71,16 @@ export default function MarketTab() {
   }, [audioRef]);
 
 
-  const handleSpeak = async () => {
+  const handleSpeak = async (text: string) => {
     if (isSpeaking) {
       audioRef?.pause();
       setIsSpeaking(false);
       return;
     }
-    if (!analysis) return;
+    if (!text) return;
     setIsSpeaking(true);
     try {
-      const { audioDataUri } = await voiceBasedInformationDelivery({ text: analysis });
+      const { audioDataUri } = await voiceBasedInformationDelivery({ text });
       if (audioRef) {
           audioRef.src = audioDataUri;
           audioRef.play();
@@ -85,7 +97,7 @@ export default function MarketTab() {
   };
 
   return (
-    <div className="grid md:grid-cols-2 gap-8">
+    <div className="grid md:grid-cols-2 gap-8 items-start">
       <Card className="shadow-lg border-primary/20">
         <CardHeader>
           <CardTitle className="font-headline text-2xl">Market Prices</CardTitle>
@@ -111,36 +123,65 @@ export default function MarketTab() {
         </CardContent>
       </Card>
 
-      <Card className="shadow-lg border-primary/20">
-        <CardHeader>
-          <CardTitle className="font-headline text-2xl">Market Trend Analysis</CardTitle>
-          <CardDescription>AI-powered insights on price movements.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {isLoading && (
-            <div className="space-y-2">
-              <Skeleton className="h-4 w-full" />
-              <Skeleton className="h-4 w-full" />
-              <Skeleton className="h-4 w-3/4" />
-            </div>
-          )}
-          {error && (
-            <div className="text-destructive flex items-center gap-2">
-                <AlertCircle className="h-5 w-5" />
-                <p>{error}</p>
-            </div>
-          )}
-          {!isLoading && !error && (
+      <div className="space-y-8">
+        <Card className="shadow-lg border-primary/20">
+          <CardHeader>
+            <CardTitle className="font-headline text-2xl">Market Trend Analysis</CardTitle>
+            <CardDescription>AI-powered insights on price movements.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
             <div>
-              <p className="text-foreground/90 whitespace-pre-wrap">{analysis}</p>
-              <Button onClick={handleSpeak} variant="outline" size="sm" className="mt-4 border-accent text-accent hover:bg-accent/10 hover:text-accent">
-                <Volume2 className={`mr-2 h-4 w-4 ${isSpeaking ? "animate-pulse" : ""}`} />
-                {isSpeaking ? "Stop" : "Read Aloud"}
-              </Button>
+              <Label htmlFor="location-input">Your Location</Label>
+              <Input 
+                id="location-input"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                placeholder="e.g., Nagpur"
+              />
             </div>
-          )}
-        </CardContent>
-      </Card>
+            {isLoading && (
+              <div className="space-y-6 pt-4">
+                <div className="space-y-2">
+                    <Skeleton className="h-5 w-48" />
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-3/4" />
+                </div>
+                <div className="space-y-2">
+                    <Skeleton className="h-5 w-48" />
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-5/6" />
+                </div>
+              </div>
+            )}
+            {error && (
+              <div className="text-destructive flex items-center gap-2 pt-4">
+                  <AlertCircle className="h-5 w-5" />
+                  <p>{error}</p>
+              </div>
+            )}
+            {!isLoading && !error && analysis && (
+              <div className="space-y-6 pt-4">
+                <div>
+                  <h3 className="font-bold text-lg text-primary flex items-center gap-2"><TrendingUp size={20} /> Price Trend Analysis</h3>
+                  <p className="text-foreground/90 whitespace-pre-wrap mt-1">{analysis.trendAnalysis}</p>
+                </div>
+                 <div>
+                  <h3 className="font-bold text-lg text-primary flex items-center gap-2"><LineChart size={20} /> Demand Forecast</h3>
+                  <p className="text-foreground/90 whitespace-pre-wrap mt-1">{analysis.demandForecast}</p>
+                </div>
+                 <div>
+                  <h3 className="font-bold text-lg text-primary flex items-center gap-2"><LocateFixed size={20} /> Location-Based Pricing</h3>
+                  <p className="text-foreground/90 whitespace-pre-wrap mt-1">{analysis.locationBasedPricing}</p>
+                </div>
+                <Button onClick={() => handleSpeak(Object.values(analysis).join('. '))} variant="outline" size="sm" className="border-accent text-accent hover:bg-accent/10 hover:text-accent">
+                  <Volume2 className={`mr-2 h-4 w-4 ${isSpeaking ? "animate-pulse" : ""}`} />
+                  {isSpeaking ? "Stop" : "Read Aloud"}
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

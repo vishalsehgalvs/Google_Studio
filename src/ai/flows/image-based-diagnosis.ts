@@ -24,6 +24,7 @@ const ImageBasedDiagnosisOutputSchema = z.object({
   diagnosis: z.object({
     disease: z.string().describe('The identified disease of the plant.'),
     remedies: z.string().describe('Suggested remedies for the identified disease.'),
+    confidenceScore: z.number().min(0).max(1).describe('The confidence score of the diagnosis, between 0 and 1.'),
   }),
 });
 export type ImageBasedDiagnosisOutput = z.infer<typeof ImageBasedDiagnosisOutputSchema>;
@@ -38,6 +39,7 @@ const prompt = ai.definePrompt({
   output: {schema: ImageBasedDiagnosisOutputSchema},
   prompt: `You are an expert in plant pathology. A farmer has provided an image of a diseased plant.
   Your task is to analyze the image and provide a diagnosis of the disease and suggest remedies.
+  You must also provide a confidence score for your diagnosis.
 
   Image: {{media url=photoDataUri}}
   `,
