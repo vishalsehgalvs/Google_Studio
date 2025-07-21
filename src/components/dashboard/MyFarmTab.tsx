@@ -53,7 +53,6 @@ const mapContainerStyle = {
 };
 
 const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-const isApiKeyValid = apiKey && apiKey !== "YOUR_API_KEY_HERE";
 
 function MapComponent() {
   const locationContext = useContext(LocationContext);
@@ -133,6 +132,8 @@ export default function MyFarmTab() {
   const { user } = useUser();
   const { languageCode, t } = useTranslation();
   const { toast } = useToast();
+  
+  const isApiKeyValid = apiKey && apiKey !== "YOUR_API_KEY_HERE";
 
   const handleOpenSoilCard = () => {
     if (user) {
@@ -287,7 +288,7 @@ export default function MyFarmTab() {
               <CardContent className="flex flex-col gap-3">
                   <Button variant="outline" onClick={() => setIsDroneModalOpen(true)}>{t('myFarmTab.droneAnalysisBtn')}</Button>
                   <Button variant="outline" onClick={handleOpenSoilCard}>{t('myFarmTab.soilHealthCardBtn')}</Button>
-                  <Button variant="outline" onClick={() => setIsSoilAnalysisModalOpen(true)}><Beaker className="mr-2 h-4 w-4"/>Get AI Soil Analysis</Button>
+                  <Button variant="outline" onClick={() => setIsSoilAnalysisModalOpen(true)}><Beaker className="mr-2 h-4 w-4"/>{t('myFarmTab.getAiSoilAnalysisBtn')}</Button>
                   <Button variant="outline" onClick={() => setIsHistoryOpen(true)}><Database className="mr-2 h-4 w-4"/> {t('myFarmTab.historyBtn')}</Button>
               </CardContent>
           </Card>
@@ -419,15 +420,15 @@ export default function MyFarmTab() {
       <Dialog open={isSoilAnalysisModalOpen} onOpenChange={setIsSoilAnalysisModalOpen}>
         <DialogContent className="sm:max-w-2xl">
           <DialogHeader>
-            <DialogTitle className="font-headline text-2xl flex items-center gap-2"><Beaker className="text-primary"/>AI Soil Health Analysis</DialogTitle>
+            <DialogTitle className="font-headline text-2xl flex items-center gap-2"><Beaker className="text-primary"/>{t('myFarmTab.soilAnalysisModal.title')}</DialogTitle>
             <DialogDescription>
-              View your soil metrics and get an AI-powered analysis and recommendations.
+              {t('myFarmTab.soilAnalysisModal.description')}
             </DialogDescription>
           </DialogHeader>
           <div className="mt-4">
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Your Soil Metrics (Sample Data)</CardTitle>
+                  <CardTitle className="text-lg">{t('myFarmTab.soilAnalysisModal.yourMetrics')}</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
@@ -443,22 +444,22 @@ export default function MyFarmTab() {
               <div className="mt-4 text-center">
                 <Button onClick={handleAnalyzeSoil} disabled={isLoadingSoilAnalysis}>
                     {isLoadingSoilAnalysis ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Sparkles className="mr-2 h-4 w-4"/>}
-                    {isLoadingSoilAnalysis ? 'Analyzing...' : 'Run AI Analysis'}
+                    {isLoadingSoilAnalysis ? t('myFarmTab.soilAnalysisModal.analyzing') : t('myFarmTab.soilAnalysisModal.runAnalysis')}
                 </Button>
               </div>
 
               {soilAnalysisResult && (
                 <Card className="mt-6 animate-in fade-in-50">
                   <CardHeader>
-                    <CardTitle className="text-lg">AI Analysis & Recommendations</CardTitle>
+                    <CardTitle className="text-lg">{t('myFarmTab.soilAnalysisModal.resultTitle')}</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div>
-                      <h4 className="font-semibold text-primary">Detailed Analysis</h4>
+                      <h4 className="font-semibold text-primary">{t('myFarmTab.soilAnalysisModal.detailedAnalysis')}</h4>
                       <p className="text-sm whitespace-pre-wrap">{soilAnalysisResult.analysis}</p>
                     </div>
                     <div>
-                      <h4 className="font-semibold text-primary">Recommendations</h4>
+                      <h4 className="font-semibold text-primary">{t('myFarmTab.soilAnalysisModal.recommendations')}</h4>
                       <ul className="list-disc list-inside space-y-1 text-sm mt-2">
                         {soilAnalysisResult.recommendations.map((rec, index) => (
                           <li key={index}>{rec}</li>

@@ -21,12 +21,12 @@
     "error": {
       "title": "Login Failed",
       "invalidCredentials": "The email or password you entered is incorrect. Please try again.",
-      "invalidMobile": "Please enter a valid 10-digit mobile number.",
-      "welcomeGuest": "Welcome, Guest!"
+      "invalidMobile": "Please enter a valid 10-digit mobile number."
     },
     "success": {
         "title": "Login Successful!",
-        "description": "Redirecting you to the dashboard..."
+        "description": "Redirecting you to the dashboard...",
+        "welcomeGuest": "Welcome, Guest!"
     }
   },
   "header": {
@@ -244,3 +244,5 @@
     "close": "Close"
   }
 }
+
+    
