@@ -32,7 +32,8 @@ const RecommendSchemesOutputSchema = z.object({
 export type RecommendSchemesOutput = z.infer<typeof RecommendSchemesOutputSchema>;
 
 export async function recommendSchemes(input: Omit<RecommendSchemesInput, 'schemes'> & { schemes: any }): Promise<RecommendSchemesOutput> {
-  return recommendSchemesFlow(input);
+  // Pass the full input, including the dynamically added schemes, to the flow.
+  return recommendSchemesFlow(input as RecommendSchemesInput);
 }
 
 const prompt = ai.definePrompt({

@@ -17,7 +17,17 @@
     "signUp": "Sign up here",
     "emailPlaceholder": "farmer@example.com",
     "passwordPlaceholder": "********",
-    "mobilePlaceholder": "e.g. 9876543210"
+    "mobilePlaceholder": "e.g. 9876543210",
+    "error": {
+      "title": "Login Failed",
+      "invalidCredentials": "The email or password you entered is incorrect. Please try again.",
+      "invalidMobile": "Please enter a valid 10-digit mobile number.",
+      "welcomeGuest": "Welcome, Guest!"
+    },
+    "success": {
+        "title": "Login Successful!",
+        "description": "Redirecting you to the dashboard..."
+    }
   },
   "header": {
     "appName": "FarmAssist",
@@ -81,10 +91,12 @@
     "state": "State",
     "selectState": "Select your state",
     "landSize": "Land Size (in acres)",
-    "cropsGrown": "Crops Grown (comma-separated)",
+    "cropsGrown": "Crops Grown",
+    "cropsGrownPlaceholder": "e.g., Cotton, Soybean",
     "getRecs": "Get Recommendations",
     "findingSchemes": "Finding Schemes...",
     "yourRecsTitle": "Your Recommended Schemes",
+    "yourRecsDescription": "Based on your profile, here are the most relevant government schemes.",
     "noSchemesFound": "No specific schemes found",
     "noSchemesDescription": "Based on your profile, we couldn't find any highly relevant schemes from our list. You can browse all available schemes below.",
     "allSchemes": {
@@ -127,7 +139,14 @@
     "howToApply": "How to apply:",
     "learnMore": "Learn More",
     "error": {
-        "missingInfo": "Please fill out all fields to get recommendations."
+        "missingInfo": {
+            "title": "Missing Information",
+            "description": "Please fill out all fields to get recommendations."
+        },
+        "fetchError": {
+            "title": "Error",
+            "description": "Could not fetch scheme recommendations."
+        }
     }
   },
   "weatherTab": {
@@ -153,6 +172,7 @@
     "droneAnalysisBtn": "Request Drone Footage Analysis",
     "soilHealthCardBtn": "View Soil Health Card",
     "historyBtn": "View Data History",
+    "getAiSoilAnalysisBtn": "Get AI Soil Analysis",
     "soilCard": {
       "title": "Soil Health Card",
       "description": "A summary of your soil's health and recommendations.",
@@ -181,6 +201,16 @@
       "uploadToSee": "Upload an image to see the analysis.",
       "overallAssessment": "Overall Assessment",
       "hotspots": "Identified Hotspots"
+    },
+    "soilAnalysisModal": {
+      "title": "AI Soil Health Analysis",
+      "description": "View your soil metrics and get an AI-powered analysis and recommendations.",
+      "yourMetrics": "Your Soil Metrics (Sample Data)",
+      "runAnalysis": "Run AI Analysis",
+      "analyzing": "Analyzing...",
+      "resultTitle": "AI Analysis & Recommendations",
+      "detailedAnalysis": "Detailed Analysis",
+      "recommendations": "Recommendations"
     },
     "supplierModal": {
         "title": "Supplier Results",

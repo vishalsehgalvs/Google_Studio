@@ -42,8 +42,8 @@ export default function SchemesTab() {
     if (!state || !landSize || !crops) {
       toast({
         variant: "destructive",
-        title: "Missing Information",
-        description: t('schemesTab.error.missingInfo'),
+        title: t('schemesTab.error.missingInfo.title'),
+        description: t('schemesTab.error.missingInfo.description'),
       });
       return;
     }
@@ -55,14 +55,15 @@ export default function SchemesTab() {
         landSize: parseFloat(landSize),
         crops: crops.split(",").map(c => c.trim()),
         language: languageCode || 'en',
+        schemes: governmentSchemes,
       });
       setRecommendations(result);
     } catch (e) {
       console.error(e);
       toast({
         variant: "destructive",
-        title: "Error",
-        description: "Could not fetch scheme recommendations.",
+        title: t('schemesTab.error.fetchError.title'),
+        description: t('schemesTab.error.fetchError.description'),
       });
     } finally {
       setIsLoading(false);
@@ -101,7 +102,7 @@ export default function SchemesTab() {
           </div>
           <div className="space-y-2">
             <Label htmlFor="crops">{t('schemesTab.cropsGrown')}</Label>
-            <Input id="crops" placeholder="e.g., Cotton, Soybean" value={crops} onChange={(e) => setCrops(e.target.value)} />
+            <Input id="crops" placeholder={t('schemesTab.cropsGrownPlaceholder')} value={crops} onChange={(e) => setCrops(e.target.value)} />
           </div>
         </CardContent>
         <CardFooter>
@@ -113,10 +114,20 @@ export default function SchemesTab() {
       </Card>
       
       <div className="space-y-8">
+        {isLoading && (
+            <Card className="shadow-lg border-primary/20">
+                <CardContent className="p-6 flex items-center justify-center">
+                    <Loader2 className="mr-2 h-6 w-6 animate-spin text-primary" />
+                    <p className="text-muted-foreground">{t('schemesTab.findingSchemes')}</p>
+                </CardContent>
+            </Card>
+        )}
+
         {recommendations && (
-          <Card className="shadow-lg border-primary/20">
+          <Card className="shadow-lg border-primary/20 animate-in fade-in-50">
             <CardHeader>
               <CardTitle className="font-headline text-2xl">{t('schemesTab.yourRecsTitle')}</CardTitle>
+              <CardDescription>{t('schemesTab.yourRecsDescription')}</CardDescription>
             </CardHeader>
             <CardContent>
               {recommendations.recommendations.length > 0 ? (
@@ -124,14 +135,14 @@ export default function SchemesTab() {
                   {recommendations.recommendations.map((scheme, index) => (
                     <AccordionItem value={`item-${index}`} key={index}>
                       <AccordionTrigger className="font-bold text-left hover:no-underline">{scheme.title}</AccordionTrigger>
-                      <AccordionContent className="space-y-3">
+                      <AccordionContent className="space-y-3 pt-2">
                         <div>
                           <p className="font-semibold text-primary">{t('schemesTab.whyRecommended')}</p>
-                          <p>{scheme.reason}</p>
+                          <p className="text-sm text-foreground/80">{scheme.reason}</p>
                         </div>
                          <div>
                           <p className="font-semibold text-primary">{t('schemesTab.howToApply')}</p>
-                          <p>{scheme.applicationGuidance}</p>
+                          <p className="text-sm text-foreground/80">{scheme.applicationGuidance}</p>
                         </div>
                       </AccordionContent>
                     </AccordionItem>
@@ -159,8 +170,8 @@ export default function SchemesTab() {
             {governmentSchemes.map((scheme, index) => (
               <AccordionItem value={`item-${index}`} key={index}>
                 <AccordionTrigger className="font-bold text-left hover:no-underline">{scheme.title}</AccordionTrigger>
-                <AccordionContent>
-                  <p className="mb-4">{scheme.description}</p>
+                <AccordionContent className="pt-2">
+                  <p className="mb-4 text-sm text-foreground/80">{scheme.description}</p>
                   <Button asChild variant="link" className="p-0 h-auto text-accent hover:text-accent/80">
                     <a href={scheme.link} target="_blank" rel="noopener noreferrer">
                       {t('schemesTab.learnMore')} <ExternalLink className="w-4 h-4 ml-2" />
