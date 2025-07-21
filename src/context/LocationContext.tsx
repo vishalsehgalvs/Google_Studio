@@ -18,27 +18,46 @@ interface LocationContextType {
 
 export const LocationContext = createContext<LocationContextType | undefined>(undefined);
 
-// Mock reverse geocoding. In a real app, use an API like Google Maps Geocoding API.
+// In a real app, use an API like Google Maps Geocoding API.
+// This mock now includes more cities relevant to the app.
 const mockReverseGeocode = (coords: Coordinates): string => {
-    // This is a very simple mock. A real implementation would be more complex.
-    // Coordinates for Nagpur: 21.1458, 79.0882
-    if (Math.abs(coords.lat - 21.1) < 0.5 && Math.abs(coords.lng - 79.1) < 0.5) {
-        return "Nagpur";
+    const locations = [
+        { name: 'Nagpur', lat: 21.1458, lng: 79.0882 },
+        { name: 'Mumbai', lat: 19.0760, lng: 72.8777 },
+        { name: 'Pune', lat: 18.5204, lng: 73.8567 },
+        { name: 'Delhi', lat: 28.7041, lng: 77.1025 },
+    ];
+
+    let closestLocation = 'Nagpur'; // Default location
+    let minDistance = Infinity;
+
+    for (const loc of locations) {
+        const distance = Math.sqrt(
+            Math.pow(coords.lat - loc.lat, 2) + Math.pow(coords.lng - loc.lng, 2)
+        );
+        if (distance < minDistance) {
+            minDistance = distance;
+            closestLocation = loc.name;
+        }
     }
-    // Coordinates for Mumbai: 19.0760, 72.8777
-    if (Math.abs(coords.lat - 19.0) < 0.5 && Math.abs(coords.lng - 72.8) < 0.5) {
-        return "Mumbai";
+    
+    // If the closest known location is still too far, we can consider it unknown.
+    // A threshold of ~1 degree is roughly 111km.
+    if (minDistance > 1) {
+        return "Nagpur"; // Fallback to a default if user is not near any known city
     }
-    return "Unknown Location";
+
+    return closestLocation;
 }
 
 export const LocationProvider = ({ children }: { children: ReactNode }) => {
   const [coordinates, setCoordinates] = useState<Coordinates | null>(null);
-  const [locationName, setLocationName] = useState<string>("Nagpur");
+  const [locationName, setLocationName] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
+    setLoading(true);
     if (!navigator.geolocation) {
       setError("Geolocation is not supported by your browser.");
       setLocationName("Nagpur"); // Default location
@@ -53,7 +72,6 @@ export const LocationProvider = ({ children }: { children: ReactNode }) => {
           lng: position.coords.longitude,
         };
         setCoordinates(coords);
-        // In a real app, you would use a reverse geocoding API here.
         const name = mockReverseGeocode(coords);
         setLocationName(name);
         setError(null);
