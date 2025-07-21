@@ -5,12 +5,13 @@ import Image from 'next/image';
 
 export default function MockMap() {
   return (
-    <div className="relative w-full h-full bg-gray-300">
+    <div className="relative w-full h-full">
       <Image 
         src="https://placehold.co/1000x500.png"
         alt="Satellite view of a farm field"
-        fill
-        className="object-cover"
+        width={1000}
+        height={500}
+        className="absolute inset-0 w-full h-full object-cover"
         data-ai-hint="satellite farm"
       />
        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
