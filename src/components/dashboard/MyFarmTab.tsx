@@ -1,20 +1,33 @@
 "use client";
 
-import { useState, useContext } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+import { useState, useContext, useCallback } from 'react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Map, Pin, Droplet, Sun, Wind, TestTube2, ImageUp, Loader2, AlertCircle, Sparkles, CheckCircle, X, MapPin } from "lucide-react";
+import { Map, Pin, Sun, TestTube2, ImageUp, Loader2, AlertCircle, Sparkles, X, MapPin } from "lucide-react";
 import Image from 'next/image';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from '../ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../ui/dialog';
 import { Input } from '../ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { analyzeDroneFootage } from '@/ai/flows/drone-footage-analysis';
 import { LocationContext } from '@/context/LocationContext';
 import { Skeleton } from '../ui/skeleton';
+import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
 
 type AnalysisResult = {
   analysis: string;
   hotspots: { issue: string; recommendation: string }[];
+};
+
+const mapContainerStyle = {
+  width: '100%',
+  height: '100%',
+  borderRadius: '0.5rem',
+};
+
+const mapOptions = {
+  disableDefaultUI: true,
+  zoomControl: true,
+  mapTypeId: 'satellite',
 };
 
 export default function MyFarmTab() {
@@ -24,12 +37,15 @@ export default function MyFarmTab() {
   const [droneImageFile, setDroneImageFile] = useState<File | null>(null);
   const [droneImagePreview, setDroneImagePreview] = useState<string | null>(null);
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [isLoadingAnalysis, setIsLoadingAnalysis] = useState(false);
+  const [errorAnalysis, setErrorAnalysis] = useState<string | null>(null);
 
   const locationContext = useContext(LocationContext);
-
   const { toast } = useToast();
+
+  const { isLoaded: isMapLoaded, loadError: mapLoadError } = useJsApiLoader({
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
+  });
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -41,28 +57,28 @@ export default function MyFarmTab() {
       };
       reader.readAsDataURL(file);
       setAnalysisResult(null);
-      setError(null);
+      setErrorAnalysis(null);
     }
   };
 
   const handleAnalyzeFootage = async () => {
     if (!droneImagePreview) return;
-    setIsLoading(true);
-    setError(null);
+    setIsLoadingAnalysis(true);
+    setErrorAnalysis(null);
     setAnalysisResult(null);
     try {
       const result = await analyzeDroneFootage({ imageDataUri: droneImagePreview });
       setAnalysisResult(result);
     } catch (e) {
       console.error(e);
-      setError("Failed to analyze the footage. Please try another image or try again later.");
+      setErrorAnalysis("Failed to analyze the footage. Please try another image or try again later.");
       toast({
         variant: "destructive",
         title: "Analysis Error",
         description: "Could not get analysis from the provided image."
       });
     } finally {
-      setIsLoading(false);
+      setIsLoadingAnalysis(false);
     }
   };
 
@@ -70,43 +86,31 @@ export default function MyFarmTab() {
     setDroneImageFile(null);
     setDroneImagePreview(null);
     setAnalysisResult(null);
-    setError(null);
-    setIsLoading(false);
+    setErrorAnalysis(null);
+    setIsLoadingAnalysis(false);
   };
-
-  const renderLocationInfo = () => {
-    if (locationContext?.loading) {
-      return (
-        <div className="absolute bottom-4 left-4 bg-background/80 backdrop-blur-sm p-3 rounded-lg shadow-lg flex items-center gap-2">
-            <Skeleton className="h-6 w-6 rounded-full" />
-            <div className="space-y-2">
-                <Skeleton className="h-4 w-32" />
-                <Skeleton className="h-3 w-24" />
-            </div>
-        </div>
-      );
+  
+  const renderMap = useCallback(() => {
+    if (mapLoadError) {
+      return <div className="flex items-center justify-center h-full text-destructive"><AlertCircle className="mr-2"/>Error loading map. Please check the API key.</div>;
     }
-    if (locationContext?.error) {
-       return (
-         <div className="absolute bottom-4 left-4 bg-destructive/80 text-destructive-foreground backdrop-blur-sm p-3 rounded-lg shadow-lg flex items-center gap-2">
-            <AlertCircle />
-            <p className="text-xs">{locationContext.error}</p>
-         </div>
-       )
+    if (!isMapLoaded || locationContext?.loading) {
+        return <Skeleton className="w-full h-full" />;
     }
     if (locationContext?.coordinates) {
         return (
-            <div className="absolute bottom-4 left-4 bg-background/80 backdrop-blur-sm p-3 rounded-lg shadow-lg flex items-center gap-2">
-              <MapPin className="text-primary"/>
-              <div>
-                <p className="font-bold text-sm">{locationContext.locationName}</p>
-                <p className="text-xs text-muted-foreground">{locationContext.coordinates.lat.toFixed(4)}° N, {locationContext.coordinates.lng.toFixed(4)}° E</p>
-              </div>
-            </div>
-        )
+            <GoogleMap
+                mapContainerStyle={mapContainerStyle}
+                center={locationContext.coordinates}
+                zoom={15}
+                options={mapOptions}
+            >
+                <Marker position={locationContext.coordinates} />
+            </GoogleMap>
+        );
     }
-    return null;
-  }
+    return <div className="flex items-center justify-center h-full text-muted-foreground"><MapPin className="mr-2" />Could not determine location.</div>;
+  }, [isMapLoaded, mapLoadError, locationContext]);
 
   return (
     <>
@@ -118,20 +122,12 @@ export default function MyFarmTab() {
                 <Map className="text-primary"/> My Field Map
               </CardTitle>
               <CardDescription>
-                A satellite overview of your primary field, centered on your location.
+                A satellite overview of your field, centered on your current location.
               </CardDescription>
             </CardHeader>
-            <CardContent className="h-full">
+            <CardContent className="h-[calc(100%-110px)]">
               <div className="w-full h-full bg-muted rounded-md flex items-center justify-center overflow-hidden relative">
-                  <Image 
-                    src="https://placehold.co/800x600.png" 
-                    alt="Farm map placeholder" 
-                    width={800} 
-                    height={600} 
-                    className="object-cover w-full h-full"
-                    data-ai-hint="satellite map farm"
-                  />
-                  {renderLocationInfo()}
+                  {renderMap()}
               </div>
             </CardContent>
           </Card>
@@ -148,6 +144,7 @@ export default function MyFarmTab() {
                       <div>
                           <p className="font-semibold">Location</p>
                           {locationContext?.loading ? <Skeleton className="h-4 w-32 mt-1" /> : <p className="text-muted-foreground">{locationContext?.locationName || 'Not available'}</p>}
+                          {locationContext?.error && <p className="text-xs text-destructive">{locationContext.error}</p>}
                       </div>
                   </div>
                   <div className="flex items-center gap-4">
@@ -250,18 +247,18 @@ export default function MyFarmTab() {
                     )}
                 </label>
               </div>
-              <Button onClick={handleAnalyzeFootage} disabled={!droneImagePreview || isLoading} className="w-full mt-4 bg-accent hover:bg-accent/90">
-                  {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
-                  {isLoading ? 'Analyzing...' : 'Analyze Footage'}
+              <Button onClick={handleAnalyzeFootage} disabled={!droneImagePreview || isLoadingAnalysis} className="w-full mt-4 bg-accent hover:bg-accent/90">
+                  {isLoadingAnalysis ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
+                  {isLoadingAnalysis ? 'Analyzing...' : 'Analyze Footage'}
               </Button>
             </div>
             <div>
               <h3 className="font-bold text-lg mb-2">Analysis Result</h3>
               <Card className="h-[340px] overflow-y-auto">
                 <CardContent className="p-4">
-                  {isLoading && <div className="flex items-center justify-center h-full gap-2"><Loader2 className="h-6 w-6 animate-spin text-primary"/> <p>Analyzing your field...</p></div>}
-                  {error && <div className="text-destructive flex items-center justify-center h-full gap-2"><AlertCircle className="h-6 w-6"/> <p>{error}</p></div>}
-                  {!isLoading && !error && !analysisResult && <div className="text-muted-foreground flex items-center justify-center h-full">Upload an image to see the analysis.</div>}
+                  {isLoadingAnalysis && <div className="flex items-center justify-center h-full gap-2"><Loader2 className="h-6 w-6 animate-spin text-primary"/> <p>Analyzing your field...</p></div>}
+                  {errorAnalysis && <div className="text-destructive flex items-center justify-center h-full gap-2"><AlertCircle className="h-6 w-6"/> <p>{errorAnalysis}</p></div>}
+                  {!isLoadingAnalysis && !errorAnalysis && !analysisResult && <div className="text-muted-foreground flex items-center justify-center h-full">Upload an image to see the analysis.</div>}
                   {analysisResult && (
                     <div className="space-y-4 animate-in fade-in-50">
                       <div>
