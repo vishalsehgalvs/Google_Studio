@@ -26,9 +26,9 @@ export default function RootLayout({
         <LanguageProvider>
           <UserProvider>
             {children}
+            <Toaster />
           </UserProvider>
         </LanguageProvider>
-        <Toaster />
       </body>
     </html>
   );

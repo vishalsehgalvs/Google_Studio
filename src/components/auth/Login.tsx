@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useContext } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,10 +12,9 @@ import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useUser } from '@/context/UserContext';
 import { addUser, getUser } from '@/lib/db';
-import { languages } from '@/context/LanguageContext';
+import { languages, useTranslation } from '@/context/LanguageContext';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { ScrollArea } from '../ui/scroll-area';
-import { useTranslation } from '@/context/LanguageContext';
 
 export default function Login() {
     const router = useRouter();
@@ -40,7 +39,7 @@ export default function Login() {
                 login(user);
                 loginSuccess();
             } else {
-                loginFailure("Please enter your email and password.");
+                loginFailure(t('login.error.invalidCredentials'));
             }
         }, 1000);
     };
@@ -58,7 +57,7 @@ export default function Login() {
                  login(user);
                  loginSuccess();
             } else {
-                loginFailure("Please enter a valid mobile number.");
+                loginFailure(t('login.error.invalidMobile'));
             }
         }, 1000);
     };
@@ -69,14 +68,14 @@ export default function Login() {
             const guestId = `guest_${Date.now()}`;
             const user = addUser({ id: guestId, email: 'Guest User', mobile: '', password: '' });
             login(user);
-            loginSuccess("Welcome, Guest!");
+            loginSuccess(t('login.welcomeGuest'));
         }, 500);
     };
 
-    const loginSuccess = (title: string = "Login Successful") => {
+    const loginSuccess = (title: string = t('login.success.title')) => {
         toast({
             title: title,
-            description: "Redirecting to your dashboard...",
+            description: t('login.success.description'),
         });
         router.push('/dashboard');
     }
@@ -84,7 +83,7 @@ export default function Login() {
     const loginFailure = (description: string) => {
         toast({
             variant: "destructive",
-            title: "Login Failed",
+            title: t('login.error.title'),
             description: description,
         });
         setIsLoading(false);
@@ -97,7 +96,7 @@ export default function Login() {
                     <div className="flex justify-center items-center gap-3 mb-4">
                         <Leaf className="text-primary h-10 w-10" />
                         <h1 className="text-4xl font-headline font-bold text-foreground">
-                            FarmAssist
+                            {t('header.appName')}
                         </h1>
                     </div>
                     <CardTitle className="text-2xl">{t('login.welcome')}</CardTitle>

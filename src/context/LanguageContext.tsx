@@ -46,7 +46,7 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const storedLang = sessionStorage.getItem('languageCode');
-    if (storedLang) {
+    if (storedLang && languages.some(l => l.value === storedLang)) {
       setLanguageCode(storedLang);
     }
   }, []);
@@ -73,7 +73,7 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
 
     if (options) {
       Object.keys(options).forEach(k => {
-        text = text.replace(`{{${k}}}`, String(options[k]));
+        text = text.replace(new RegExp(`{{${k}}}`, 'g'), String(options[k]));
       });
     }
 

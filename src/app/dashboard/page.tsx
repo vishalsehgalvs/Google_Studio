@@ -1,4 +1,3 @@
-import Header from '@/components/layout/Header';
 import DashboardTabs from '@/components/dashboard/DashboardTabs';
 import { LocationProvider } from '@/context/LocationContext';
 import { AudioPlayerProvider } from '@/context/AudioPlayerContext';
