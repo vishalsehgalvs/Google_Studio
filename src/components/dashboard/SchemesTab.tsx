@@ -9,13 +9,25 @@ import {
 } from "@/components/ui/accordion";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { governmentSchemes } from "@/lib/data";
-import { ExternalLink, Loader2, Sparkles } from "lucide-react";
+import { ExternalLink, Loader2, Sparkles, AlertCircle } from "lucide-react";
 import { Button } from "../ui/button";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { recommendSchemes, RecommendSchemesOutput } from "@/ai/flows/scheme-recommendation";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+const indianStates = [
+  "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", 
+  "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", 
+  "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", 
+  "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", 
+  "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", 
+  "West Bengal", "Andaman and Nicobar Islands", "Chandigarh", 
+  "Dadra and Nagar Haveli and Daman and Diu", "Delhi", "Jammu and Kashmir", 
+  "Ladakh", "Lakshadweep", "Puducherry"
+];
 
 export default function SchemesTab() {
   const [state, setState] = useState("");
@@ -66,7 +78,18 @@ export default function SchemesTab() {
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="state">State</Label>
-            <Input id="state" placeholder="e.g., Maharashtra" value={state} onChange={(e) => setState(e.target.value)} />
+            <Select value={state} onValueChange={setState}>
+              <SelectTrigger id="state" className="w-full">
+                <SelectValue placeholder="Select your state" />
+              </SelectTrigger>
+              <SelectContent>
+                {indianStates.map((stateName) => (
+                  <SelectItem key={stateName} value={stateName}>
+                    {stateName}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div className="space-y-2">
             <Label htmlFor="land-size">Land Size (in acres)</Label>
