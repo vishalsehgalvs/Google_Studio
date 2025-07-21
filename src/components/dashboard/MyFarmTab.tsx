@@ -49,6 +49,7 @@ const mapContainerStyle = {
 };
 
 const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+// A valid key must exist and must not be the placeholder.
 const isApiKeyValid = apiKey && apiKey !== "YOUR_API_KEY_HERE";
 
 export default function MyFarmTab() {
@@ -75,8 +76,7 @@ export default function MyFarmTab() {
   const { isLoaded, loadError } = useJsApiLoader({
     id: 'google-map-script',
     googleMapsApiKey: apiKey || "",
-    preventGoogleFontsLoading: true,
-    // Only attempt to load the script if the key is valid
+    // Crucially, disable loading if the key is not valid.
     disabled: !isApiKeyValid,
   });
 
@@ -161,6 +161,7 @@ export default function MyFarmTab() {
   };
 
   const renderMap = () => {
+    // If the API key is not valid, show the placeholder immediately.
     if (!isApiKeyValid) {
       return (
         <div className="flex flex-col items-center justify-center text-center p-4 bg-muted h-full rounded-md">
@@ -171,13 +172,14 @@ export default function MyFarmTab() {
         </div>
       );
     }
-
+    
+    // If the API key is valid, proceed with loading logic.
     if (loadError) {
       return (
         <div className="flex flex-col items-center justify-center text-center p-4 bg-muted h-full rounded-md">
             <AlertCircle className="w-12 h-12 text-destructive mb-4" />
             <h3 className="font-bold text-lg text-destructive">Map Loading Error</h3>
-            <p className="text-muted-foreground text-sm mt-2">Could not load the map. Please check your API key and network connection.</p>
+            <p className="text-muted-foreground text-sm mt-2">Could not load the map. This might be due to an incorrect API key or a problem with your Google Cloud project setup.</p>
         </div>
       );
     }
@@ -457,3 +459,4 @@ export default function MyFarmTab() {
     </>
   );
 }
+
