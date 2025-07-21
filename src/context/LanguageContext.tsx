@@ -6,6 +6,13 @@ import en from '@/locales/en.json';
 import hi from '@/locales/hi.json';
 import mr from '@/locales/mr.json';
 import ta from '@/locales/ta.json';
+import bn from '@/locales/bn.json';
+import gu from '@/locales/gu.json';
+import kn from '@/locales/kn.json';
+import ml from '@/locales/ml.json';
+import pa from '@/locales/pa.json';
+import te from '@/locales/te.json';
+import ur from '@/locales/ur.json';
 
 interface Language {
     value: string;
@@ -31,6 +38,13 @@ const translations: Record<string, any> = {
   hi,
   mr,
   ta,
+  bn,
+  gu,
+  kn,
+  ml,
+  pa,
+  te,
+  ur,
 };
 
 type TranslateFunction = (key: string, options?: Record<string, string | number>) => string;
@@ -63,7 +77,7 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
     let text = key.split('.').reduce((obj, i) => obj?.[i], langTranslations);
     
     if (typeof text !== 'string') {
-        // Fallback for languages without full translation files
+        // Fallback to English if translation for the key is not found in the selected language
         const enTranslations = translations.en;
         text = key.split('.').reduce((obj, i) => obj?.[i], enTranslations);
     }

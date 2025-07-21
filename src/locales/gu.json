@@ -1,0 +1,182 @@
+
+{
+  "login": {
+    "welcome": "સ્વાગત છે!",
+    "signInPrompt": "તમારા ડેશબોર્ડને ઍક્સેસ કરવા માટે સાઇન ઇન કરો.",
+    "preferredLanguage": "પસંદગીની ભાષા",
+    "email": "ઈમેલ",
+    "mobile": "મોબાઇલ",
+    "password": "પાસવર્ડ",
+    "signIn": "સાઇન ઇન કરો",
+    "signingIn": "સાઇન ઇન કરી રહ્યું છે...",
+    "sendOtp": "OTP મોકલો",
+    "sendingOtp": "OTP મોકલી રહ્યું છે...",
+    "or": "અથવા",
+    "continueAsGuest": "મહેમાન તરીકે ચાલુ રાખો",
+    "noAccount": "ખાતું નથી?",
+    "signUp": "અહીં સાઇન અપ કરો",
+    "emailPlaceholder": "farmer@example.com",
+    "passwordPlaceholder": "********",
+    "mobilePlaceholder": "દા.ત. 9876543210"
+  },
+  "header": {
+    "appName": "ફાર્મઆસિસ્ટ",
+    "readPageAloud": "પેજ મોટેથી વાંચો",
+    "stopReading": "વાંચવાનું બંધ કરો",
+    "logout": "લોગ આઉટ"
+  },
+  "dashboard": {
+    "tabs": {
+      "diagnosis": "નિદાન",
+      "market": "બજાર માહિતી",
+      "schemes": "સરકારી યોજનાઓ",
+      "weather": "હવામાન",
+      "myfarm": "મારું ખેતર"
+    }
+  },
+  "diagnosisTab": {
+    "title": "છબી-આધારિત નિદાન",
+    "description": "નિદાન અને ઉપચારો મેળવવા માટે અસરગ્રસ્ત પાકની છબી અપલોડ કરો.",
+    "uploadPrompt": "છબી અપલોડ કરવા માટે ક્લિક કરો અથવા ખેંચો અને છોડો",
+    "selectedFile": "પસંદ કરેલી ફાઇલ: {{fileName}}",
+    "diagnosePlant": "વનસ્પતિનું નિદાન કરો",
+    "diagnosing": "નિદાન થઈ રહ્યું છે...",
+    "voiceQueryTitle": "અવાજ દ્વારા પ્રશ્ન",
+    "voiceQueryDescription": "તમારા અવાજથી પ્રશ્ન પૂછો. જો નિદાન સક્રિય હોય, તો તેને ફોલો-અપ પ્રશ્ન તરીકે ગણવામાં આવશે.",
+    "tapToSpeak": "બોલવા માટે ટેપ કરો",
+    "recording": "રેકોર્ડિંગ થઈ રહ્યું છે...",
+    "transcribing": "લિવ્યંતરણ થઈ રહ્યું છે...",
+    "youSaid": "તમે કહ્યું:",
+    "resultTitle": "નિદાન પરિણામ",
+    "analyzing": "તમારા પાકનું વિશ્લેષણ થઈ રહ્યું છે...",
+    "diseaseIdentified": "ઓળખાયેલ રોગ",
+    "suggestedRemedies": "સૂચવેલા ઉપચારો",
+    "confidenceScore": "આત્મવિશ્વાસ સ્કોર",
+    "readAloud": "મોટેથી વાંચો",
+    "stop": "બંધ કરો",
+    "loading": "લોડ થઈ રહ્યું છે...",
+    "followUpTitle": "ફોલો-અપ પ્રશ્ન પૂછો",
+    "typeQuestion": "તમારો પ્રશ્ન અહીં લખો...",
+    "error": {
+      "failedDiagnosis": "છબીનું નિદાન કરવામાં નિષ્ફળ. કૃપા કરીને બીજી છબીનો પ્રયાસ કરો અથવા પછીથી ફરી પ્રયાસ કરો.",
+      "failedTranscription": "ઓડિયોનું લિવ્યંતરણ કરવામાં નિષ્ફળ. કૃપા કરીને ફરી પ્રયાસ કરો."
+    }
+  },
+  "marketTab": {
+    "pricesTitle": "બજાર ભાવ",
+    "pricesDescription": "બજારમાંથી નવીનતમ પાકના ભાવ.",
+    "crop": "પાક",
+    "pricePerUnit": "ભાવ (પ્રતિ {{unit}})",
+    "analysisTitle": "બજાર વલણ વિશ્લેષણ",
+    "analysisDescription": "ભાવની હિલચાલ પર AI-સંચાલિત આંતરદૃષ્ટિ.",
+    "yourLocation": "તમારું સ્થાન",
+    "priceTrend": "ભાવ વલણ વિશ્લેષણ",
+    "demandForecast": "માંગની આગાહી",
+    "locationPricing": "સ્થાન-આધારિત ભાવ નિર્ધારણ",
+    "error": "બજાર વલણોનું વિશ્લેષણ કરવામાં નિષ્ફળ. કૃપા કરીને પછીથી ફરી પ્રયાસ કરો."
+  },
+  "schemesTab": {
+    "recsTitle": "વ્યક્તિગત યોજના ભલામણો",
+    "recsDescription": "તમારા માટે બનાવેલી સરકારી યોજનાઓ શોધવા માટે તમારી વિગતો ભરો.",
+    "state": "રાજ્ય",
+    "selectState": "તમારું રાજ્ય પસંદ કરો",
+    "landSize": "જમીનનું કદ (એકરમાં)",
+    "cropsGrown": "ઉગાડવામાં આવતા પાક (અલ્પવિરામથી અલગ)",
+    "getRecs": "ભલામણો મેળવો",
+    "findingSchemes": "યોજનાઓ શોધી રહ્યું છે...",
+    "yourRecsTitle": "તમારી ભલામણ કરેલી યોજનાઓ",
+    "noSchemesFound": "કોઈ ચોક્કસ યોજનાઓ મળી નથી",
+    "noSchemesDescription": "તમારી પ્રોફાઇલના આધારે, અમને અમારી સૂચિમાંથી કોઈ અત્યંત સુસંગત યોજનાઓ મળી નથી. તમે નીચે બધી ઉપલબ્ધ યોજનાઓ બ્રાઉઝ કરી શકો છો.",
+    "allSchemesTitle": "બધી સરકારી યોજનાઓ",
+    "allSchemesDescription": "ખેડૂતો માટેની યોજનાઓ અને નીતિઓ પર નવીનતમ અપડેટ્સ.",
+    "whyRecommended": "તે તમારા માટે શા માટે ભલામણ કરવામાં આવે છે:",
+    "howToApply": "કેવી રીતે અરજી કરવી:",
+    "learnMore": "વધુ જાણો",
+    "error": {
+        "missingInfo": "ભલામણો મેળવવા માટે કૃપા કરીને બધી ફીલ્ડ્સ ભરો."
+    }
+  },
+  "weatherTab": {
+    "title": "હવામાન અને આબોહવા સલાહ",
+    "description": "હાઇપર-લોકલ હવામાન આગાહી અને AI-સંચાલિત ખેતી સલાહ મેળવો.",
+    "yourLocation": "તમારું સ્થાન",
+    "aiAdvisory": "{{location}} માટે AI આબોહવા સલાહ",
+    "temperature": "તાપમાન",
+    "humidity": "ભેજ",
+    "windSpeed": "પવનની ગતિ",
+    "forecast": "આગાહી",
+    "error": "આબોહવા સલાહ મેળવવામાં નિષ્ફળ. કૃપા કરીને પછીથી ફરી પ્રયાસ કરો."
+  },
+  "myFarmTab": {
+    "mapTitle": "મારા ખેતરનો નકશો",
+    "mapDescription": "તમારા વર્તમાન સ્થાન પર કેન્દ્રિત તમારા ખેતરનું સેટેલાઇટ અવલોકન.",
+    "overviewTitle": "ખેતરનું અવલોકન",
+    "location": "સ્થાન",
+    "soilType": "જમીનનો પ્રકાર",
+    "soilTypeExample": "કાળી કપાસની જમીન",
+    "notAvailable": "ઉપલબ્ધ નથી",
+    "actionsTitle": "ઝડપી ક્રિયાઓ",
+    "droneAnalysisBtn": "ડ્રોન ફૂટેજ વિશ્લેષણની વિનંતી કરો",
+    "soilHealthCardBtn": "જમીન આરોગ્ય કાર્ડ જુઓ",
+    "historyBtn": "ડેટા ઇતિહાસ જુઓ",
+    "soilCard": {
+      "title": "જમીન આરોગ્ય કાર્ડ",
+      "description": "તમારી જમીનના આરોગ્ય અને ભલામણોનો સારાંશ.",
+      "keyMetrics": "મુખ્ય મેટ્રિક્સ",
+      "phLevel": "pH સ્તર",
+      "organicCarbon": "ઓર્ગેનિક કાર્બન",
+      "conductivity": "વિદ્યુત વાહકતા",
+      "nutrientStatus": "પોષક તત્વોની સ્થિતિ",
+      "nitrogen": "નાઇટ્રોજન (N)",
+      "phosphorus": "ફોસ્ફરસ (P)",
+      "potassium": "પોટેશિયમ (K)",
+      "recommendations": "ભલામણો",
+      "orderSupplies": "પુરવઠો ઓર્ડર કરો",
+      "orderDescription": "જરૂરી ઇનપુટ્સ ઓર્ડર કરીને તમારા જમીન આરોગ્ય રિપોર્ટ પર કાર્યવાહી કરો.",
+      "orderFertilizers": "ભલામણ કરેલા ખાતરો ઓર્ડર કરો",
+      "orderSeeds": "બીજ ઓર્ડર કરો"
+    },
+    "droneModal": {
+      "title": "ડ્રોન ફૂટેજ વિશ્લેષણ",
+      "description": "AI-સંચાલિત આરોગ્ય મૂલ્યાંકન મેળવવા માટે તમારા ખેતરની ડ્રોન છબી અપલોડ કરો.",
+      "uploadPrompt": "અપલોડ કરવા માટે ક્લિક કરો અથવા ખેંચો અને છોડો",
+      "analyze": "ફૂટેજનું વિશ્લેષણ કરો",
+      "analyzing": "વિશ્લેષણ થઈ રહ્યું છે...",
+      "resultTitle": "વિશ્લેષણ પરિણામ",
+      "analyzingField": "તમારા ખેતરનું વિશ્લેષણ થઈ રહ્યું છે...",
+      "uploadToSee": "વિશ્લેષણ જોવા માટે છબી અપલોડ કરો.",
+      "overallAssessment": "એકંદરે મૂલ્યાંકન",
+      "hotspots": "ઓળખાયેલ હોટસ્પોટ્સ"
+    },
+    "supplierModal": {
+        "title": "સપ્લાયર પરિણામો",
+        "description": "\"{{product}}\" માટે સંભવિત સપ્લાયર્સ બતાવી રહ્યું છે. આ એક મોક પ્રતિસાદ છે.",
+        "searching": "સપ્લાયર્સ શોધી રહ્યું છે...",
+        "supplier": "સપ્લાયર",
+        "type": "પ્રકાર",
+        "contact": "સંપર્ક / સ્થાન",
+        "local": "સ્થાનિક",
+        "online": "ઓનલાઇન"
+    },
+    "historyModal": {
+        "title": "ડેટા ઇતિહાસ",
+        "adminDescription": "એડમિન તરીકે બધો ડેટા જોઈ રહ્યું છે.",
+        "userDescription": "તમારી ભૂતકાળની પ્રવૃત્તિઓ અને રિપોર્ટ્સનો રેકોર્ડ."
+    },
+    "dataHistory": {
+        "title": "નિદાન ઇતિહાસ",
+        "noDiagnoses": "કોઈ નિદાન મળ્યું નથી.",
+        "remedies": "ઉપચારો:",
+        "confidence": "આત્મવિશ્વાસ:",
+        "soilCardsTitle": "જમીન આરોગ્ય કાર્ડ ઇતિહાસ",
+        "noSoilCards": "કોઈ જમીન આરોગ્ય કાર્ડ મળ્યું નથી.",
+        "reportFor": "{{location}} માટે રિપોર્ટ",
+        "recommendations": "ભલામણો:",
+        "metrics": "મેટ્રિક્સ:",
+        "ph": "pH:",
+        "organicCarbon": "ઓર્ગેનિક કાર્બન:",
+        "conductivity": "વાહકતા:"
+    },
+    "close": "બંધ કરો"
+  }
+}

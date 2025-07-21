@@ -1,0 +1,182 @@
+
+{
+  "login": {
+    "welcome": "خوش آمدید!",
+    "signInPrompt": "اپنے ڈیش بورڈ تک رسائی کے لیے سائن ان کریں۔",
+    "preferredLanguage": "پسندیدہ زبان",
+    "email": "ای میل",
+    "mobile": "موبائل",
+    "password": "پاس ورڈ",
+    "signIn": "سائن ان کریں",
+    "signingIn": "سائن ان ہو رہا ہے...",
+    "sendOtp": "OTP بھیجیں",
+    "sendingOtp": "OTP بھیجا جا رہا ہے...",
+    "or": "یا",
+    "continueAsGuest": "مہمان کے طور پر جاری رکھیں",
+    "noAccount": "اکاؤنٹ نہیں ہے؟",
+    "signUp": "یہاں سائن اپ کریں",
+    "emailPlaceholder": "farmer@example.com",
+    "passwordPlaceholder": "********",
+    "mobilePlaceholder": "مثال کے طور پر 9876543210"
+  },
+  "header": {
+    "appName": "فارم اسسٹ",
+    "readPageAloud": "صفحہ بلند آواز سے پڑھیں",
+    "stopReading": "پڑھنا بند کریں",
+    "logout": "لاگ آؤٹ"
+  },
+  "dashboard": {
+    "tabs": {
+      "diagnosis": "تشخیص",
+      "market": "مارکیٹ کی معلومات",
+      "schemes": "سرکاری اسکیمیں",
+      "weather": "موسم",
+      "myfarm": "میرا فارم"
+    }
+  },
+  "diagnosisTab": {
+    "title": "تصویر پر مبنی تشخیص",
+    "description": "تشخیص اور علاج حاصل کرنے کے لیے متاثرہ فصل کی تصویر اپ لوڈ کریں۔",
+    "uploadPrompt": "تصویر اپ لوڈ کرنے کے لیے کلک کریں یا گھسیٹ کر چھوڑیں",
+    "selectedFile": "منتخب فائل: {{fileName}}",
+    "diagnosePlant": "پودے کی تشخیص کریں",
+    "diagnosing": "تشخیص ہو رہی ہے...",
+    "voiceQueryTitle": "آواز کے ذریعے سوال",
+    "voiceQueryDescription": "اپنی آواز سے ایک سوال پوچھیں۔ اگر تشخیص فعال ہے، تو اسے ایک فالو اپ سوال سمجھا جائے گا۔",
+    "tapToSpeak": "بولنے کے لیے ٹیپ کریں",
+    "recording": "ریکارڈنگ ہو رہی ہے...",
+    "transcribing": "ٹرانسکرائب ہو رہا ہے...",
+    "youSaid": "آپ نے کہا:",
+    "resultTitle": "تشخیص کا نتیجہ",
+    "analyzing": "آپ کی فصل کا تجزیہ ہو رہا ہے...",
+    "diseaseIdentified": "شناخت شدہ بیماری",
+    "suggestedRemedies": "تجویز کردہ علاج",
+    "confidenceScore": "اعتماد کا سکور",
+    "readAloud": "بلند آواز سے پڑھیں",
+    "stop": "روکیں",
+    "loading": "لوڈ ہو رہا ہے...",
+    "followUpTitle": "ایک فالو اپ سوال پوچھیں",
+    "typeQuestion": "اپنا سوال یہاں ٹائپ کریں...",
+    "error": {
+      "failedDiagnosis": "تصویر کی تشخیص میں ناکام۔ براہ کرم ایک مختلف تصویر آزمائیں یا بعد میں دوبارہ کوشش کریں۔",
+      "failedTranscription": "آڈیو کو ٹرانسکرائب کرنے میں ناکام۔ براہ کرم دوبارہ کوشش کریں۔"
+    }
+  },
+  "marketTab": {
+    "pricesTitle": "مارکیٹ کی قیمتیں",
+    "pricesDescription": "مارکیٹ سے تازہ ترین فصل کی قیمتیں۔",
+    "crop": "فصل",
+    "pricePerUnit": "قیمت (فی {{unit}})",
+    "analysisTitle": "مارکیٹ کے رجحان کا تجزیہ",
+    "analysisDescription": "قیمتوں کی نقل و حرکت پر AI سے چلنے والی بصیرتیں۔",
+    "yourLocation": "آپ کا مقام",
+    "priceTrend": "قیمت کے رجحان کا تجزیہ",
+    "demandForecast": "طلب کی پیشن گوئی",
+    "locationPricing": "مقام پر مبنی قیمتوں کا تعین",
+    "error": "مارکیٹ کے رجحانات کا تجزیہ کرنے میں ناکام۔ براہ کرم بعد میں دوبارہ کوشش کریں۔"
+  },
+  "schemesTab": {
+    "recsTitle": "ذاتی نوعیت کی اسکیم کی سفارشات",
+    "recsDescription": "اپنے لیے تیار کردہ سرکاری اسکیمیں تلاش کرنے کے لیے اپنی تفصیلات پر کریں۔",
+    "state": "ریاست",
+    "selectState": "اپنی ریاست منتخب کریں",
+    "landSize": "زمین کا سائز (ایکڑ میں)",
+    "cropsGrown": "کاشت کی گئی فصلیں (کوما سے الگ)",
+    "getRecs": "سفارشات حاصل کریں",
+    "findingSchemes": "اسکیمیں تلاش کی جا رہی ہیں...",
+    "yourRecsTitle": "آپ کی تجویز کردہ اسکیمیں",
+    "noSchemesFound": "کوئی مخصوص اسکیمیں نہیں ملیں",
+    "noSchemesDescription": "آپ کے پروفائل کی بنیاد پر، ہمیں اپنی فہرست سے کوئی انتہائی متعلقہ اسکیمیں نہیں مل سکیں۔ آپ ذیل میں تمام دستیاب اسکیمیں براؤز کر سکتے ہیں۔",
+    "allSchemesTitle": "تمام سرکاری اسکیمیں",
+    "allSchemesDescription": "کسانوں کے لیے اسکیموں اور پالیسیوں کے بارے میں تازہ ترین اپ ڈیٹس۔",
+    "whyRecommended": "یہ آپ کے لیے کیوں تجویز کی جاتی ہے:",
+    "howToApply": "درخواست کیسے دیں:",
+    "learnMore": "مزید جانیں",
+    "error": {
+        "missingInfo": "سفارشات حاصل کرنے کے لیے براہ کرم تمام فیلڈز کو پر کریں۔"
+    }
+  },
+  "weatherTab": {
+    "title": "موسم اور آب و ہوا کا مشورہ",
+    "description": "ہائپر-لوکل موسم کی پیشن گوئی اور AI سے چلنے والی کاشتکاری کے مشورے حاصل کریں۔",
+    "yourLocation": "آپ کا مقام",
+    "aiAdvisory": "{{location}} کے لیے AI آب و ہوا کا مشورہ",
+    "temperature": "درجہ حرارت",
+    "humidity": "نمی",
+    "windSpeed": "ہوا کی رفتار",
+    "forecast": "پیشن گوئی",
+    "error": "آب و ہوا کا مشورہ حاصل کرنے میں ناکام۔ براہ کرم بعد میں دوبارہ کوشش کریں۔"
+  },
+  "myFarmTab": {
+    "mapTitle": "میرے کھیت کا نقشہ",
+    "mapDescription": "آپ کے موجودہ مقام پر مرکوز آپ کے کھیت کا ایک سیٹلائٹ جائزہ۔",
+    "overviewTitle": "فارم کا جائزہ",
+    "location": "مقام",
+    "soilType": "مٹی کی قسم",
+    "soilTypeExample": "کالی کپاس کی مٹی",
+    "notAvailable": "دستیاب نہیں",
+    "actionsTitle": "فوری کارروائیاں",
+    "droneAnalysisBtn": "ڈرون فوٹیج کے تجزیے کی درخواست کریں",
+    "soilHealthCardBtn": "مٹی کی صحت کا کارڈ دیکھیں",
+    "historyBtn": "ڈیٹا کی تاریخ دیکھیں",
+    "soilCard": {
+      "title": "مٹی کی صحت کا کارڈ",
+      "description": "آپ کی مٹی کی صحت اور سفارشات کا خلاصہ۔",
+      "keyMetrics": "کلیدی میٹرکس",
+      "phLevel": "پی ایچ لیول",
+      "organicCarbon": "نامیاتی کاربن",
+      "conductivity": "برقی چالکتا",
+      "nutrientStatus": "غذائی اجزاء کی حیثیت",
+      "nitrogen": "نائٹروجن (N)",
+      "phosphorus": "فاسفورس (P)",
+      "potassium": "پوٹاشیم (K)",
+      "recommendations": "سفارشات",
+      "orderSupplies": "سامان کا آرڈر دیں",
+      "orderDescription": "ضروری ان پٹ کا آرڈر دے کر اپنی مٹی کی صحت کی رپورٹ پر کارروائی کریں۔",
+      "orderFertilizers": "تجویز کردہ کھاد کا آرڈر دیں",
+      "orderSeeds": "بیج کا آرڈر دیں"
+    },
+    "droneModal": {
+      "title": "ڈرون فوٹیج کا تجزیہ",
+      "description": "AI سے چلنے والی صحت کی تشخیص حاصل کرنے کے لیے اپنے کھیت کی ڈرون تصویر اپ لوڈ کریں۔",
+      "uploadPrompt": "اپ لوڈ کرنے کے لیے کلک کریں یا گھسیٹ کر چھوڑیں",
+      "analyze": "فوٹیج کا تجزیہ کریں",
+      "analyzing": "تجزیہ ہو رہا ہے...",
+      "resultTitle": "تجزیہ کا نتیجہ",
+      "analyzingField": "آپ کے کھیت کا تجزیہ ہو رہا ہے...",
+      "uploadToSee": "تجزیہ دیکھنے کے لیے ایک تصویر اپ لوڈ کریں۔",
+      "overallAssessment": "مجموعی تشخیص",
+      "hotspots": "شناخت شدہ ہاٹ سپاٹ"
+    },
+    "supplierModal": {
+        "title": "سپلائر کے نتائج",
+        "description": "\"{{product}}\" کے لیے ممکنہ سپلائرز دکھائے جا رہے ہیں۔ یہ ایک فرضی جواب ہے۔",
+        "searching": "سپلائرز کی تلاش ہو رہی ہے...",
+        "supplier": "سپلائر",
+        "type": "قسم",
+        "contact": "رابطہ / مقام",
+        "local": "مقامی",
+        "online": "آن لائن"
+    },
+    "historyModal": {
+        "title": "ڈیٹا کی تاریخ",
+        "adminDescription": "ایڈمن کے طور پر تمام ڈیٹا دیکھ رہا ہے۔",
+        "userDescription": "آپ کی ماضی کی سرگرمیوں اور رپورٹس کا ایک ریکارڈ۔"
+    },
+    "dataHistory": {
+        "title": "تشخیص کی تاریخ",
+        "noDiagnoses": "کوئی تشخیص نہیں ملی۔",
+        "remedies": "علاج:",
+        "confidence": "اعتماد:",
+        "soilCardsTitle": "مٹی کی صحت کارڈ کی تاریخ",
+        "noSoilCards": "کوئی مٹی کی صحت کا کارڈ نہیں ملا۔",
+        "reportFor": "{{location}} کے لیے رپورٹ",
+        "recommendations": "سفارشات:",
+        "metrics": "میٹرکس:",
+        "ph": "پی ایچ:",
+        "organicCarbon": "نامیاتی کاربن:",
+        "conductivity": "چالکتا:"
+    },
+    "close": "بند کریں"
+  }
+}
