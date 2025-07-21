@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -11,7 +12,7 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-export const SoilHealthAnalysisInputSchema = z.object({
+const SoilHealthAnalysisInputSchema = z.object({
   metrics: z.object({
     ph: z.number().describe('The pH level of the soil.'),
     organicCarbon: z.number().describe('The percentage of organic carbon in the soil.'),
@@ -23,7 +24,7 @@ export const SoilHealthAnalysisInputSchema = z.object({
 });
 export type SoilHealthAnalysisInput = z.infer<typeof SoilHealthAnalysisInputSchema>;
 
-export const SoilHealthAnalysisOutputSchema = z.object({
+const SoilHealthAnalysisOutputSchema = z.object({
   analysis: z.string().describe('A detailed analysis of the soil health based on the provided metrics.'),
   recommendations: z.array(z.string()).describe('A list of actionable recommendations for improving soil health and crop yield.'),
 });
