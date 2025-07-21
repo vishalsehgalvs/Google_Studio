@@ -3,20 +3,24 @@
 import { useState, useContext, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Map, Pin, Sun, TestTube2, ImageUp, Loader2, AlertCircle, Sparkles, X, MapPin, ShoppingCart } from "lucide-react";
+import { Map, Pin, Sun, TestTube2, ImageUp, Loader2, AlertCircle, Sparkles, X, MapPin, ShoppingCart, Building, Globe } from "lucide-react";
 import Image from 'next/image';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '../ui/dialog';
 import { Input } from '../ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { analyzeDroneFootage } from '@/ai/flows/drone-footage-analysis';
 import { LocationContext } from '@/context/LocationContext';
 import { Skeleton } from '../ui/skeleton';
 import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
+import { orderSupplies, OrderSuppliesOutput } from '@/ai/flows/order-supplies';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 
 type AnalysisResult = {
   analysis: string;
   hotspots: { issue: string; recommendation: string }[];
 };
+
+type SupplierResults = OrderSuppliesOutput['suppliers'];
 
 const mapContainerStyle = {
   width: '100%',
@@ -39,6 +43,11 @@ export default function MyFarmTab() {
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
   const [isLoadingAnalysis, setIsLoadingAnalysis] = useState(false);
   const [errorAnalysis, setErrorAnalysis] = useState<string | null>(null);
+
+  const [isSupplierModalOpen, setIsSupplierModalOpen] = useState(false);
+  const [supplierResults, setSupplierResults] = useState<SupplierResults>([]);
+  const [isLoadingSuppliers, setIsLoadingSuppliers] = useState(false);
+  const [orderedProduct, setOrderedProduct] = useState("");
 
   const locationContext = useContext(LocationContext);
   const { toast } = useToast();
@@ -82,11 +91,25 @@ export default function MyFarmTab() {
     }
   };
   
-  const handleOrderSupplies = (supply: string) => {
-    toast({
-        title: "Searching for suppliers...",
-        description: `Looking for ${supply} on local e-commerce stores.`
-    });
+  const handleOrderSupplies = async (product: string) => {
+    setIsLoadingSuppliers(true);
+    setOrderedProduct(product);
+    setIsSupplierModalOpen(true);
+    setSupplierResults([]);
+    try {
+        const { suppliers } = await orderSupplies({ product });
+        setSupplierResults(suppliers);
+    } catch (e) {
+        console.error(e);
+        toast({
+            variant: "destructive",
+            title: "Supplier Search Error",
+            description: "Could not find suppliers at this time."
+        });
+        setIsSupplierModalOpen(false); // Close modal on error
+    } finally {
+        setIsLoadingSuppliers(false);
+    }
   }
 
   const resetDroneAnalysis = () => {
@@ -223,7 +246,7 @@ export default function MyFarmTab() {
                     <CardDescription>Take action on your soil health report by ordering the necessary inputs.</CardDescription>
                 </CardHeader>
                 <CardContent className="flex flex-col sm:flex-row gap-4">
-                    <Button className="flex-1" onClick={() => handleOrderSupplies("Muriate of Potash")}>Order Recommended Fertilizers</Button>
+                    <Button className="flex-1" onClick={() => handleOrderSupplies("Muriate of Potash (fertilizer)")}>Order Recommended Fertilizers</Button>
                     <Button className="flex-1" variant="secondary" onClick={() => handleOrderSupplies("quality seeds")}>Order Seeds</Button>
                 </CardContent>
             </Card>
@@ -297,6 +320,55 @@ export default function MyFarmTab() {
               </Card>
             </div>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Supplier Search Results Dialog */}
+      <Dialog open={isSupplierModalOpen} onOpenChange={setIsSupplierModalOpen}>
+        <DialogContent className="sm:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="font-headline text-2xl flex items-center gap-2">
+                <ShoppingCart className="text-primary"/> Supplier Results
+            </DialogTitle>
+            <DialogDescription>
+                Showing potential suppliers for "{orderedProduct}". This is a mock response.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="mt-4">
+            {isLoadingSuppliers ? (
+                 <div className="flex items-center justify-center h-40 gap-2">
+                    <Loader2 className="h-6 w-6 animate-spin text-primary"/>
+                    <p>Searching for suppliers...</p>
+                 </div>
+            ) : (
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>Supplier</TableHead>
+                            <TableHead>Type</TableHead>
+                            <TableHead>Contact / Location</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {supplierResults.map((supplier, index) => (
+                            <TableRow key={index}>
+                                <TableCell className="font-medium">{supplier.name}</TableCell>
+                                <TableCell>
+                                    <span className="flex items-center gap-2">
+                                        {supplier.type === 'local' ? <Building size={16}/> : <Globe size={16}/>}
+                                        {supplier.type.charAt(0).toUpperCase() + supplier.type.slice(1)}
+                                    </span>
+                                </TableCell>
+                                <TableCell>{supplier.contact}</TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            )}
+          </div>
+           <DialogFooter>
+                <Button variant="secondary" onClick={() => setIsSupplierModalOpen(false)}>Close</Button>
+            </DialogFooter>
         </DialogContent>
       </Dialog>
     </>
