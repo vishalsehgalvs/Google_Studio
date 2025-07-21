@@ -4,12 +4,12 @@ import { AudioPlayerProvider } from '@/context/AudioPlayerContext';
 
 export default function DashboardPage() {
   return (
-    <LocationProvider>
-      <AudioPlayerProvider>
+    <AudioPlayerProvider>
+      <LocationProvider>
         <div className="flex flex-col min-h-screen bg-background">
           <DashboardTabs />
         </div>
-      </AudioPlayerProvider>
-    </LocationProvider>
+      </LocationProvider>
+    </AudioPlayerProvider>
   );
 }

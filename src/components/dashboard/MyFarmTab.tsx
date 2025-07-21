@@ -4,7 +4,7 @@
 import { useState, useContext, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Map, Pin, Sun, TestTube2, ImageUp, Loader2, AlertCircle, Sparkles, X, MapPin, ShoppingCart, Building, Globe, Database, Key } from "lucide-react";
+import { Map, Pin, Sun, TestTube2, ImageUp, Loader2, AlertCircle, Sparkles, X, MapPin, ShoppingCart, Building, Globe, Database } from "lucide-react";
 import Image from 'next/image';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '../ui/dialog';
 import { Input } from '../ui/input';
@@ -12,7 +12,6 @@ import { useToast } from '@/hooks/use-toast';
 import { analyzeDroneFootage } from '@/ai/flows/drone-footage-analysis';
 import { LocationContext } from '@/context/LocationContext';
 import { Skeleton } from '../ui/skeleton';
-import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
 import { orderSupplies, OrderSuppliesOutput } from '@/ai/flows/order-supplies';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { useUser } from '@/context/UserContext';
@@ -28,18 +27,6 @@ type AnalysisResult = {
 
 type SupplierResults = OrderSuppliesOutput['suppliers'];
 
-const mapContainerStyle = {
-  width: '100%',
-  height: '100%',
-  borderRadius: '0.5rem',
-};
-
-const mapOptions = {
-  disableDefaultUI: true,
-  zoomControl: true,
-  mapTypeId: 'satellite',
-};
-
 const sampleSoilHealthCard = {
   id: `shc_${Date.now()}`,
   metrics: {
@@ -54,9 +41,6 @@ const sampleSoilHealthCard = {
   },
   recommendations: "Increase Potassium application. Consider using Muriate of Potash. Maintain current Nitrogen levels. No additional Phosphorus required this season."
 };
-
-const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "";
-const isMapsKeyMissing = !GOOGLE_MAPS_API_KEY || GOOGLE_MAPS_API_KEY === "YOUR_GOOGLE_MAPS_API_KEY_HERE";
 
 export default function MyFarmTab() {
   const [isSoilCardOpen, setIsSoilCardOpen] = useState(false);
@@ -78,11 +62,6 @@ export default function MyFarmTab() {
   const { user } = useUser();
   const { languageCode, t } = useTranslation();
   const { toast } = useToast();
-
-  const { isLoaded: isMapLoaded, loadError: mapLoadError } = useJsApiLoader({
-    googleMapsApiKey: isMapsKeyMissing ? "" : GOOGLE_MAPS_API_KEY,
-    preventGoogleFontsLoading: true,
-  });
 
   const handleOpenSoilCard = () => {
     if (user) {
@@ -163,31 +142,6 @@ export default function MyFarmTab() {
     setErrorAnalysis(null);
     setIsLoadingAnalysis(false);
   };
-  
-  const renderMap = useCallback(() => {
-    if (isMapsKeyMissing) {
-      return <MockMap />;
-    }
-    if (mapLoadError) {
-      return <div className="flex items-center justify-center h-full text-destructive"><AlertCircle className="mr-2"/>Error loading map. Please check your API key and project settings.</div>;
-    }
-    if (!isMapLoaded || locationContext?.loading) {
-        return <Skeleton className="w-full h-full" />;
-    }
-    if (locationContext?.coordinates) {
-        return (
-            <GoogleMap
-                mapContainerStyle={mapContainerStyle}
-                center={locationContext.coordinates}
-                zoom={15}
-                options={mapOptions}
-            >
-                <Marker position={locationContext.coordinates} />
-            </GoogleMap>
-        );
-    }
-    return <div className="flex items-center justify-center h-full text-muted-foreground"><MapPin className="mr-2" />Could not determine location.</div>;
-  }, [isMapLoaded, mapLoadError, locationContext]);
 
   return (
     <>
@@ -204,7 +158,7 @@ export default function MyFarmTab() {
             </CardHeader>
             <CardContent className="h-[calc(100%-110px)]">
               <div className="w-full h-full bg-muted rounded-md flex items-center justify-center overflow-hidden relative">
-                  {renderMap()}
+                  <MockMap />
               </div>
             </CardContent>
           </Card>
