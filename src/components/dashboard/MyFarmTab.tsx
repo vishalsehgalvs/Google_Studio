@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Map, Pin, Droplet, Sun, Wind, TestTube2, ImageUp, Loader2, AlertCircle, Sparkles, CheckCircle, X } from "lucide-react";
+import { Map, Pin, Droplet, Sun, Wind, TestTube2, ImageUp, Loader2, AlertCircle, Sparkles, CheckCircle, X, MapPin } from "lucide-react";
 import Image from 'next/image';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from '../ui/dialog';
 import { Input } from '../ui/input';
@@ -80,19 +80,26 @@ export default function MyFarmTab() {
                 <Map className="text-primary"/> My Field Map
               </CardTitle>
               <CardDescription>
-                A satellite overview of your primary field.
+                A satellite overview of your primary field, centered on your location.
               </CardDescription>
             </CardHeader>
             <CardContent className="h-full">
-              <div className="w-full h-full bg-muted rounded-md flex items-center justify-center overflow-hidden">
+              <div className="w-full h-full bg-muted rounded-md flex items-center justify-center overflow-hidden relative">
                   <Image 
                     src="https://placehold.co/800x600.png" 
                     alt="Farm map placeholder" 
                     width={800} 
                     height={600} 
                     className="object-cover w-full h-full"
-                    data-ai-hint="satellite farm"
+                    data-ai-hint="satellite map farm"
                   />
+                  <div className="absolute bottom-4 left-4 bg-background/80 backdrop-blur-sm p-3 rounded-lg shadow-lg flex items-center gap-2">
+                    <MapPin className="text-primary"/>
+                    <div>
+                      <p className="font-bold text-sm">Your Location</p>
+                      <p className="text-xs text-muted-foreground">21.1458° N, 79.0882° E</p>
+                    </div>
+                  </div>
               </div>
             </CardContent>
           </Card>
