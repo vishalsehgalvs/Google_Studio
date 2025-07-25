@@ -7,20 +7,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Image as ImageIcon, Mic, Upload, X, Loader2, AlertCircle, Volume2, ShieldCheck, MessageCircle, Send } from "lucide-react";
 import Image from "next/image";
-import { imageBasedDiagnosis } from '@/ai/flows/image-based-diagnosis';
-import { voiceQueryToText } from '@/ai/flows/voice-query-to-text';
 import { useToast } from "@/hooks/use-toast";
-import { voiceBasedInformationDelivery } from '@/ai/flows/voice-based-information-delivery';
 import { Progress } from '../ui/progress';
-import { answerFollowUp } from '@/ai/flows/continuous-query';
+// TODO: Remove direct AI/server-only imports. Use backend API for follow-up answers.
 import { Textarea } from '../ui/textarea';
 import { ScrollArea } from '../ui/scroll-area';
-import { useAudioPlayer } from '@/context/AudioPlayerContext';
+
 import { useUser } from '@/context/UserContext';
 import { saveDiagnosis } from '@/lib/db';
 import { useTranslation } from '@/context/LanguageContext';
 
 type DiagnosisResult = {
+  cropName: string;
   disease: string;
   remedies: string;
   confidenceScore: number;
@@ -46,7 +44,7 @@ export default function DiagnosisTab() {
 
   const { toast } = useToast();
   
-  const { playAudio, stopAudio, isPlaying, isLoading: isAudioLoading, audioSrc } = useAudioPlayer();
+
   const { user } = useUser();
   const { languageCode, t } = useTranslation();
 
@@ -72,25 +70,56 @@ export default function DiagnosisTab() {
   };
 
   const handleDiagnose = async () => {
-    if (!imagePreview || !user) return;
+    if (!imageFile || !user) return;
     setIsLoading(true);
     setError(null);
     setDiagnosis(null);
     setChatHistory([]);
     try {
-      const result = await imageBasedDiagnosis({ 
-        photoDataUri: imagePreview,
-        language: languageCode || 'en',
+      const formData = new FormData();
+      formData.append('image', imageFile);
+      formData.append('language', languageCode || 'English');
+
+      const response = await fetch('http://localhost:4000/api/crop-diagnosis', {
+        method: 'POST',
+        body: formData,
       });
-      setDiagnosis(result.diagnosis);
-      saveDiagnosis(user.id, {
-        id: `diag_${Date.now()}`,
-        userId: user.id,
-        imageDataUri: imagePreview,
-        ...result.diagnosis,
-        timestamp: new Date().toISOString(),
-      });
-      toast({ title: "Diagnosis Saved", description: "The result has been saved to your farm history." });
+      let data;
+      try {
+        data = await response.json();
+      } catch (err) {
+        setError(t('diagnosisTab.error.failedDiagnosis'));
+        toast({
+          variant: "destructive",
+          title: "Diagnosis Error",
+          description: "Invalid response from backend."
+        });
+        setIsLoading(false);
+        return;
+      }
+      if (data.success && data.diagnosis) {
+        setDiagnosis({
+          cropName: data.diagnosis.cropName || '',
+          disease: data.diagnosis.disease || data.diagnosis,
+          remedies: data.diagnosis.remedies || '',
+          confidenceScore: data.diagnosis.confidenceScore || 1,
+        });
+        saveDiagnosis(user.id, {
+          id: `diag_${Date.now()}`,
+          userId: user.id,
+          imageDataUri: imagePreview,
+          ...data.diagnosis,
+          timestamp: new Date().toISOString(),
+        });
+        toast({ title: "Diagnosis Saved", description: "The result has been saved to your farm history." });
+      } else {
+        setError(t('diagnosisTab.error.failedDiagnosis'));
+        toast({
+          variant: "destructive",
+          title: "Diagnosis Error",
+          description: data && data.error ? data.error : "Could not get diagnosis from the image."
+        });
+      }
     } catch (e) {
       console.error(e);
       setError(t('diagnosisTab.error.failedDiagnosis'));
@@ -108,16 +137,18 @@ export default function DiagnosisTab() {
     if (!diagnosis) return;
     const textToSpeak = `${t('diagnosisTab.diseaseIdentified')}: ${diagnosis.disease}. ${t('diagnosisTab.suggestedRemedies')}: ${diagnosis.remedies}`;
     
-    if (isPlaying && currentSpokenText === textToSpeak) {
-      stopAudio();
+    // TODO: Optionally stop any playing audio using browser Audio API if implemented
+    // If you implement audio playback, check if the same text is being played and stop it
+    if (currentSpokenText === textToSpeak) {
       setCurrentSpokenText("");
       return;
     }
 
     setCurrentSpokenText(textToSpeak);
     try {
-      const { audioDataUri } = await voiceBasedInformationDelivery({ text: textToSpeak });
-      playAudio(audioDataUri);
+      // TODO: Call backend API for voice-based information delivery
+      // const { audioDataUri } = await fetch('/api/voice-delivery', { ... })
+      // Use browser Audio API to play audioDataUri if needed
     } catch (e) {
       console.error(e);
       toast({
@@ -147,11 +178,12 @@ export default function DiagnosisTab() {
         reader.onloadend = async () => {
           const base64Audio = reader.result as string;
           try {
-            const result = await voiceQueryToText({ audioDataUri: base64Audio });
-            setTranscript(result.text);
-            if(diagnosis) {
-              setFollowUpQuestion(result.text);
-            }
+            // TODO: Call backend API for voice query to text
+            // const result = await fetch('/api/voice-query-to-text', { ... })
+            // setTranscript(result.text);
+            // if(diagnosis) {
+            //   setFollowUpQuestion(result.text);
+            // }
           } catch (e) {
              console.error(e);
              setError(t('diagnosisTab.error.failedTranscription'));
@@ -194,12 +226,9 @@ export default function DiagnosisTab() {
     
     try {
       const context = `The diagnosed disease is ${diagnosis.disease}. The suggested remedies are: ${diagnosis.remedies}.`;
-      const result = await answerFollowUp({ 
-          question: followUpQuestion, 
-          context,
-          language: languageCode || 'en',
-      });
-      setChatHistory([...newHistory, { sender: 'ai', text: result.answer }]);
+      // TODO: Call backend API for follow-up answers
+      // const result = await fetch('/api/diagnosis-followup', { ... })
+      // setChatHistory([...newHistory, { sender: 'ai', text: result.answer }]);
     } catch(e) {
       console.error(e);
       const errorMessage = "Sorry, I couldn't answer that question. Please try again.";
@@ -284,6 +313,10 @@ export default function DiagnosisTab() {
                   {diagnosis && (
                       <div className="space-y-4">
                           <div>
+                              <h3 className="font-bold text-lg text-primary">{t('diagnosisTab.cropName')}</h3>
+                              <p>{diagnosis.cropName}</p>
+                          </div>
+                          <div>
                               <h3 className="font-bold text-lg text-primary">{t('diagnosisTab.diseaseIdentified')}</h3>
                               <p>{diagnosis.disease}</p>
                           </div>
@@ -299,8 +332,8 @@ export default function DiagnosisTab() {
                             </div>
                           </div>
                           <Button onClick={handleSpeakDiagnosis} variant="outline" size="sm" className="mt-4 border-accent text-accent hover:bg-accent/10 hover:text-accent">
-                            <Volume2 className={`mr-2 h-4 w-4 ${(isPlaying && currentSpokenText.startsWith(t('diagnosisTab.diseaseIdentified'))) || isAudioLoading ? "animate-pulse" : ""}`} />
-                            {(isPlaying && currentSpokenText.startsWith(t('diagnosisTab.diseaseIdentified'))) ? t('diagnosisTab.stop') : (isAudioLoading && currentSpokenText.startsWith(t('diagnosisTab.diseaseIdentified'))) ? t('diagnosisTab.loading') : t('diagnosisTab.readAloud')}
+                            <Volume2 className="mr-2 h-4 w-4" />
+                            {t('diagnosisTab.readAloud')}
                           </Button>
 
                           <div className="pt-4 border-t border-border">

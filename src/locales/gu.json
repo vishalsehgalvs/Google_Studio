@@ -1,4 +1,3 @@
-
 {
   "login": {
     "welcome": "સ્વાગત છે!",
@@ -17,7 +16,17 @@
     "signUp": "અહીં સાઇન અપ કરો",
     "emailPlaceholder": "farmer@example.com",
     "passwordPlaceholder": "********",
-    "mobilePlaceholder": "દા.ત. 9876543210"
+    "mobilePlaceholder": "દા.ત. 9876543210",
+    "error": {
+      "title": "લોગિન નિષ્ફળ",
+      "invalidCredentials": "તમે દાખલ કરેલ ઈમેલ અથવા પાસવર્ડ ખોટો છે. કૃપા કરીને ફરી પ્રયાસ કરો.",
+      "invalidMobile": "કૃપા કરીને માન્ય 10-અંકનો મોબાઇલ નંબર દાખલ કરો."
+    },
+    "success": {
+      "title": "લોગિન સફળ!",
+      "description": "તમને ડેશબોર્ડ પર રીડાયરેક્ટ કરી રહ્યા છીએ...",
+      "welcomeGuest": "સ્વાગત છે, મહેમાન!"
+    }
   },
   "header": {
     "appName": "ફાર્મઆસિસ્ટ",
@@ -31,10 +40,22 @@
       "market": "બજાર માહિતી",
       "schemes": "સરકારી યોજનાઓ",
       "weather": "હવામાન",
+      "machinery": "યંત્રો",
       "myfarm": "મારું ખેતર"
     }
   },
+  "machineryTab": {
+    "title": "યંત્રો ભાડે",
+    "sendingRequest": "વિનંતી મોકલાઈ રહી છે...",
+    "error": "વિનંતી મોકલવામાં નિષ્ફળતા.",
+    "rentPrice": "ભાડું: ₹{{price}}/દિવસ",
+    "statusAvailable": "ઉપલબ્ધ",
+    "statusNotAvailable": "ઉપલબ્ધ નથી",
+    "requestSent": "વિનંતી મોકલાઈ",
+    "rentNow": "હમણાં ભાડે લો"
+  },
   "diagnosisTab": {
+    "cropName": "પાકનું નામ",
     "title": "છબી-આધારિત નિદાન",
     "description": "નિદાન અને ઉપચારો મેળવવા માટે અસરગ્રસ્ત પાકની છબી અપલોડ કરો.",
     "uploadPrompt": "છબી અપલોડ કરવા માટે ક્લિક કરો અથવા ખેંચો અને છોડો",
@@ -55,6 +76,7 @@
     "readAloud": "મોટેથી વાંચો",
     "stop": "બંધ કરો",
     "loading": "લોડ થઈ રહ્યું છે...",
+    "marketTab.loading": "લોડ થઈ રહ્યું છે...",
     "followUpTitle": "ફોલો-અપ પ્રશ્ન પૂછો",
     "typeQuestion": "તમારો પ્રશ્ન અહીં લખો...",
     "error": {
@@ -63,15 +85,71 @@
     }
   },
   "marketTab": {
+    "locations": {
+      "KR_Market_Bengaluru_Karnataka": "કેઆર માર્કેટ, બેંગલુરુ, કર્ણાટક",
+      "Nagpur_Maharashtra": "નાગપુર, મહારાષ્ટ્ર",
+      "Azadpur_Mandi_Delhi": "આઝાદપુર મંડિ, દિલ્હી",
+      "Vashi_Market_Navi_Mumbai": "વાશી માર્કેટ, નવિ મુંબઈ",
+      "Chennai_Koyambedu_Market_Tamil_Nadu": "ચેન્નાઈ કોયમ્બેડુ માર્કેટ, તમિલનાડુ",
+      "Lucknow_Uttar_Pradesh": "લખનૌ, ઉત્તર પ્રદેશ",
+      "Indore_Madhya_Pradesh": "ઇન્દોર, મધ્ય પ્રદેશ",
+      "Ahmedabad_Gujarat": "અમદાવાદ, ગુજરાત",
+      "Jaipur_Rajasthan": "જયપુર, રાજસ્થાન",
+      "Hyderabad_Telangana": "હૈદરાબાદ, તેલંગાણા",
+      "Patna_Bihar": "પટણા, બિહાર",
+      "Kolkata_West_Bengal": "કોલકાતા, પશ્ચિમ બંગાળ",
+      "Bhopal_Madhya_Pradesh": "ભોપાલ, મધ્ય પ્રદેશ",
+      "Pune_Maharાષ્ટ્ર": "પુણે, મહારાષ્ટ્ર",
+      "Surat_Gujarat": "સુરત, ગુજરાત",
+      "Chandigarh": "ચંડીગઢ",
+      "Coimbatore_Tamil_Nadu": "કોઇમ્બતુર, તમિલનાડુ",
+      "Guntur_Andhra_Pradesh": "ગુન્ટુર, આંધ્ર પ્રદેશ",
+      "Agra_Uttar_Pradesh": "આગ્રા, ઉત્તર પ્રદેશ",
+      "Varanasi_Uttar_Pradesh": "વારાણસી, ઉત્તર પ્રદેશ"
+    },
+    "crops": {
+      "Tur_Dal": "તુવર દાળ",
+      "Sunflower": "સૂર્યમુખી",
+      "Coffee": "કોફી",
+      "Arecanut": "સુપારી",
+      "Coconut": "નારીયલ",
+      "Mango": "કેરી",
+      "Grapes": "દ્રાક્ષ",
+      "Wheat": "ઘઉં",
+      "Rice": "ચોખા",
+      "Maize": "મકાઈ",
+      "Cotton": "કપાસ",
+      "Soybean": "સોયાબીન",
+      "Sugarcane": "ઉખડ",
+      "Potato": "બટાકા",
+      "Onion": "ડુંગળી",
+      "Tomato": "ટમેટા",
+      "Chilli": "મરચું",
+      "Banana": "કેળું",
+      "Paddy": "પાદી",
+      "Barley": "જૌ",
+      "Mustard": "સરસવ",
+      "Peas": "વટાણા",
+      "Groundnut": "દાણા",
+      "Jowar": "જવાર",
+      "Bajra": "બાજરી",
+      "Ragi": "રાગી",
+      "ToorDal": "તુવર દાળ",
+      "Brinjal": "રીંગણ",
+      "Pulses": "દાળ",
+      "Other": "અન્ય"
+    },
     "pricesTitle": "બજાર ભાવ",
     "pricesDescription": "બજારમાંથી નવીનતમ પાકના ભાવ.",
     "crop": "પાક",
     "pricePerUnit": "ભાવ (પ્રતિ {{unit}})",
+    "loading": "લોડ થઈ રહ્યું છે...",
+    "noData": "કોઈ માહિતી ઉપલબ્ધ નથી.",
     "analysisTitle": "બજાર વલણ વિશ્લેષણ",
     "analysisDescription": "ભાવની હિલચાલ પર AI-સંચાલિત આંતરદૃષ્ટિ.",
     "yourLocation": "તમારું સ્થાન",
     "priceTrend": "ભાવ વલણ વિશ્લેષણ",
-    "demandForecast": "માંગની આગાહી",
+    "demandForecast": "માગની આગાહી",
     "locationPricing": "સ્થાન-આધારિત ભાવ નિર્ધારણ",
     "error": "બજાર વલણોનું વિશ્લેષણ કરવામાં નિષ્ફળ. કૃપા કરીને પછીથી ફરી પ્રયાસ કરો."
   },
@@ -82,9 +160,11 @@
     "selectState": "તમારું રાજ્ય પસંદ કરો",
     "landSize": "જમીનનું કદ (એકરમાં)",
     "cropsGrown": "ઉગાડવામાં આવતા પાક (અલ્પવિરામથી અલગ)",
+    "cropsGrownPlaceholder": "દા.ત. કપાસ, સોયાબીન",
     "getRecs": "ભલામણો મેળવો",
     "findingSchemes": "યોજનાઓ શોધી રહ્યું છે...",
     "yourRecsTitle": "તમારી ભલામણ કરેલી યોજનાઓ",
+    "yourRecsDescription": "તમારી પ્રોફાઇલના આધારે, અહીં સૌથી વધુ સંબંધિત સરકારી યોજનાઓ છે.",
     "noSchemesFound": "કોઈ ચોક્કસ યોજનાઓ મળી નથી",
     "noSchemesDescription": "તમારી પ્રોફાઇલના આધારે, અમને અમારી સૂચિમાંથી કોઈ અત્યંત સુસંગત યોજનાઓ મળી નથી. તમે નીચે બધી ઉપલબ્ધ યોજનાઓ બ્રાઉઝ કરી શકો છો.",
     "allSchemes": {
@@ -123,11 +203,20 @@
       "દાદરા અને નગર હવેલી અને દમણ અને દીવ", "દિલ્હી", "જમ્મુ અને કાશ્મીર",
       "લદ્દાખ", "લક્ષદ્વીપ", "પુડુચેરી"
     ],
+    "eligibility": "પાત્રતા",
+    "benefits": "લાભ",
     "whyRecommended": "તે તમારા માટે શા માટે ભલામણ કરવામાં આવે છે:",
     "howToApply": "કેવી રીતે અરજી કરવી:",
     "learnMore": "વધુ જાણો",
     "error": {
-        "missingInfo": "ભલામણો મેળવવા માટે કૃપા કરીને બધી ફીલ્ડ્સ ભરો."
+      "missingInfo": {
+        "title": "માહિતી ગુમ છે",
+        "description": "ભલામણો મેળવવા માટે કૃપા કરીને બધી ફીલ્ડ્સ ભરો."
+      },
+      "fetchError": {
+        "title": "ભૂલ",
+        "description": "યોજનાની ભલામણો લાવવામાં નિષ્ફળ."
+      }
     }
   },
   "weatherTab": {
@@ -153,6 +242,7 @@
     "droneAnalysisBtn": "ડ્રોન ફૂટેજ વિશ્લેષણની વિનંતી કરો",
     "soilHealthCardBtn": "જમીન આરોગ્ય કાર્ડ જુઓ",
     "historyBtn": "ડેટા ઇતિહાસ જુઓ",
+    "getAiSoilAnalysisBtn": "એઆઈ માટી વિશ્લેષણ મેળવો",
     "soilCard": {
       "title": "જમીન આરોગ્ય કાર્ડ",
       "description": "તમારી જમીનના આરોગ્ય અને ભલામણોનો સારાંશ.",
@@ -181,6 +271,16 @@
       "uploadToSee": "વિશ્લેષણ જોવા માટે છબી અપલોડ કરો.",
       "overallAssessment": "એકંદરે મૂલ્યાંકન",
       "hotspots": "ઓળખાયેલ હોટસ્પોટ્સ"
+    },
+    "soilAnalysisModal": {
+      "title": "AI માટી આરોગ્ય વિશ્લેષણ",
+      "description": "તમારી જમીનના મેટ્રિક્સ જુઓ અને AI-સંચાલિત વિશ્લેષણ અને ભલામણો મેળવો.",
+      "yourMetrics": "તમારી જમીનના મેટ્રિક્સ (નમૂના ડેટા)",
+      "runAnalysis": "AI વિશ્લેષણ ચલાવો",
+      "analyzing": "વિશ્લેષણ થઈ રહ્યું છે...",
+      "resultTitle": "AI વિશ્લેષણ અને ભલામણો",
+      "detailedAnalysis": "વિગતવાર વિશ્લેષણ",
+      "recommendations": "ભલામણો"
     },
     "supplierModal": {
         "title": "સપ્લાયર પરિણામો",

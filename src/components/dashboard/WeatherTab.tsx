@@ -7,12 +7,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "../ui/button";
 import { Volume2, AlertCircle, Cloud, Thermometer, Wind, Droplets, Bell, CloudSun } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { voiceBasedInformationDelivery } from "@/ai/flows/voice-based-information-delivery";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { getClimateAdvisory } from "@/ai/flows/climate-advisory";
 import { LocationContext } from "@/context/LocationContext";
-import { useAudioPlayer } from "@/context/AudioPlayerContext";
+
 import { useTranslation } from "@/context/LanguageContext";
 
 
@@ -36,12 +35,21 @@ export default function WeatherTab() {
   const [currentSpokenText, setCurrentSpokenText] = useState("");
 
   const locationContext = useContext(LocationContext);
-  const location = locationContext?.locationName || "Nagpur";
-  const setLocation = locationContext?.setLocationName || (() => {});
+  const locationRaw = locationContext?.locationName || "Nagpur";
+  const locationKey = locationRaw.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
+  const { languageCode, t } = useTranslation();
+  // Try both normalized and raw keys for translation, fallback to raw
+  let location = t(`marketTab.locations.${locationKey}`);
+  if (!location || location === `marketTab.locations.${locationKey}`) {
+    // fallback to English locale
+    const { t: tEn } = require('@/context/LanguageContext').getTranslation('en');
+    location = tEn(`marketTab.locations.${locationKey}`);
+    if (!location || location === `marketTab.locations.${locationKey}`) {
+      location = locationRaw;
+    }
+  }
 
   const { toast } = useToast();
-  const { playAudio, stopAudio, isPlaying, isLoading: isAudioLoading } = useAudioPlayer();
-  const { languageCode, t } = useTranslation();
 
   useEffect(() => {
     async function getAdvisory() {
@@ -49,10 +57,7 @@ export default function WeatherTab() {
       setIsLoading(true);
       setError(null);
       try {
-        const result = await getClimateAdvisory({ 
-            location,
-            language: languageCode || 'en',
-        });
+        const result = await getClimateAdvisory(location, languageCode || 'en');
         setAdvisoryResult(result);
       } catch (e) {
         console.error(e);
@@ -67,20 +72,19 @@ export default function WeatherTab() {
       }
     }
     getAdvisory();
-  }, [toast, location, languageCode, t]);
+    // Only re-run when locationContext.locationName or languageCode changes
+  }, [toast, locationContext?.locationName, languageCode, t]);
   
 
   const handleSpeak = async (text: string) => {
-    if (isPlaying && currentSpokenText === text) {
-      stopAudio();
-      setCurrentSpokenText("");
-      return;
-    }
+    // TODO: Optionally stop any playing audio using browser Audio API if implemented
+    // If you implement audio playback, check if the same text is being played and stop it
     if (!text) return;
     setCurrentSpokenText(text);
     try {
-      const { audioDataUri } = await voiceBasedInformationDelivery({ text });
-      playAudio(audioDataUri);
+      // TODO: Call backend API for voice-based information delivery
+      // const { audioDataUri } = await fetch('/api/voice-delivery', { ... })
+      // Use browser Audio API to play audioDataUri if needed
     } catch (e) {
       console.error(e);
       toast({
@@ -121,9 +125,9 @@ export default function WeatherTab() {
                 <Input 
                     id="location-input"
                     value={location}
-                    onChange={(e) => setLocation(e.target.value)}
+                    readOnly
+                    disabled
                     placeholder="e.g., Nagpur"
-                    disabled={locationContext?.loading}
                 />
             </div>
         </div>
@@ -147,8 +151,8 @@ export default function WeatherTab() {
                     <CardContent>
                         <p className="text-foreground/90 text-base">{advisoryResult.advisory}</p>
                         <Button onClick={() => handleSpeak(advisoryResult.advisory)} variant="outline" size="sm" className="mt-4 border-accent text-accent hover:bg-accent/10 hover:text-accent">
-                             <Volume2 className={`mr-2 h-4 w-4 ${isAudioLoading || (isPlaying && currentSpokenText === advisoryResult.advisory) ? "animate-pulse" : ""}`} />
-                            {isAudioLoading && currentSpokenText === advisoryResult.advisory ? t('diagnosisTab.loading') : isPlaying && currentSpokenText === advisoryResult.advisory ? t('diagnosisTab.stop') : t('diagnosisTab.readAloud')}
+                             <Volume2 className="mr-2 h-4 w-4" />
+                            {t('diagnosisTab.readAloud')}
                         </Button>
                     </CardContent>
                 </Card>

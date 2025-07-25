@@ -1,4 +1,3 @@
-
 {
   "login": {
     "welcome": "ਜੀ ਆਇਆਂ ਨੂੰ!",
@@ -17,7 +16,17 @@
     "signUp": "ਇੱਥੇ ਸਾਈਨ ਅੱਪ ਕਰੋ",
     "emailPlaceholder": "farmer@example.com",
     "passwordPlaceholder": "********",
-    "mobilePlaceholder": "ਉਦਾ. 9876543210"
+    "mobilePlaceholder": "ਉਦਾ. 9876543210",
+    "error": {
+      "title": "ਲੌਗਇਨ ਅਸਫਲ",
+      "invalidCredentials": "ਤੁਸੀਂ ਦਰਜ ਕੀਤਾ ਈਮੇਲ ਜਾਂ ਪਾਸਵਰਡ ਗਲਤ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।",
+      "invalidMobile": "ਕਿਰਪਾ ਕਰਕੇ 10-ਅੰਕਾਂ ਵਾਲਾ ਵੈਧ ਮੋਬਾਈਲ ਨੰਬਰ ਦਰਜ ਕਰੋ।"
+    },
+    "success": {
+        "title": "ਲੌਗਇਨ ਸਫਲ!",
+        "description": "ਤੁਹਾਨੂੰ ਡੈਸ਼ਬੋਰਡ ਵੱਲ ਰੀਡਾਇਰੈਕਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...",
+        "welcomeGuest": "ਜੀ ਆਇਆਂ ਨੂੰ, ਮਹਿਮਾਨ!"
+    }
   },
   "header": {
     "appName": "ਫਾਰਮਅਸਿਸਟ",
@@ -31,10 +40,22 @@
       "market": "ਬਾਜ਼ਾਰ ਦੀ ਜਾਣਕਾਰੀ",
       "schemes": "ਸਰਕਾਰੀ ਯੋਜਨਾਵਾਂ",
       "weather": "ਮੌਸਮ",
+      "machinery": "ਮਸ਼ੀਨਰੀ",
       "myfarm": "ਮੇਰਾ ਖੇਤ"
     }
   },
+  "machineryTab": {
+    "title": "ਮਸ਼ੀਨਰੀ ਕਿਰਾਏ 'ਤੇ",
+    "sendingRequest": "ਬੇਨਤੀ ਭੇਜੀ ਜਾ ਰਹੀ ਹੈ...",
+    "error": "ਬੇਨਤੀ ਭੇਜਣ ਵਿੱਚ ਅਸਫਲ।",
+    "rentPrice": "ਕਿਰਾਇਆ: ₹{{price}}/ਦਿਨ",
+    "statusAvailable": "ਉਪਲਬਧ",
+    "statusNotAvailable": "ਉਪਲਬਧ ਨਹੀਂ",
+    "requestSent": "ਬੇਨਤੀ ਭੇਜੀ ਗਈ",
+    "rentNow": "ਹੁਣ ਕਿਰਾਏ 'ਤੇ ਲਵੋ"
+  },
   "diagnosisTab": {
+    "cropName": "ਫ਼ਸਲ ਦਾ ਨਾਮ",
     "title": "ਚਿੱਤਰ-ਅਧਾਰਤ ਨਿਦਾਨ",
     "description": "ਨਿਦਾਨ ਅਤੇ ਉਪਚਾਰ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਪ੍ਰਭਾਵਿਤ ਫਸਲ ਦੀ ਇੱਕ ਤਸਵੀਰ ਅਪਲੋਡ ਕਰੋ।",
     "uploadPrompt": "ਚਿੱਤਰ ਅਪਲੋਡ ਕਰਨ ਲਈ ਕਲਿੱਕ ਕਰੋ ਜਾਂ ਖਿੱਚੋ ਅਤੇ ਛੱਡੋ",
@@ -55,6 +76,7 @@
     "readAloud": "ਉੱਚੀ ਆਵਾਜ਼ ਵਿੱਚ ਪੜ੍ਹੋ",
     "stop": "ਰੋਕੋ",
     "loading": "ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ...",
+    "marketTab.loading": "ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ...",
     "followUpTitle": "ਇੱਕ ਫਾਲੋ-ਅੱਪ ਸਵਾਲ ਪੁੱਛੋ",
     "typeQuestion": "ਆਪਣਾ ਸਵਾਲ ਇੱਥੇ ਟਾਈਪ ਕਰੋ...",
     "error": {
@@ -63,10 +85,66 @@
     }
   },
   "marketTab": {
+    "locations": {
+      "KR_Market_Bengaluru_Karnataka": "ਕੇਆਰ ਮਾਰਕੀਟ, ਬੈਂਗਲੁਰੂ, ਕਰਨਾਟਕ",
+      "Nagpur_Maharashtra": "ਨਾਗਪੁਰ, ਮਹਾਰਾਸ਼ਟਰ",
+      "Azadpur_Mandi_Delhi": "ਆਜ਼ਾਦਪੁਰ ਮੰਡੀ, ਦਿੱਲੀ",
+      "Vashi_Market_Navi_Mumbai": "ਵਾਸ਼ੀ ਮਾਰਕੀਟ, ਨਵੀ ਮੁੰਬਈ",
+      "Chennai_Koyambedu_Market_Tamil_Nadu": "ਚੇਨਈ ਕੋਯੰਬੇਡੂ ਮਾਰਕੀਟ, ਤਮਿਲਨਾਡੂ",
+      "Lucknow_Uttar_Pradesh": "ਲਖਨਊ, ਉੱਤਰ ਪ੍ਰਦੇਸ਼",
+      "Indore_Madhya_Pradesh": "ਇੰਦੌਰ, ਮਧ੍ਯ ਪ੍ਰਦੇਸ਼",
+      "Ahmedabad_Gujarat": "ਅਹਿਮਦਾਬਾਦ, ਗੁਜਰਾਤ",
+      "Jaipur_Rajasthan": "ਜੈਪੁਰ, ਰਾਜਸਥਾਨ",
+      "Hyderabad_Telangana": "ਹੈਦਰਾਬਾਦ, ਤੇਲੰਗਾਨਾ",
+      "Patna_Bihar": "ਪਟਨਾ, ਬਿਹਾਰ",
+      "Kolkata_West_Bengal": "ਕੋਲਕਾਤਾ, ਪੱਛਮੀ ਬੰਗਾਲ",
+      "Bhopal_Madhya_Pradesh": "ਭੋਪਾਲ, ਮਧ੍ਯ ਪ੍ਰਦੇਸ਼",
+      "Pune_Maharashtra": "ਪੁਣੇ, ਮਹਾਰਾਸ਼ਟਰ",
+      "Surat_Gujarat": "ਸੂਰਤ, ਗੁਜਰਾਤ",
+      "Chandigarh": "ਚੰਡੀਗੜ੍ਹ",
+      "Coimbatore_Tamil_Nadu": "ਕੋਇੰਬਤੂਰ, ਤਮਿਲਨਾਡੂ",
+      "Guntur_Andhra_Pradesh": "ਗੁੰਟੂਰ, ਆਂਧਰਾ ਪ੍ਰਦੇਸ਼",
+      "Agra_Uttar_Pradesh": "ਆਗਰਾ, ਉੱਤਰ ਪ੍ਰਦੇਸ਼",
+      "Varanasi_Uttar_Pradesh": "ਵਾਰਾਣਸੀ, ਉੱਤਰ ਪ੍ਰਦੇਸ਼"
+    },
+    "crops": {
+      "Tur_Dal": "ਤੂਰ ਦਾਲ",
+      "Sunflower": "ਸੂਰਜਮੁਖੀ",
+      "Coffee": "ਕੌਫੀ",
+      "Arecanut": "ਸੁਪਾਰੀ",
+      "Coconut": "ਨਾਰੀਅਲ",
+      "Mango": "ਅੰਬ",
+      "Grapes": "ਅੰਗੂਰ",
+      "Wheat": "ਗੰਧੁਮ",
+      "Rice": "ਚੌਲ",
+      "Maize": "ਮੱਕੀ",
+      "Cotton": "ਕਪਾਹ",
+      "Soybean": "ਸੋਯਾਬੀਨ",
+      "Sugarcane": "ਗੰਨਾ",
+      "Potato": "ਆਲੂ",
+      "Onion": "ਪਿਆਜ਼",
+      "Tomato": "ਟਮਾਟਰ",
+      "Chilli": "ਮਿਰਚ",
+      "Banana": "ਕੇਲਾ",
+      "Paddy": "ਧਾਨ",
+      "Barley": "ਜੌ",
+      "Mustard": "ਸਰੋਂ",
+      "Peas": "ਮਟਰ",
+      "Groundnut": "ਮੂੰਗਫਲੀ",
+      "Jowar": "ਜੋਅ",
+      "Bajra": "ਬਾਜਰਾ",
+      "Ragi": "ਰਾਗੀ",
+      "ToorDal": "ਤੂਰ ਦਾਲ",
+      "Brinjal": "ਬੈਂਗਨ",
+      "Pulses": "ਦਾਲਾਂ",
+      "Other": "ਹੋਰ"
+    },
     "pricesTitle": "ਬਾਜ਼ਾਰ ਦੀਆਂ ਕੀਮਤਾਂ",
     "pricesDescription": "ਬਾਜ਼ਾਰ ਤੋਂ ਨਵੀਨਤਮ ਫਸਲਾਂ ਦੀਆਂ ਕੀਮਤਾਂ।",
     "crop": "ਫਸਲ",
     "pricePerUnit": "ਕੀਮਤ (ਪ੍ਰਤੀ {{unit}})",
+    "loading": "ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ...",
+    "noData": "ਕੋਈ ਡਾਟਾ ਉਪਲਬਧ ਨਹੀਂ ਹੈ।",
     "analysisTitle": "ਬਾਜ਼ਾਰ ਰੁਝਾਨ ਵਿਸ਼ਲੇਸ਼ਣ",
     "analysisDescription": "ਕੀਮਤ ਦੀਆਂ ਗਤੀਵਿਧੀਆਂ 'ਤੇ AI-ਸੰਚਾਲਿਤ ਸੂਝ।",
     "yourLocation": "ਤੁਹਾਡਾ ਸਥਾਨ",
@@ -82,9 +160,11 @@
     "selectState": "ਆਪਣਾ ਰਾਜ ਚੁਣੋ",
     "landSize": "ਜ਼ਮੀਨ ਦਾ ਆਕਾਰ (ਏਕੜ ਵਿੱਚ)",
     "cropsGrown": "ਉਗਾਈਆਂ ਗਈਆਂ ਫਸਲਾਂ (ਕਾਮੇ ਨਾਲ ਵੱਖ ਕਰੋ)",
+    "cropsGrownPlaceholder": "ਉਦਾ. ਕਪਾਹ, ਸੋਯਾਬੀਨ",
     "getRecs": "ਸਿਫਾਰਸ਼ਾਂ ਪ੍ਰਾਪਤ ਕਰੋ",
     "findingSchemes": "ਯੋਜਨਾਵਾਂ ਲੱਭ ਰਿਹਾ ਹੈ...",
     "yourRecsTitle": "ਤੁਹਾਡੀਆਂ ਸਿਫਾਰਸ਼ ਕੀਤੀਆਂ ਯੋਜਨਾਵਾਂ",
+    "yourRecsDescription": "ਤੁਹਾਡੀ ਪ੍ਰੋਫਾਈਲ ਦੇ ਅਧਾਰ ਤੇ, ਇੱਥੇ ਸਭ ਤੋਂ ਸੰਬੰਧਿਤ ਸਰਕਾਰੀ ਯੋਜਨਾਵਾਂ ਹਨ।",
     "noSchemesFound": "ਕੋਈ ਖਾਸ ਯੋਜਨਾਵਾਂ ਨਹੀਂ ਮਿਲੀਆਂ",
     "noSchemesDescription": "ਤੁਹਾਡੀ ਪ੍ਰੋਫਾਈਲ ਦੇ ਅਧਾਰ ਤੇ, ਸਾਨੂੰ ਸਾਡੀ ਸੂਚੀ ਵਿੱਚੋਂ ਕੋਈ ਵੀ ਬਹੁਤ ਜ਼ਿਆਦਾ ਸੰਬੰਧਿਤ ਯੋਜਨਾਵਾਂ ਨਹੀਂ ਮਿਲੀਆਂ। ਤੁਸੀਂ ਹੇਠਾਂ ਸਾਰੀਆਂ ਉਪਲਬਧ ਯੋਜਨਾਵਾਂ ਨੂੰ ਬ੍ਰਾਊਜ਼ ਕਰ ਸਕਦੇ ਹੋ।",
     "allSchemes": {
@@ -123,11 +203,20 @@
       "ਦਾਦਰਾ ਅਤੇ ਨਗਰ ਹਵੇਲੀ ਅਤੇ ਦਮਨ ਅਤੇ ਦੀਉ", "ਦਿੱਲੀ", "ਜੰਮੂ ਅਤੇ ਕਸ਼ਮੀਰ",
       "ਲੱਦਾਖ", "ਲਕਸ਼ਦੀਪ", "ਪੁਡੂਚੇਰੀ"
     ],
+    "eligibility": "ਯੋਗਤਾ",
+    "benefits": "ਫਾਇਦੇ",
     "whyRecommended": "ਇਹ ਤੁਹਾਡੇ ਲਈ ਕਿਉਂ ਸਿਫਾਰਸ਼ ਕੀਤੀ ਗਈ ਹੈ:",
     "howToApply": "ਅਰਜ਼ੀ ਕਿਵੇਂ ਦੇਣੀ ਹੈ:",
     "learnMore": "ਹੋਰ ਜਾਣੋ",
     "error": {
-        "missingInfo": "ਸਿਫਾਰਸ਼ਾਂ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਕਿਰਪਾ ਕਰਕੇ ਸਾਰੇ ਖੇਤਰ ਭਰੋ।"
+      "missingInfo": {
+        "title": "ਜਾਣਕਾਰੀ ਗੁੰਮ ਹੈ",
+        "description": "ਸਿਫਾਰਸ਼ਾਂ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਕਿਰਪਾ ਕਰਕੇ ਸਾਰੇ ਖੇਤਰ ਭਰੋ।"
+      },
+      "fetchError": {
+        "title": "ਗਲਤੀ",
+        "description": "ਯੋਜਨਾ ਦੀਆਂ ਸਿਫਾਰਸ਼ਾਂ ਪ੍ਰਾਪਤ ਨਹੀਂ ਕੀਤੀਆਂ ਜਾ ਸਕੀਆਂ।"
+      }
     }
   },
   "weatherTab": {
@@ -153,6 +242,7 @@
     "droneAnalysisBtn": "ਡਰੋਨ ਫੁਟੇਜ ਵਿਸ਼ਲੇਸ਼ਣ ਦੀ ਬੇਨਤੀ ਕਰੋ",
     "soilHealthCardBtn": "ਮਿੱਟੀ ਸਿਹਤ ਕਾਰਡ ਵੇਖੋ",
     "historyBtn": "ਡਾਟਾ ਇਤਿਹਾਸ ਵੇਖੋ",
+    "getAiSoilAnalysisBtn": "ਏਆਈ ਮਿੱਟੀ ਵਿਸ਼ਲੇਸ਼ਣ ਪ੍ਰਾਪਤ ਕਰੋ",
     "soilCard": {
       "title": "ਮਿੱਟੀ ਸਿਹਤ ਕਾਰਡ",
       "description": "ਤੁਹਾਡੀ ਮਿੱਟੀ ਦੀ ਸਿਹਤ ਅਤੇ ਸਿਫਾਰਸ਼ਾਂ ਦਾ ਸਾਰ।",
@@ -181,6 +271,16 @@
       "uploadToSee": "ਵਿਸ਼ਲੇਸ਼ਣ ਦੇਖਣ ਲਈ ਇੱਕ ਚਿੱਤਰ ਅਪਲੋਡ ਕਰੋ।",
       "overallAssessment": "ਸਮੁੱਚਾ ਮੁਲਾਂਕਣ",
       "hotspots": "ਪਛਾਣੇ ਗਏ ਹੌਟਸਪੌਟਸ"
+    },
+    "soilAnalysisModal": {
+      "title": "AI ਮਿੱਟੀ ਸਿਹਤ ਵਿਸ਼ਲੇਸ਼ਣ",
+      "description": "ਆਪਣੀ ਮਿੱਟੀ ਦੇ ਮੈਟ੍ਰਿਕਸ ਵੇਖੋ ਅਤੇ AI-ਸੰਚਾਲਿਤ ਵਿਸ਼ਲੇਸ਼ਣ ਅਤੇ ਸਿਫਾਰਸ਼ਾਂ ਪ੍ਰਾਪਤ ਕਰੋ।",
+      "yourMetrics": "ਤੁਹਾਡੀ ਮਿੱਟੀ ਦੇ ਮੈਟ੍ਰਿਕਸ (ਨਮੂਨਾ ਡਾਟਾ)",
+      "runAnalysis": "AI ਵਿਸ਼ਲੇਸ਼ਣ ਚਲਾਓ",
+      "analyzing": "ਵਿਸ਼ਲੇਸ਼ਣ ਹੋ ਰਿਹਾ ਹੈ...",
+      "resultTitle": "AI ਵਿਸ਼ਲੇਸ਼ਣ ਅਤੇ ਸਿਫਾਰਸ਼ਾਂ",
+      "detailedAnalysis": "ਵੇਰਵਾ ਵਿਸ਼ਲੇਸ਼ਣ",
+      "recommendations": "ਸਿਫਾਰਸ਼ਾਂ"
     },
     "supplierModal": {
         "title": "ਸਪਲਾਇਰ ਨਤੀਜੇ",

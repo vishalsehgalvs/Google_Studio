@@ -13,7 +13,7 @@ import { ExternalLink, Loader2, Sparkles, AlertCircle } from "lucide-react";
 import { Button } from "../ui/button";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
-import { recommendSchemes, RecommendSchemesOutput } from "@/ai/flows/scheme-recommendation";
+// TODO: Remove direct AI/server-only imports. Use backend API for scheme recommendation.
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -30,13 +30,13 @@ export default function SchemesTab() {
   const [state, setState] = useState("");
   const [landSize, setLandSize] = useState("");
   const [crops, setCrops] = useState("");
-  const [recommendations, setRecommendations] = useState<RecommendSchemesOutput | null>(null);
+  const [recommendations, setRecommendations] = useState<any | null>(null); // Use any until backend API is ready
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const { languageCode, t } = useTranslation();
 
   const indianStates: string[] = t('schemesTab.indianStates') as any;
-  const governmentSchemes: Scheme[] = t('schemesTab.allSchemes.schemesList') as any;
+  // Remove static governmentSchemes, will use model response
 
   const handleGetRecommendations = async () => {
     if (!state || !landSize || !crops) {
@@ -50,14 +50,18 @@ export default function SchemesTab() {
     setIsLoading(true);
     setRecommendations(null);
     try {
-      const result = await recommendSchemes({
-        state,
-        landSize: parseFloat(landSize),
-        crops: crops.split(",").map(c => c.trim()),
-        language: languageCode || 'en',
-        schemes: governmentSchemes,
+      const res = await fetch('/api/scheme-recommendation', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ state, landSize, crops, language: languageCode })
       });
-      setRecommendations(result);
+      if (!res.ok) throw new Error('Failed to fetch scheme recommendations');
+      const data = await res.json();
+      if (data.schemes_information) {
+        setRecommendations({ recommendations: data.schemes_information });
+      } else {
+        setRecommendations({ recommendations: [] });
+      }
     } catch (e) {
       console.error(e);
       toast({
@@ -132,17 +136,21 @@ export default function SchemesTab() {
             <CardContent>
               {recommendations.recommendations.length > 0 ? (
                 <Accordion type="single" collapsible className="w-full">
-                  {recommendations.recommendations.map((scheme, index) => (
+                  {recommendations.recommendations.map((scheme: any, index: any) => (
                     <AccordionItem value={`item-${index}`} key={index}>
                       <AccordionTrigger className="font-bold text-left hover:no-underline">{scheme.title}</AccordionTrigger>
                       <AccordionContent className="space-y-3 pt-2">
                         <div>
-                          <p className="font-semibold text-primary">{t('schemesTab.whyRecommended')}</p>
-                          <p className="text-sm text-foreground/80">{scheme.reason}</p>
+                          <p className="font-semibold text-primary">Eligibility</p>
+                          <p className="text-sm text-foreground/80">{scheme.eligibility}</p>
                         </div>
-                         <div>
+                        <div>
+                          <p className="font-semibold text-primary">Benefits</p>
+                          <p className="text-sm text-foreground/80">{scheme.benefits}</p>
+                        </div>
+                        <div>
                           <p className="font-semibold text-primary">{t('schemesTab.howToApply')}</p>
-                          <p className="text-sm text-foreground/80">{scheme.applicationGuidance}</p>
+                          <p className="text-sm text-foreground/80">{scheme.application}</p>
                         </div>
                       </AccordionContent>
                     </AccordionItem>
@@ -160,28 +168,6 @@ export default function SchemesTab() {
             </CardContent>
           </Card>
         )}
-
-        <Card className="shadow-lg border-primary/20">
-          <CardHeader>
-            <CardTitle className="font-headline text-2xl">{t('schemesTab.allSchemes.title')}</CardTitle>
-            <CardDescription>{t('schemesTab.allSchemes.description')}</CardDescription>
-          </CardHeader>
-          <Accordion type="single" collapsible className="w-full px-6 pb-6">
-            {governmentSchemes.map((scheme, index) => (
-              <AccordionItem value={`item-${index}`} key={index}>
-                <AccordionTrigger className="font-bold text-left hover:no-underline">{scheme.title}</AccordionTrigger>
-                <AccordionContent className="pt-2">
-                  <p className="mb-4 text-sm text-foreground/80">{scheme.description}</p>
-                  <Button asChild variant="link" className="p-0 h-auto text-accent hover:text-accent/80">
-                    <a href={scheme.link} target="_blank" rel="noopener noreferrer">
-                      {t('schemesTab.learnMore')} <ExternalLink className="w-4 h-4 ml-2" />
-                    </a>
-                  </Button>
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
-        </Card>
       </div>
 
     </div>

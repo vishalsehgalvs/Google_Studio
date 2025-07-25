@@ -8,55 +8,26 @@
  * - MarketTrendAnalysisOutput - The return type for the analyzeMarketTrends function.
  */
 
-import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
 
-const MarketTrendAnalysisInputSchema = z.object({
-  marketData: z.string().describe('Market data in JSON format.'),
-  location: z.string().describe('The location for which to provide pricing analysis.'),
-  language: z.string().describe('The language for the response (e.g., "en", "hi", "es").'),
-});
+// ...existing code...
+export type MarketTrendAnalysisInput = {
+  marketData: string;
+  location: string;
+  language: string;
+};
 
-export type MarketTrendAnalysisInput = z.infer<typeof MarketTrendAnalysisInputSchema>;
-
-const MarketTrendAnalysisOutputSchema = z.object({
-  trendAnalysis: z.string().describe('Analysis of market trends and predicted price movements.'),
-  demandForecast: z.string().describe('A forecast of demand for the upcoming season.'),
-  locationBasedPricing: z.string().describe('Pricing insights specific to the provided location.'),
-});
-
-export type MarketTrendAnalysisOutput = z.infer<typeof MarketTrendAnalysisOutputSchema>;
+export type MarketTrendAnalysisOutput = {
+  trendAnalysis: string;
+  demandForecast: string;
+  locationBasedPricing: string;
+};
 
 export async function analyzeMarketTrends(input: MarketTrendAnalysisInput): Promise<MarketTrendAnalysisOutput> {
-  return analyzeMarketTrendsFlow(input);
+  const res = await fetch('/api/market-trend', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(input),
+  });
+  if (!res.ok) throw new Error('Failed to fetch market trend analysis');
+  return res.json();
 }
-
-const prompt = ai.definePrompt({
-  name: 'marketTrendAnalysisPrompt',
-  input: {schema: MarketTrendAnalysisInputSchema},
-  output: {schema: MarketTrendAnalysisOutputSchema},
-  model: 'googleai/gemini-2.0-flash',
-  prompt: `You are an expert market analyst specializing in agricultural market trends.
-Generate the response in the following language: {{language}}.
-
-Analyze the following market data for the location "{{location}}" and provide:
-1.  A general price trend analysis.
-2.  A demand forecast for the next season.
-3.  Specific pricing insights for the given location.
-Provide actionable insights for farmers.
-
-Market Data: {{{marketData}}}
-`,
-});
-
-const analyzeMarketTrendsFlow = ai.defineFlow(
-  {
-    name: 'analyzeMarketTrendsFlow',
-    inputSchema: MarketTrendAnalysisInputSchema,
-    outputSchema: MarketTrendAnalysisOutputSchema,
-  },
-  async input => {
-    const {output} = await prompt(input);
-    return output!;
-  }
-);

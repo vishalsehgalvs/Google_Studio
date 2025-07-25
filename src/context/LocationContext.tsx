@@ -44,12 +44,13 @@ const mockReverseGeocode = (coords: Coordinates): string => {
             closestLocation = { name: loc.name, address: loc.address };
         }
     }
-    
-    // A threshold of ~2 degrees is roughly 222km. If a known city is within this range, use it.
-    if (closestLocation && minDistance < 2) {
+    // Debug log for geolocation matching
+    console.log('[LocationContext] User coordinates:', coords);
+    console.log('[LocationContext] Closest market:', closestLocation, 'Distance:', minDistance);
+    // Relaxed threshold: 3 degrees (~333km)
+    if (closestLocation && minDistance < 3) {
         return closestLocation.address;
     }
-
     // If no known city is nearby, return the coordinates as a string.
     return `Lat: ${coords.lat.toFixed(4)}, Lng: ${coords.lng.toFixed(4)}`;
 }
@@ -66,9 +67,9 @@ export const LocationProvider = ({ children }: { children: ReactNode }) => {
     setLocationName("Determining location...");
 
     if (!navigator.geolocation) {
-      setError("Geolocation is not supported by your browser. Defaulting to Nagpur.");
-      setLocationName("Kisan Mandi, Nagpur, Maharashtra");
-      setCoordinates({ lat: 21.1458, lng: 79.0882 });
+      setError("Geolocation is not supported by your browser. Defaulting to Bengaluru.");
+      setLocationName("KR Market, Bengaluru, Karnataka");
+      setCoordinates({ lat: 12.9716, lng: 77.5946 });
       setLoading(false);
       return;
     }
@@ -79,18 +80,25 @@ export const LocationProvider = ({ children }: { children: ReactNode }) => {
           lat: position.coords.latitude,
           lng: position.coords.longitude,
         };
+        console.log('[LocationContext] Geolocation success:', coords);
         setCoordinates(coords);
         const name = mockReverseGeocode(coords);
+        console.log('[LocationContext] Resolved location name:', name);
         setLocationName(name);
         setError(null);
         setLoading(false);
       },
       (err) => {
-        setError(`Location access denied. Defaulting to Nagpur. Error: ${err.message}`);
-        setLocationName("Kisan Mandi, Nagpur, Maharashtra");
-        setCoordinates({ lat: 21.1458, lng: 79.0882 });
+        if (err.code === 1) {
+          setError("Location access denied by user. Defaulting to Bengaluru.");
+        } else {
+          setError(`Could not determine location. Defaulting to Bengaluru. Error: ${err.message}`);
+        }
+        setLocationName("KR Market, Bengaluru, Karnataka");
+        setCoordinates({ lat: 12.9716, lng: 77.5946 });
         setLoading(false);
-      }
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
     );
   }, []);
 

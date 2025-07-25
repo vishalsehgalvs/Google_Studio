@@ -10,23 +10,23 @@ import Image from 'next/image';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '../ui/dialog';
 import { Input } from '../ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { analyzeDroneFootage } from '@/ai/flows/drone-footage-analysis';
+// TODO: Remove direct AI/server-only imports. Use backend API for drone analysis.
 import { LocationContext } from '@/context/LocationContext';
 import { Skeleton } from '../ui/skeleton';
-import { orderSupplies, OrderSuppliesOutput } from '@/ai/flows/order-supplies';
+// TODO: Remove direct AI/server-only imports. Use backend API for ordering supplies.
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { useUser } from '@/context/UserContext';
 import { saveSoilHealthCard } from '@/lib/db';
 import DataHistoryTab from './DataHistoryTab';
 import { useTranslation } from '@/context/LanguageContext';
-import { analyzeSoilHealth, SoilHealthAnalysisOutput } from '@/ai/flows/soil-health-analysis';
+// TODO: Remove direct AI/server-only imports. Use backend API for soil health analysis.
 
 type DroneAnalysisResult = {
   analysis: string;
   hotspots: { issue: string; recommendation: string }[];
 };
 
-type SupplierResults = OrderSuppliesOutput['suppliers'];
+type SupplierResults = any[]; // Use any until backend API is ready
 
 const sampleSoilHealthCard = {
   id: `shc_${Date.now()}`,
@@ -81,7 +81,7 @@ export default function MyFarmTab() {
   const [errorDroneAnalysis, setErrorDroneAnalysis] = useState<string | null>(null);
 
   const [isLoadingSoilAnalysis, setIsLoadingSoilAnalysis] = useState(false);
-  const [soilAnalysisResult, setSoilAnalysisResult] = useState<SoilHealthAnalysisOutput | null>(null);
+  const [soilAnalysisResult, setSoilAnalysisResult] = useState<any | null>(null); // Use any until backend API is ready
 
   const [isSupplierModalOpen, setIsSupplierModalOpen] = useState(false);
   const [supplierResults, setSupplierResults] = useState<SupplierResults>([]);
@@ -128,11 +128,9 @@ export default function MyFarmTab() {
     setErrorDroneAnalysis(null);
     setDroneAnalysisResult(null);
     try {
-      const result = await analyzeDroneFootage({ 
-        imageDataUri: droneImagePreview,
-        language: languageCode || 'en',
-      });
-      setDroneAnalysisResult(result);
+      // TODO: Call backend API for drone analysis
+      // const result = await fetch('/api/drone-analysis', { ... })
+      // setDroneAnalysisResult(result);
     } catch (e) {
       console.error(e);
       setErrorDroneAnalysis("Failed to analyze the footage. Please try another image or try again later.");
@@ -150,11 +148,9 @@ export default function MyFarmTab() {
     setIsLoadingSoilAnalysis(true);
     setSoilAnalysisResult(null);
     try {
-        const result = await analyzeSoilHealth({
-            metrics: sampleSoilHealthCard.metrics,
-            language: languageCode || 'en',
-        });
-        setSoilAnalysisResult(result);
+        // TODO: Call backend API for soil health analysis
+        // const result = await fetch('/api/soil-analysis', { ... })
+        // setSoilAnalysisResult(result);
     } catch(e) {
         console.error(e);
         toast({
@@ -173,8 +169,9 @@ export default function MyFarmTab() {
     setIsSupplierModalOpen(true);
     setSupplierResults([]);
     try {
-        const { suppliers } = await orderSupplies({ product });
-        setSupplierResults(suppliers);
+        // TODO: Call backend API for ordering supplies
+        // const { suppliers } = await fetch('/api/order-supplies', { ... })
+        // setSupplierResults(suppliers);
     } catch (e) {
         console.error(e);
         toast({
@@ -254,7 +251,20 @@ export default function MyFarmTab() {
                       <Pin className="text-primary" size={24}/>
                       <div>
                           <p className="font-semibold">{t('myFarmTab.location')}</p>
-                          {locationContext?.loading ? <Skeleton className="h-4 w-32 mt-1" /> : <p className="text-muted-foreground">{locationContext?.locationName || t('myFarmTab.notAvailable')}</p>}
+                          {locationContext?.loading ? <Skeleton className="h-4 w-32 mt-1" /> : <p className="text-muted-foreground">{(() => {
+                            if (!locationContext?.locationName) return t('myFarmTab.notAvailable');
+                            const locKey = locationContext.locationName.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
+                            let localized = t(`marketTab.locations.${locKey}`);
+                            if (!localized || localized === `marketTab.locations.${locKey}`) {
+                              // fallback to English locale
+                              const { t: tEn } = require('@/context/LanguageContext').getTranslation('en');
+                              localized = tEn(`marketTab.locations.${locKey}`);
+                              if (!localized || localized === `marketTab.locations.${locKey}`) {
+                                localized = locationContext.locationName;
+                              }
+                            }
+                            return localized;
+                          })()}</p>}
                           {locationContext?.error && <p className="text-xs text-destructive">{locationContext.error}</p>}
                       </div>
                   </div>
@@ -448,7 +458,7 @@ export default function MyFarmTab() {
                     <div>
                       <h4 className="font-semibold text-primary">{t('myFarmTab.soilAnalysisModal.recommendations')}</h4>
                       <ul className="list-disc list-inside space-y-1 text-sm mt-2">
-                        {soilAnalysisResult.recommendations.map((rec, index) => (
+                        {soilAnalysisResult.recommendations.map((rec: any, index: any) => (
                           <li key={index}>{rec}</li>
                         ))}
                       </ul>

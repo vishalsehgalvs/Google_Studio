@@ -1,4 +1,3 @@
-
 {
   "login": {
     "welcome": "स्वागत!",
@@ -17,7 +16,17 @@
     "signUp": "यहां साइन अप करें",
     "emailPlaceholder": "farmer@example.com",
     "passwordPlaceholder": "********",
-    "mobilePlaceholder": "उदा. 9876543210"
+    "mobilePlaceholder": "उदा. 9876543210",
+    "error": {
+      "title": "लॉगिन विफल",
+      "invalidCredentials": "आपके द्वारा दर्ज किया गया ईमेल या पासवर्ड गलत है। कृपया पुनः प्रयास करें।",
+      "invalidMobile": "कृपया एक मान्य 10-अंकीय मोबाइल नंबर दर्ज करें।"
+    },
+    "success": {
+      "title": "लॉगिन सफल!",
+      "description": "आपको डैशबोर्ड पर पुनः निर्देशित किया जा रहा है...",
+      "welcomeGuest": "स्वागत है, अतिथि!"
+    }
   },
   "header": {
     "appName": "फार्मअसिस्ट",
@@ -31,10 +40,22 @@
       "market": "बाजार की जानकारी",
       "schemes": "सरकारी योजनाएं",
       "weather": "मौसम",
+      "machinery": "मशीनरी",
       "myfarm": "मेरा खेत"
     }
   },
+  "machineryTab": {
+    "title": "मशीनरी किराया",
+    "sendingRequest": "अनुरोध भेजा जा रहा है...",
+    "error": "अनुरोध भेजने में विफल।",
+    "rentPrice": "किराया मूल्य: ₹{{price}}/दिन",
+    "statusAvailable": "उपलब्ध",
+    "statusNotAvailable": "उपलब्ध नहीं",
+    "requestSent": "अनुरोध भेजा गया",
+    "rentNow": "अभी किराए पर लें"
+  },
   "diagnosisTab": {
+    "cropName": "फसल का नाम",
     "title": "छवि-आधारित निदान",
     "description": "निदान और उपचार प्राप्त करने के लिए प्रभावित फसल की एक छवि अपलोड करें।",
     "uploadPrompt": "छवि अपलोड करने के लिए क्लिक करें या खींचें और छोड़ें",
@@ -55,6 +76,7 @@
     "readAloud": "जोर से पढ़ें",
     "stop": "बंद करें",
     "loading": "लोड हो रहा है...",
+    "marketTab.loading": "लोड हो रहा है...",
     "followUpTitle": "एक अनुवर्ती प्रश्न पूछें",
     "typeQuestion": "अपना प्रश्न यहां टाइप करें...",
     "error": {
@@ -63,10 +85,66 @@
     }
   },
   "marketTab": {
+    "locations": {
+      "KR_Market_Bengaluru_Karnataka": "केआर मार्केट, बेंगलुरु, कर्नाटक",
+      "Nagpur_Maharashtra": "नागपुर, महाराष्ट्र",
+      "Azadpur_Mandi_Delhi": "आज़ादपुर मंडी, दिल्ली",
+      "Vashi_Market_Navi_Mumbai": "वाशी मार्केट, नवी मुंबई",
+      "Chennai_Koyambedu_Market_Tamil_Nadu": "चेन्नई कोयम्बेडु मार्केट, तमिलनाडु",
+      "Lucknow_Uttar_Pradesh": "लखनऊ, उत्तर प्रदेश",
+      "Indore_Madhya_Pradesh": "इंदौर, मध्य प्रदेश",
+      "Ahmedabad_Gujarat": "अहमदाबाद, गुजरात",
+      "Jaipur_Rajasthan": "जयपुर, राजस्थान",
+      "Hyderabad_Telangana": "हैदराबाद, तेलंगाना",
+      "Patna_Bihar": "पटना, बिहार",
+      "Kolkata_West_Bengal": "कोलकाता, पश्चिम बंगाल",
+      "Bhopal_Madhya_Pradesh": "भोपाल, मध्य प्रदेश",
+      "Pune_Maharashtra": "पुणे, महाराष्ट्र",
+      "Surat_Gujarat": "सूरत, गुजरात",
+      "Chandigarh": "चंडीगढ़",
+      "Coimbatore_Tamil_Nadu": "कोयंबटूर, तमिलनाडु",
+      "Guntur_Andhra_Pradesh": "गुंटूर, आंध्र प्रदेश",
+      "Agra_Uttar_Pradesh": "आगरा, उत्तर प्रदेश",
+      "Varanasi_Uttar_Pradesh": "वाराणसी, उत्तर प्रदेश"
+    },
+    "crops": {
+      "Tur_Dal": "तूर दाल",
+      "Sunflower": "सूरजमुखी",
+      "Coffee": "कॉफी",
+      "Arecanut": "सुपारी",
+      "Coconut": "नारियल",
+      "Mango": "आम",
+      "Grapes": "अंगूर",
+      "Wheat": "गेहूं",
+      "Rice": "चावल",
+      "Maize": "मक्का",
+      "Cotton": "कपास",
+      "Soybean": "सोयाबीन",
+      "Sugarcane": "गन्ना",
+      "Potato": "आलू",
+      "Onion": "प्याज",
+      "Tomato": "टमाटर",
+      "Chilli": "मिर्च",
+      "Banana": "केला",
+      "Paddy": "धान",
+      "Barley": "जौ",
+      "Mustard": "सरसों",
+      "Peas": "मटर",
+      "Groundnut": "मूंगफली",
+      "Jowar": "ज्वार",
+      "Bajra": "बाजरा",
+      "Ragi": "रागी",
+      "ToorDal": "तूर दाल",
+      "Brinjal": "बैंगन",
+      "Pulses": "दालें",
+      "Other": "अन्य"
+    },
     "pricesTitle": "बाजार मूल्य",
     "pricesDescription": "बाजार से नवीनतम फसल की कीमतें।",
     "crop": "फसल",
     "pricePerUnit": "मूल्य (प्रति {{unit}})",
+    "loading": "लोड हो रहा है...",
+    "noData": "कोई डेटा उपलब्ध नहीं है।",
     "analysisTitle": "बाजार प्रवृत्ति विश्लेषण",
     "analysisDescription": "मूल्य आंदोलनों पर एआई-संचालित अंतर्दृष्टि।",
     "yourLocation": "आपका स्थान",
@@ -82,9 +160,11 @@
     "selectState": "अपना राज्य चुनें",
     "landSize": "भूमि का आकार (एकड़ में)",
     "cropsGrown": "उगाई गई फसलें (अल्पविराम से अलग)",
+    "cropsGrownPlaceholder": "उदा. कपास, सोयाबीन",
     "getRecs": "सिफारिशें प्राप्त करें",
     "findingSchemes": "योजनाएं ढूंढी जा रही हैं...",
     "yourRecsTitle": "आपकी अनुशंसित योजनाएं",
+    "yourRecsDescription": "आपकी प्रोफ़ाइल के आधार पर, यहां सबसे अधिक प्रासंगिक सरकारी योजनाएं हैं।",
     "noSchemesFound": "कोई विशिष्ट योजना नहीं मिली",
     "noSchemesDescription": "आपकी प्रोफ़ाइल के आधार पर, हमें हमारी सूची से कोई अत्यधिक प्रासंगिक योजना नहीं मिली। आप नीचे सभी उपलब्ध योजनाओं को ब्राउज़ कर सकते हैं।",
     "allSchemes": {
@@ -123,11 +203,20 @@
       "दादरा और नगर हवेली और दमन और दीव", "दिल्ली", "जम्मू और कश्मीर", 
       "लद्दाख", "लक्षद्वीप", "पुडुचेरी"
     ],
+    "eligibility": "पात्रता",
+    "benefits": "लाभ",
     "whyRecommended": "यह आपके लिए क्यों अनुशंसित है:",
     "howToApply": "आवेदन कैसे करें:",
     "learnMore": "और जानें",
     "error": {
-        "missingInfo": "सिफारिशें प्राप्त करने के लिए कृपया सभी फ़ील्ड भरें।"
+      "missingInfo": {
+        "title": "जानकारी गायब है",
+        "description": "सिफारिशें प्राप्त करने के लिए कृपया सभी फ़ील्ड भरें।"
+      },
+      "fetchError": {
+        "title": "त्रुटि",
+        "description": "योजना सिफारिशें प्राप्त करने में विफल।"
+      }
     }
   },
   "weatherTab": {
@@ -153,6 +242,7 @@
     "droneAnalysisBtn": "ड्रोन फुटेज विश्लेषण का अनुरोध करें",
     "soilHealthCardBtn": "मृदा स्वास्थ्य कार्ड देखें",
     "historyBtn": "डेटा इतिहास देखें",
+    "getAiSoilAnalysisBtn": "एआई मृदा विश्लेषण प्राप्त करें",
     "soilCard": {
       "title": "मृदा स्वास्थ्य कार्ड",
       "description": "आपकी मिट्टी के स्वास्थ्य और सिफारिशों का सारांश।",
@@ -181,6 +271,16 @@
       "uploadToSee": "विश्लेषण देखने के लिए एक छवि अपलोड करें।",
       "overallAssessment": "समग्र मूल्यांकन",
       "hotspots": "पहचाने गए हॉटस्पॉट"
+    },
+    "soilAnalysisModal": {
+      "title": "एआई मृदा स्वास्थ्य विश्लेषण",
+      "description": "अपनी मिट्टी के मीट्रिक्स देखें और एआई-संचालित विश्लेषण और सिफारिशें प्राप्त करें।",
+      "yourMetrics": "आपकी मिट्टी के मीट्रिक्स (नमूना डेटा)",
+      "runAnalysis": "एआई विश्लेषण चलाएं",
+      "analyzing": "विश्लेषण हो रहा है...",
+      "resultTitle": "एआई विश्लेषण और सिफारिशें",
+      "detailedAnalysis": "विस्तृत विश्लेषण",
+      "recommendations": "सिफारिशें"
     },
     "supplierModal": {
         "title": "आपूर्तिकर्ता परिणाम",

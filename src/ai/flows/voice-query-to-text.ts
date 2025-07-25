@@ -7,45 +7,21 @@
  * - VoiceQueryToTextOutput - The return type for the voiceQueryToText function.
  */
 
-import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+// ...existing code...
+export type VoiceQueryToTextInput = {
+  audioDataUri: string;
+};
 
-const VoiceQueryToTextInputSchema = z.object({
-  audioDataUri: z
-    .string()
-    .describe(
-      "Audio data URI of the voice query.  It must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
-    ),
-});
-export type VoiceQueryToTextInput = z.infer<typeof VoiceQueryToTextInputSchema>;
-
-const VoiceQueryToTextOutputSchema = z.object({
-  text: z.string().describe('The transcribed text from the voice query.'),
-});
-export type VoiceQueryToTextOutput = z.infer<typeof VoiceQueryToTextOutputSchema>;
+export type VoiceQueryToTextOutput = {
+  text: string;
+};
 
 export async function voiceQueryToText(input: VoiceQueryToTextInput): Promise<VoiceQueryToTextOutput> {
-  return voiceQueryToTextFlow(input);
+  const res = await fetch('/api/voice-query-to-text', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(input),
+  });
+  if (!res.ok) throw new Error('Failed to fetch voice query to text');
+  return res.json();
 }
-
-const prompt = ai.definePrompt({
-  name: 'voiceQueryToTextPrompt',
-  input: {schema: VoiceQueryToTextInputSchema},
-  output: {schema: VoiceQueryToTextOutputSchema},
-  model: 'googleai/gemini-2.0-flash',
-  prompt: `Transcribe the following audio into text:
-
-Audio: {{media url=audioDataUri}}`,
-});
-
-const voiceQueryToTextFlow = ai.defineFlow(
-  {
-    name: 'voiceQueryToTextFlow',
-    inputSchema: VoiceQueryToTextInputSchema,
-    outputSchema: VoiceQueryToTextOutputSchema,
-  },
-  async input => {
-    const {output} = await prompt(input);
-    return output!;
-  }
-);
