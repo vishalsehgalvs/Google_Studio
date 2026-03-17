@@ -20,7 +20,7 @@ if genai and API_KEY:
 else:
     print("[ERROR] genai or API_KEY missing. genai:", genai, "API_KEY:", bool(API_KEY))
 
-API_KEY = os.environ.get("GOOGLE_API_KEY") or os.environ.get("GEMINI_API_KEY") or "AIzaSyCNcEYekl4UAWDmcMFxiPcr5FakRaT_-qM"
+API_KEY = os.environ.get("GOOGLE_API_KEY") or os.environ.get("GEMINI_API_KEY")
 
 if genai and API_KEY:
     genai.configure(api_key=API_KEY)
